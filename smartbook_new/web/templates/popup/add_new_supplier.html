@@ -1,0 +1,59 @@
+<div style='display:none' id="add_supplier">
+    <div id='add_new_vendor' style='padding:10px; background:#fff;'>
+        <div class="sign_box">
+            <div class="row-fluid">
+                <div class="span12 sign_mid">
+                    <form action="" id="register" name="register" method="post" class="reg_sec">
+                        {% csrf_token %}
+                        <div class="control">
+                            <div class="formtext"><label>Supplier Name</label></div>
+                            <div class="forminput"><input name="name" type="text" ng-model="name"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Contact Person</label></div>
+                            <div class="forminput"> <input name="contact_person" type="text" ng-model="contact_person"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>House Name</label></div>
+                            <div class="forminput"> <input name="house" type="text" ng-model="house"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Street</label></div>
+                            <div class="forminput"> <input name="street" type="text" ng-model="street"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>City</label></div>
+                            <div class="forminput"> <input name="city" type="text" ng-model="city"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>District</label></div>
+                            <div class="forminput"> <input name="district" type="text" ng-model="district"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Pin</label></div>
+                            <div class="forminput"> <input name="pin" type="text" ng-model="pin" /></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Mobile</label></div>
+                            <div class="forminput"> <input name="mobile" type="text" ng-model="mobile" /></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Land Line</label></div>
+                            <div class="forminput"> <input name="phone" type="text" ng-model="phone"/></div>
+                        </div>
+                        <div class="control">
+                            <div class="formtext"><label>Email Id</label></div>
+                            <div class="forminput"> <input name="email" type="text" ng-model="email" /></div>
+                        </div>
+                        <div align="center" class="control_buttons">
+                            <p class="error_message">[[validation_error]]</p>
+                            <input name="submit" type="button" value="Add" ng-click="add_new_supplier()">
+                            <input name="cancel" type="button" value="Cancel" ng-click="close_popup()">
+                        </div>
+                    </form>                        
+                </div>
+            </div>    
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>

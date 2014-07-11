@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Purchase Reports {% endblock title %}
+{% block body_id %}purchase_reports_date{% endblock %}
+{% block controller %}
+	ng-controller="PurchaseReportController" ng-init="init('{{csrf_token}}','{{report_type}}')"   
+{% endblock controller %}
+{% block content %}
+	<div>
+	
+		<div class="main-title">				
+			<div class="alert alert-info" align="Center"> Purchase Report
+									
+			</div>
+		</div>
+			
+		<div class="error_message">
+			<p>{{msg}}</p>
+		</div>
+		<form name="purchase_form" method="get" action="{% url 'purchase_reports' %}">
+			
+			<div>
+				<input type="hidden" value="{{report_type}}" name="report_type">
+				<div class="reportinput">
+					<label for="s_date">Start Date</label>
+					<input type="text" name="start_date" id="start_date" value="{{start_date}}">
+				</div>					
+				<div class="reportinput">
+					<label for="e_date">End Date</label>
+					<input type="text" name="end_date" id="end_date" value="{{end_date}}">
+				</div>
+			</div>
+			
+			<div class="reporttext">
+				<input type="submit" value="View Report" class="btn btn-info " style="border-top-width: 0px; margin-top: 3px;" />
+			</div>
+		</form>
+		<p class="error_message"> {{validation_error}} </p>
+	</div>
+	
+{% endblock content %}

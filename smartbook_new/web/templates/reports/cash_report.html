@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Cash Report{% endblock title %}
+{% block body_id %}cash_report{% endblock %}
+
+{% block controller %}
+	ng-controller="CashReportController" ng-init="init('{{csrf_token}}','{{report_type}}')"   
+{% endblock controller %}
+
+{% block content %}
+
+<div>
+	<div class="main-title">		
+		<div class="alert alert-info" align="Center">Cash Report</div>
+	</div>	
+
+	<div class="message">
+		<p>{{msg}}</p>
+	</div>
+
+	<form name="salesreport_form" method="get" action="{% url 'cash_report' %}">
+		
+		<div>	
+			<div class="reportinput">
+				<label>Project</label> 
+				<input type="hidden" name="report_type" value="{{report_type}}">
+				<select name="project_name" ng-model="project_name">
+				 	<option value="select">Select Project</option>
+				 	<option ng-repeat="project in projects" value="[[project.id]]">[[project.name]]</option>
+				</select>
+			</div>	
+		</div>		
+		
+		<div class="reportinput">
+			<label> &nbsp; &nbsp;</label>
+			<input type="submit" value="View Report" class="btn btn-info report_button " style="border-top-width: 0px; margin-top: 3px;">
+		</div>	
+	</form>		
+</div>
+
+{% endblock content %}

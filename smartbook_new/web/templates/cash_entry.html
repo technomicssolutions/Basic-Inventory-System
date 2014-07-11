@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block body_id %}create_cash_entry{% endblock %}
+
+{% block title %}Create Cash Entry{% endblock title %}
+{% block controller %}ng-controller="CashInHandEntryController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Create Cash Entry</h4></div>
+	</div>
+
+	<div class="purchase_form_container">
+		<form name="purchase_entry" method="post">
+			<div class="form_contents_purchase">
+				<div class="section_1_purchase">
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="date">Date </label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="date"  ng-model="cash_entry.date" id="date" value="{{date}}" />
+						</div>
+					</div>
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="from">From</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="from" ng-model="cash_entry.from" />
+						</div>
+					</div>
+					
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="purpose">Purpose</label>
+						</div>
+						<div class="forminput">
+							<select ng-model="cash_entry.purpose" name="pupose" ng-change="add_purpose()">
+								<option value="">Select</option>
+								<option value="project">Project</option>
+								<option value="petty_cash">Petty Cash</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+					</div>
+					<div class="formrow_purchase" ng-show="is_other_purpose">
+						<div class="formtext_purchase">
+							<label for="purpose">Other Purpose</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="other_purpose" ng-model="cash_entry.other_purpose">
+						</div> 
+					</div>
+					<div class="formrow_purchase" ng-show="is_project">
+						<div class="formtext_purchase">
+							<label for="project">Project</label>
+						</div>
+						<div class="forminput">
+							<select name="project" ng-model="cash_entry.project_id">
+								<option value="">Select</option>
+								<option ng-repeat="project in projects" value="[[project.id]]" ng-selected="cash_entry.project_id == project.id">[[project.name]]</option>
+							</select>
+						</div> 
+					</div>
+
+				</div>	
+			</div>
+			<div  align="Center">
+				<div class="buttons">
+					<p class="error_message"> [[validation_error]] </p>
+					<input type="button" value="Submit" ng-click="create_project();" class="btn btn-info">
+					<a href="{% url 'home' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
+				</div>
+			</div>			
+		</form>
+		<div class="clear"></div>
+	</div>
+
+{% endblock content %}

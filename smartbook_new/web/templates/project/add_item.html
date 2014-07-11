@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block body_id %}add_item{% endblock %}
+
+{% block title %}Add Item{% endblock title %}
+{% block controller %}ng-controller="AddItemController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Add Item</h4></div>
+	</div>
+
+	<div class="purchase_form_container">
+		<form name="purchase_entry" method="post">
+			<div class="form_contents_purchase">
+				<div class="section_1_purchase">
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="name">Item Name</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="name" ng-model="item.name" />
+						</div>
+					</div>
+
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="code">Item Code</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="code" ng-model="item.code" id="item_code" >
+						</div>
+					</div>
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="type">Type</label>
+						</div>
+						<div class="forminput">
+							<select ng-model="item.type">
+								<option value="">Select</option>
+                                <option value="item">Item</option>
+                                <option value="service_charge">Service Charge</option>
+                            </select>
+						</div>
+					</div>
+					
+
+				</div>	
+			</div>
+			<div  align="Center">
+				<div class="buttons">
+					<p class="error_message"> [[validation_error]] </p>
+					<input type="button" value="Submit" ng-click="add_item();" class="btn btn-info">
+					<a href="{% url 'home' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
+				</div>
+			</div>			
+		</form>
+		<div class="clear"></div>
+	</div>
+
+{% endblock content %}

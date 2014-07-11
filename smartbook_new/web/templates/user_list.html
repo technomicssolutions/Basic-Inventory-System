@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}List-{{user_type}}
+{% endblock title %}
+{% block body_id %}list-{{user_type}}{% endblock %}
+
+{% block content %}
+
+<div class="top_section">
+	{% if user_type == 'supplier' %}
+		<a class="btn btn-info" href="{% url 'register_user' user_type='supplier' %}">New Supplier</a>
+	
+	{% elif user_type == 'customer' %}
+		<a class="btn btn-info" href="{% url 'register_user' user_type='customer' %}">New Customer</a> 
+	{% endif %}
+</div>
+{% if users|length > 0 %}
+	<table border="0" class="table_list" cellspacing="0">
+		<tr>
+					
+			<th> Name </th>
+			<th> House Name</th>
+			<th> Street </th>
+			<th> City </th>
+			<th> District </th>
+			<th> Pincode </th>
+			<th> Mobile </th>
+			<th> Phone </th>
+			<th> Email </th>
+			<th>&nbsp;&nbsp;&nbsp;</th>'
+			{% if user.is_superuser %}
+				<th>&nbsp;&nbsp;&nbsp;</th>
+			{% endif %}
+			{% if user_type == 'customer' %}
+				{% for customer in users %}
+					<tr class="{% cycle 'odd' 'even' %}">
+						<td> {{ customer.customer_name }} </td>
+						<td> {{ customer.house_name }} </td>
+						<td> {{ customer.street }}</td>
+						<td> {{ customer.city }} </td>
+						<td> {{ customer.district }} </td>
+						<td> {{ customer.pin }} </td>
+						<td> {{ customer.mobile_number }} </td>
+						<td> {{ customer.land_line }} </td>
+						<td> {{ customer.customer_id }} </td>
+						
+						<td><a href="{% url 'edit_user' user_type=user_type user_id=customer.id %}">
+							<img src="/static/images/edit.png">
+							</a>
+						</td>
+						{% if user.is_superuser %}
+							<td>
+								<a href="{% url 'delete_user' user_type=user_type user_id=customer.id %}"><img src="/static/images/delete.png"></a>
+							</td>
+							
+						{% endif %}	
+					</tr>
+				{% endfor %}
+			{% else %}
+				{% for usr in users %}
+					<tr class="{% cycle 'odd' 'even' %}">
+						<td> {{ usr.name }} </td>
+						<td> {{ usr.house_name }} </td>
+						<td> {{ usr.street }}</td>
+						<td> {{ usr.city }} </td>
+						<td> {{ usr.district }} </td>
+						<td> {{ usr.pin }} </td>
+						<td> {{ usr.mobile }} </td>
+						<td> {{ usr.land_line }} </td>
+						<td> {{ usr.email_id }} </td>
+						<td><a href="{% url 'edit_user' user_type=user_type user_id=usr.id%}">
+							<img src="/static/images/edit.png">
+							</a>
+						</td>
+						
+					</tr>
+				{% endfor %}
+			{% endif %}
+		</tr>
+	</table>
+{% else %}
+	
+	<div class="message"><p>No {{user_type}}s</p></div>
+
+{% endif %}
+
+{% endblock content %}

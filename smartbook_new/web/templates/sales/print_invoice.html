@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block body_id %}print_invoice{% endblock %}
+
+{% block title %}Print Invoice{% endblock title %}
+{% block controller %}ng-controller="PrintInvoiceController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
+
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Print Invoice</h4></div>
+	</div>
+
+	<div class="sales_form_container">
+		<form name="sales_entry" method="post">
+			<div class="form_contents_sales">
+				<div class="section_1_sales">
+
+					<div class="formrow_sales">
+
+						<div class="formtext_sales">
+							<label for="invoice_number">Invoice Number</label>
+
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="invoice_number" ng-model="invoice_no" ng-change="get_sales_invoice_details();" />
+							<label class="error_message"> [[invoice_message]] </label>
+						</div>
+
+						
+					</div>
+
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="Date ">Date </label>
+						</div>
+
+						<div class="forminput_sales">
+							
+							<input type="text" name="sales_invoice_date"  id="sales_invoice_date" ng-model="sales.date" readonly>
+						</div>
+					</div>
+
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="customer">Customer Name</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" ng-model="sales.customer" readonly/>
+							
+						</div>
+					</div>
+				</div>	
+
+   				<div class="purchase_items_list" ng-show="sales.sales_items.length > 0">
+   					<div class="purchase_item_list">
+   						
+   						<div class="item_list_row header">
+							<span class="small_column"> Item Code </span>
+							<span> Item Name </span>
+							<span> Stock </span>
+							<span> Unit Price </span>
+							<span> Qty  </span>	
+							<span> Net Amount </span>
+						</div>
+						<div ng-repeat="item in sales.sales_items" class="item_list_row">
+							<span class="small_column">[[item.item_code]] </span>
+							<span>[[item.item_name]] </span>
+							<span>[[item.current_stock]] </span>
+							<span>[[item.unit_price]]</span>
+							<span> [[item.qty_sold]] </span> 
+							<span>[[item.net_amount]] </span>
+						</div>
+						
+						<div class="clear"></div>
+   					</div>
+   					<div class="clear"></div>
+   				</div>
+   				
+   				<div class="clear"></div>
+
+				<div class="section_1_sales">
+					
+					<div class="formrow_sales">
+						<div class="formtext_sales" id="radio">
+							<label for="payment_mode">Payment Mode</label>
+						</div>
+						<div class="forminput_sales" id="radio_input">
+							<input type="radio" name="payment_mode" ng-model="sales.payment_mode" value="cash" disabled><label>Cash</label>
+							<input type="radio" name="payment_mode" ng-model="sales.payment_mode" value="cheque" disabled><label>Cheque</label>
+							<input type="radio" name="payment_mode" ng-model="sales.payment_mode" value="credit" disabled><label>Credit</label>
+						</div>
+					</div>
+
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="bank_name">Bank name</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="bank_name" ng-model="sales.bank_name" readonly/>
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="branch">Branch</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="branch" ng-model="sales.branch" readonly/>
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="cheque_no">Cheque No</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="cheque_no" ng-model="sales.cheque_no" readonly/>
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="cheque_date">Cheque Date</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="cheque_date" id="cheque_date" ng-model="sales.cheque_date" readonly/>
+						</div>
+					</div>
+					
+
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="net_total">Net Total</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="net_total"ng-model="sales.net_total" readonly/ >
+						</div>
+					
+						<div class="formtext_sales">
+							<label for="discount">Discount Amount</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="discount" ng-model="sales.discount" readonly/>
+						</div>
+
+						<div class="formtext_sales">
+							<label for="discount">Discount Percentage</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="discount_percentage" ng-model="sales.discount_percentage" readonly/>
+						</div>
+
+						<div class="formtext_sales">
+							<label for="round">Round Off</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="roundoff" ng-model="sales.roundoff" readonly>
+						</div>
+
+						<div class="formtext_sales">
+							<label for="Grant Total">Grand Total</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="grant_total" ng-model="sales.grant_total" readonly/>
+						</div>
+
+						<div class="formtext_sales">
+							<label for="paid">Paid</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="paid" ng-model="sales.paid" readonly>
+						</div>
+
+						<div class="formtext_sales">
+							<label for="balance">Balance</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="balance" ng-model="sales.balance" readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div  align="Center">
+				<div class="buttons">
+					<p class="error_message"> [[validation_error]] </p>
+					<input type="button" value="Submit" ng-click="print_invoice();">
+					<a href="{% url 'home' %}"><input type="button" value="Cancel"></a>
+				</div>
+			</div>			
+		</form>
+		<div class="clear"></div>
+	</div>
+
+{% endblock content %}
