@@ -51,6 +51,7 @@ class UserList(View):
                     for usr in users:
                         ctx_suppliers.append({
                             'supplier_name': usr.name,
+                            'id': usr.id,
                         })
                 res = {
                     'suppliers': ctx_suppliers,

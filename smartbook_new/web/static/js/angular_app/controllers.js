@@ -3559,3 +3559,137 @@ function CashInHandEntryController($scope, $element, $http) {
         }
     }
 }
+
+function VendorAccountController($scope, $element, $http, $timeout, $location){  
+    $scope.actual_total_amount = 0;
+    $scope.actual_amount_paid = 0;
+    $scope.actual_balance_amount = 0; 
+    $scope.cash = true; 
+    $scope.init = function(csrf_token) 
+    {
+        $scope.csrf_token = csrf_token;
+        $scope.vendor_account = {
+            'payment_mode': 'cash',
+            'total_amount': 0,
+            'balance_amount': 0,
+            'amount_paid': 0,
+            'amount': 0,
+            'cheque_no': '',
+            'cheque_date': '',
+            'bank_name': '',
+            'branch_name': '',
+            'narration': '',
+     }
+        $scope.date_picker = new Picker.Date($$('#vendor_account_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format: '%d/%m/%Y',
+        });
+        $scope.date_picker_cheque = new Picker.Date($$('#cheque_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format: '%d/%m/%Y',
+        });
+        get_suppliers($scope, $http);
+    }
+    $scope.select_payment_mode = function(){
+        if($scope.vendor_account.payment_mode == 'cheque') {
+            $scope.cash = false;
+        } else {
+            $scope.cash = true;
+        }
+    }
+    $scope.get_vendor_account_details = function(){
+        var vendor = $scope.vendor_account.vendor;
+        $http.get('/purchase/vendor_account/?vendor='+$scope.vendor_account.vendor).success(function(data, status)
+        {
+            console.log(data.vendor_account);
+            if (status==200) {             
+                $scope.vendor_account = data.vendor_account;
+                $scope.actual_total_amount = data.vendor_account.total_amount;
+                $scope.actual_amount_paid = data.vendor_account.amount_paid;
+                $scope.actual_balance_amount = data.vendor_account.balance_amount;
+                $scope.select_payment_mode();               
+            }
+            
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.validate_vendor_account = function(){
+        if($scope.vendor_account.vendor == '' || $scope.vendor_account.vendor == undefined ) {
+            $scope.validation_error = "Please select Vendor";
+            return false;
+        } else if($$('#vendor_account_date')[0].get('value') == '') {
+            $scope.validation_error = "Please select date";
+            return false;
+        } else if($scope.vendor_account.amount == '' || $scope.vendor_account.amount == 0 || $scope.vendor_account.amount != Number($scope.vendor_account.amount)){
+            $scope.validation_error = "Please enter amount";            
+            return false;
+        } 
+        if(!$scope.vendor_account.narration){
+            $scope.vendor_account.narration = "";
+        }
+        if($scope.vendor_account.payment_mode == 'cash') {
+            if(!$scope.vendor_account.branch_name)
+                $scope.vendor_account.branch_name = "";
+            if(!$scope.vendor_account.bank_name)
+                $scope.vendor_account.bank_name = "";
+            if(!$scope.vendor_account.cheque_no)
+                $scope.vendor_account.cheque_no = "";
+            if(!$scope.vendor_account.cheque_date)
+                $scope.vendor_account.cheque_date = "";
+        } else {
+            if(!$scope.vendor_account.branch_name){
+                $scope.validation_error = "Please enter branch name";
+                return false;
+            } else if(!$scope.vendor_account.bank_name){
+                $scope.validation_error = "Please enter bank name";
+                return false;
+            }else if(!$scope.vendor_account.cheque_no){
+                $scope.validation_error = "Please enter cheque no";
+                return false;
+            }else if($$('#cheque_date')[0].get('value') == ''){
+                $scope.validation_error = "Please enter cheque date";
+                return false;
+            }
+            if($$('#cheque_date')[0].get('value') != '') {
+                $scope.vendor_account.cheque_date = $$('#cheque_date')[0].get('value');
+            }
+        }
+        return true;
+    }
+    $scope.reset_vendor_account = function(){
+        $scope.vendor_account.vendor = '';
+        
+    }
+    $scope.save_vendor_account = function(){
+        $scope.vendor_account.vendor_account_date = $$('#vendor_account_date')[0].get('value');
+        
+        if($scope.validate_vendor_account()) {
+            params = { 
+                'vendor_account': angular.toJson($scope.vendor_account),
+                "csrfmiddlewaretoken" : $scope.csrf_token
+            }
+            $http({
+                method : 'post',
+                url : '/purchase/vendor_account/',
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                document.location.href = '/purchase/vendor_accounts/';
+               
+            }).error(function(data, success){
+                
+            });
+        }
+          
+    }
+}

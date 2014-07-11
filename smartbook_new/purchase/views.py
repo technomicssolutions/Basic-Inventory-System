@@ -168,3 +168,70 @@ class PurchaseEntry(View):
         response = simplejson.dumps(res)
         status_code = 200
         return HttpResponse(response, status = status_code, mimetype="application/json")
+
+class VendorAccounts(View):
+    def get(self, request, *args, **kwargs):
+        vendor_accounts =  SupplierAccount.objects.all()
+        vendors = Supplier.objects.all()
+        return render(request, 'purchase/vendor_accounts.html', {
+            'vendor_accounts' : vendor_accounts,
+            'vendors': vendors
+        })
+        
+
+class SupplierAccountDetails(View):
+    def get(self, request, *args, **kwargs):
+        try:
+            supplier_id = request.GET['vendor']
+            supplier = Supplier.objects.get(id=supplier_id)
+            vendor_account =  SupplierAccount.objects.get(supplier=supplier)
+            res = {
+                'result': 'Ok',
+                'vendor_account': {
+                    'vendor_account_date' : vendor_account.date.strftime('%d/%m/%Y') if vendor_account.date else '',
+                    'payment_mode': vendor_account.payment_mode,
+                    'narration': vendor_account.narration,
+                    'total_amount': vendor_account.total_amount,
+                    'amount_paid': vendor_account.paid_amount,
+                    'balance_amount': vendor_account.balance,
+                    'cheque_date': vendor_account.cheque_date.strftime('%d/%m/%Y') if vendor_account.cheque_date else '',
+                    'cheque_no': vendor_account.cheque_no,
+                    'bank_name': vendor_account.bank_name,
+                    'branch_name': vendor_account.branch_name,
+                    'vendor': vendor_account.supplier.name
+                }
+            } 
+
+            response = simplejson.dumps(res)
+            status_code = 200
+        except:
+            response = {
+                'result': 'Vendor or SupplierAccount does not exists',
+            }
+            status_code = 201
+        return HttpResponse(response, status = status_code, mimetype="application/json")
+
+    def post(self, request, *args, **kwargs):
+
+        vendor_account_dict = ast.literal_eval(request.POST['vendor_account'])
+        vendor = Supplier.objects.get(name=vendor_account_dict['vendor'])
+        vendor_account, created =  SupplierAccount.objects.get_or_create(supplier=vendor) 
+        vendor_account.date = datetime.strptime(vendor_account_dict['vendor_account_date'], '%d/%m/%Y')
+        vendor_account.payment_mode = vendor_account_dict['payment_mode']
+        vendor_account.narration = vendor_account_dict['narration']
+        vendor_account.amount = int(vendor_account_dict['amount'])
+        # vendor_account.total_amount = int(vendor_account_dict['total_amount'])
+        vendor_account.paid_amount = vendor_account.paid_amount + vendor_account.amount  #int(vendor_account_dict['amount_paid'])
+        vendor_account.balance = vendor_account.balance - vendor_account.amount  #int(vendor_account_dict['balance_amount'])        
+        if vendor_account_dict['cheque_date']:
+            vendor_account.cheque_no = int(vendor_account_dict['cheque_no'])
+            vendor_account.cheque_date = datetime.strptime(vendor_account_dict['cheque_date'], '%d/%m/%Y') 
+            vendor_account.bank_name = vendor_account_dict['bank_name']
+            vendor_account.branch_name = vendor_account_dict['branch_name']
+        vendor_account.save()
+        response = {
+                'result': 'Ok',
+            }
+        status_code = 200
+        return HttpResponse(response, status = status_code, mimetype="application/json")
+
