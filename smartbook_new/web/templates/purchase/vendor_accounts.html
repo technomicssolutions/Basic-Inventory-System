@@ -19,12 +19,7 @@
 							<label for="vendor">Vendor Name</label>
 						</div>
 						<div class="forminput_purchase">
-							<!-- <select name="vendor" ng-model="vendor_account.vendor" ng-change="get_vendor_account_details();">
-								<option value="">Select</option>
-								{% for vendor in vendors %}					
-									<option value="{{vendor.id}}">{{vendor.name}}</option>
-								{% endfor %}
-							</select> -->	
+							
 							<select name="supplier" ng-model="vendor_account.vendor" ng-change="get_vendor_account_details();">
 								<option value="select">Select</option>
 								<option ng-repeat="supplier in suppliers" value="[[supplier.id]]" ng-selected="supplier.supplier_name == vendor_account.vendor">[[supplier.supplier_name]]</option>

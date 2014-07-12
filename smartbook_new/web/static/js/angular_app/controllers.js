@@ -3631,7 +3631,10 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         } else if($scope.vendor_account.amount == '' || $scope.vendor_account.amount == 0 || $scope.vendor_account.amount != Number($scope.vendor_account.amount)){
             $scope.validation_error = "Please enter amount";            
             return false;
-        } 
+        } else if ($scope.vendor_account.balance_amount  < $scope.vendor_account.amount) {
+            $scope.validation_error = "Please enter a valid amount";            
+            return false;
+        }
         if(!$scope.vendor_account.narration){
             $scope.vendor_account.narration = "";
         }
