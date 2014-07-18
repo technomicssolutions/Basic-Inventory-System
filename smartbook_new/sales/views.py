@@ -28,7 +28,25 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from smartbook_new import arabic_reshaper
-   
+
+def header(canvas, y):
+
+    canvas.setFont("Helvetica", 40)  
+    canvas.setFillColor(green)
+    canvas.drawString(50, y + 21, 'Indusco')
+    canvas.setFillColor(black)
+    canvas.drawString(200, y + 21, 'IT')
+    canvas.setFillColor(red)
+    canvas.drawString(250, y + 21, 'Solutions')
+    canvas.setFillColor(black)
+    # canvas.drawImage(path, 50, y, width=33*cm, height=3*cm, preserveAspectRatio=True)
+
+    canvas.setFont("Helvetica", 14)  
+    canvas.drawString(50, y - 15, 'P.O Box: 7307, Abu Dhabi - United Arab Emirates')
+    canvas.drawString(50, y - 35, 'Tel: +97125507474, Fax: +97126777009')
+
+    return canvas
+
 
 def invoice_body_layout(canvas, y, sales):
 
@@ -961,6 +979,7 @@ class SalesInvoicePDF(View):
         y = 1150
         
         p = invoice_body_layout(p, y, sales)
+        p = header(p, y)
 
         total_amount = 0
         y1 = y - 400
@@ -971,6 +990,7 @@ class SalesInvoicePDF(View):
                 p.showPage()
                 
                 p = invoice_body_layout(p, y, sales)
+                p = header(p, y)
 
             p.drawString(60, y1, str(s_item.quantity_sold))
             p.drawString(190, y1, str(s_item.item.code))
