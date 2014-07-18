@@ -64,3 +64,16 @@ class ProjectItem(models.Model):
 
 	class Meta:
 		verbose_name_plural = 'Project Item'
+
+class OpeningStock(models.Model):
+
+	item = models.ForeignKey(Item, null=True, blank=True)
+	selling_price = models.DecimalField('Selling Price', decimal_places=2, max_digits=14, default=0)
+	quantity = models.IntegerField('Quantity', default=0)
+	unit_price = models.DecimalField('Unit Price',max_digits=14, decimal_places=2, default=0)
+
+	class Meta:
+		verbose_name_plural = 'OpeningStock'
+
+	def __unicode__(self):
+		return self.item.code

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block body_id %}add_stock{% endblock %}
+
+{% block title %}Add Opening Stock{% endblock title %}
+{% block controller %}ng-controller="AddOpeningStockController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+
+{% block content %}
+<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Add Opening Stock</h4></div>
+	</div>
+
+	<div class="purchase_form_container">
+		<form name="opening_stock" method="post">
+			<div class="form_contents_purchase">
+				<div class="section_1_purchase">
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label> Item Code </label>
+						</div>
+						<div class="forminput">
+							<input type='text' id="item_code" ng-model="openingstock.item_code" />
+						</div>
+   					</div>
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="name">Quantity</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="name" ng-model="openingstock.quantity" />
+						</div>
+					</div>
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="name">Unit Price</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="name" ng-model="openingstock.unit_price" />
+						</div>
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="name">Selling Price</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="name" ng-model="openingstock.selling_price" />
+						</div>
+					</div>
+
+
+				</div>	
+			</div>
+			<div  align="Center">
+				<div class="buttons">
+					<p class="error_message"> [[validation_error]] </p>
+					<a href="{% url 'items' %}"><input type="button" value="Submit" ng-click="save_opening_stock();" class="btn btn-info">
+					<a href="{% url 'home' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
+				</div>
+			</div>			
+		</form>
+		<div class="clear"></div>
+	</div>
+
+{% endblock content %}

@@ -138,4 +138,37 @@ class ServiceChargeList(View):
        
         return HttpResponseRedirect(reverse('items'))
 
+class AddOpeningStock(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'project/add_stock.html', {})
 
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            status = 200
+            ctx_item = []
+            print request.POST
+            opening_stock_details = ast.literal_eval(request.POST['opening_stock_details'])
+          
+            item = Item.objects.get(code=opening_stock_details['item_code'])
+            inventory_item, created = InventoryItem.objects.get_or_create(item=item)
+            
+            opening_stock = OpeningStock()
+            opening_stock.item = item
+            opening_stock.quantity = opening_stock_details['quantity']
+            opening_stock.unit_price = opening_stock_details['unit_price']
+            opening_stock.selling_price = opening_stock_details['selling_price']
+            opening_stock.save()
+            if created:
+                inventory_item.quantity = int(opening_stock_details['quantity'])
+            else:
+                inventory_item.quantity = inventory_item.quantity + int(request.POST['quantity'])
+            inventory_item.unit_price = opening_stock_details['unit_price']
+            inventory_item.selling_price = opening_stock_details['selling_price']
+            inventory_item.save()
+            res = {
+                    'result': 'ok',
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=status, mimetype='application/json')
+
+          

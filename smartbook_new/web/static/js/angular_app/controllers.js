@@ -3417,6 +3417,7 @@ function AddItemController($scope, $http, $element) {
     }
 }
 
+
 function PrintDeliveryNoteController($scope, $http, $element) {
     $scope.delivery_note = {
         'date': '',
@@ -3695,4 +3696,68 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         }
           
     }
+}
+function AddOpeningStockController($scope, $http, $element) {
+    $scope.openingstock = {
+        'item_code':'',
+        'quantity': '',
+        'unit_price': '',
+        'selling_price': '',
+    }
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+    }
+    $scope.opening_stock_validation = function() {
+        if ($scope.openingstock.quantity == '' || $scope.openingstock.quantity == undefined || (! Number($scope.openingstock.quantity))) {
+            $scope.validation_error = 'Please enter the quantity';
+            return false;
+        } else if ($scope.openingstock.unit_price == '' || $scope.openingstock.unit_price == undefined || (! Number($scope.openingstock.unit_price))) {
+            $scope.validation_error = 'Please enter the unit price';
+            return false;
+        } else if ($scope.openingstock.selling_price == '' || $scope.openingstock.selling_price == undefined || (! Number($scope.openingstock.selling_price))) {
+            $scope.validation_error = 'Please enter the selling price';
+            return false;
+        }
+        return true;
+    }
+
+    $scope.save_opening_stock = function(){
+        $scope.is_valid = $scope.opening_stock_validation();
+        if ($scope.is_valid){
+            params = { 
+                'opening_stock_details': angular.toJson($scope.openingstock),
+                "csrfmiddlewaretoken" : $scope.csrf_token
+            }
+            $http({
+                method : 'post',
+                url : "/project/add_stock/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                console.log()
+            }).error(function(data, success){
+                console.log()
+            
+        });
+
+        }
+
+    }
+    $scope.get_items = function(parameter) {
+
+        $scope.validation_error = '';
+        if(parameter == 'item_code')
+            var param = $scope.openingstock.item_code;
+        
+        if($scope.openingstock.item_code == '' && $scope.openingstock.item_name == '') {
+            $scope.items = [];
+            return false;
+        }
+        get_inventory_items($scope, $http, parameter, param);
+        
+    }
+
+
 }
