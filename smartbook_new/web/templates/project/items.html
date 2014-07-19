@@ -26,13 +26,13 @@
 		 		<td> {{item.code}} </td>
 		 		<!-- <td> {{project.barcode}} </td> -->
 		 		<!-- <td> {{item.tax}} </td> -->
-
-		 		<td>{% comment %} 
+		 		<td><a href="{% url 'delete_item' item_id=item.id %}">Delete</a></td>
+		 		<!-- <td>{% comment %} 
 		 			<a href="{% url 'edit_item' item_id=item.id %}">
 						<img src="/static/images/edit.png">
 					</a>
 					{% endcomment %} 
-				 </td>
+				 </td> -->
 
 		 	</tr>
 		{% endfor %}

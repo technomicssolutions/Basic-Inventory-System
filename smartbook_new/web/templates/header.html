@@ -38,7 +38,7 @@
 					<ul> 
 						<li> <a href="{% url 'add_item' %}"> Add Item </a> </li>
 						<li> <a href="{% url 'items' %}"> Items </a> </li>
-						<li> <a href="{% url 'add_stock' %}">Opening Stock </a> </li>
+						<li> <a href="{% url 'stock' %}">Opening Stock </a> </li>
 					</ul>
 				</li>
 				<li class="menu"> <a href=""> Sales </a>
@@ -48,8 +48,8 @@
 							<ul class="sub_submenu">
 								
 								<li><a href="{% url 'sales' %}?sales_type=inventory_sales"> Sales Entry</a></li>
-								<li> <a href="{% url 'edit_sales_invoice' %}"> Edit Sales Invoice </a> </li>
-								<li> <a href="{% url 'print_invoice' %}"> Print Sales Invoice </a> </li>
+								<li> <a href="{% url 'edit_sales_invoice' %}"> Edit Sales  </a> </li>
+								<li> <a href="{% url 'print_invoice' %}"> Print Estimate </a> </li>
 							</ul>
 						</li>
 						

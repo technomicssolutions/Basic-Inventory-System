@@ -19,7 +19,16 @@
 							<label> Item Code </label>
 						</div>
 						<div class="forminput">
-							<input type='text' id="item_code" ng-model="openingstock.item_code" />
+							<input type='text' id="item_code" ng-model="item_code" ng-change="get_items('item_code')"/>
+						</div>
+						<div class="clear"></div>
+						<div class="item_list stock_list" ng-show='selecting_item && items.length > 0' ng-hide="item_selected">
+						
+						<div ng-repeat="item in items" ng-click="add_item(item)" class="stock_list_row">
+							<span>[[item.code]]</span>
+		
+						</div>
+						<div class="clear"></div>
 						</div>
    					</div>
 
@@ -55,7 +64,7 @@
 			<div  align="Center">
 				<div class="buttons">
 					<p class="error_message"> [[validation_error]] </p>
-					<a href="{% url 'items' %}"><input type="button" value="Submit" ng-click="save_opening_stock();" class="btn btn-info">
+					<a href="{% url 'stock' %}"><input type="button" value="Submit" ng-click="save_opening_stock();" class="btn btn-info">
 					<a href="{% url 'home' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
 				</div>
 			</div>			

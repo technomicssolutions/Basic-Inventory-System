@@ -152,9 +152,15 @@ class AddOpeningStock(View):
             item = Item.objects.get(code=opening_stock_details['item_code'])
             inventory_item, created = InventoryItem.objects.get_or_create(item=item)
             
-            opening_stock = OpeningStock()
+            opening_stock,opening_stock_created = OpeningStock.objects.get_or_create(item=item)
+            print opening_stock_created
+            if opening_stock_created:
+                
+                opening_stock.quantity = opening_stock_details['quantity']
+                
+            else:
+                opening_stock.quantity = opening_stock.quantity + int(opening_stock_details['quantity'])
             opening_stock.item = item
-            opening_stock.quantity = opening_stock_details['quantity']
             opening_stock.unit_price = opening_stock_details['unit_price']
             opening_stock.selling_price = opening_stock_details['selling_price']
             opening_stock.save()
@@ -170,5 +176,17 @@ class AddOpeningStock(View):
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
+
+class OpeningStocklist(View):
+    def  get(self, request, *args, **kwargs):
+        opening_stocks = OpeningStock.objects.all()
+        return render(request, 'project/stock.html', {'opening_stocks': opening_stocks})
+    
+class DeleteItem(View):
+    def get(self,request,*args,**kwargs):
+        item_id = kwargs['item_id']
+        item = Item.objects.get(id=item_id)
+        item.delete()
+        return HttpResponseRedirect(reverse('items'))
 
           

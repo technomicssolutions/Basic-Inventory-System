@@ -3749,15 +3749,23 @@ function AddOpeningStockController($scope, $http, $element) {
 
         $scope.validation_error = '';
         if(parameter == 'item_code')
-            var param = $scope.openingstock.item_code;
+            var param = $scope.item_code;
         
-        if($scope.openingstock.item_code == '' && $scope.openingstock.item_name == '') {
+        if($scope.item_code == '' ) {
             $scope.items = [];
             return false;
         }
         get_inventory_items($scope, $http, parameter, param);
         
     }
+    $scope.add_item = function(item){
+        console.log(item)
+        $scope.item_selected = true;
 
+        $scope.item_code = item.code;
+        console.log($scope.item_code)
+        $scope.openingstock.item_code = item.code;
+
+    }
 
 }

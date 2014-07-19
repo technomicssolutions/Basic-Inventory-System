@@ -905,3 +905,18 @@ a {
 #project_sales .item_list .item_list_row {
     width: 84%;
 }
+.stock_list_row {
+    border-top: 1px solid #add8e6;
+    float: left;
+    height: 30px;
+    text-align: center;
+    width: 100%;
+}
+.stock_list {
+    border: 1px solid #add8e6;
+    border-radius: 5px;
+    margin-left: 248px !important;
+    top: 180px;
+    position: absolute;
+    width: 17%;
+}
