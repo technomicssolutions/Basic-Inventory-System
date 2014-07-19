@@ -49,7 +49,7 @@ def header(canvas, y):
 def invoice_body_layout(canvas, y, sales):
 
     canvas.setFont("Helvetica-Bold", 40)  
-    canvas.drawString(350, y - 80, 'Invoice')
+    canvas.drawString(350, y - 80, 'Estimate')
 
     canvas.setFont("Helvetica", 15)
 

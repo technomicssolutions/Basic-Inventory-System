@@ -3736,7 +3736,8 @@ function AddOpeningStockController($scope, $http, $element) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                console.log()
+                
+                document.location.href = '/project/add_stock/';
             }).error(function(data, success){
                 console.log()
             

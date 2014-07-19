@@ -146,18 +146,15 @@ class AddOpeningStock(View):
         if request.is_ajax():
             status = 200
             ctx_item = []
-            print request.POST
             opening_stock_details = ast.literal_eval(request.POST['opening_stock_details'])
           
             item = Item.objects.get(code=opening_stock_details['item_code'])
             inventory_item, created = InventoryItem.objects.get_or_create(item=item)
             
             opening_stock,opening_stock_created = OpeningStock.objects.get_or_create(item=item)
-            print opening_stock_created
+            
             if opening_stock_created:
-                
                 opening_stock.quantity = opening_stock_details['quantity']
-                
             else:
                 opening_stock.quantity = opening_stock.quantity + int(opening_stock_details['quantity'])
             opening_stock.item = item
@@ -167,7 +164,7 @@ class AddOpeningStock(View):
             if created:
                 inventory_item.quantity = int(opening_stock_details['quantity'])
             else:
-                inventory_item.quantity = inventory_item.quantity + int(request.POST['quantity'])
+                inventory_item.quantity = inventory_item.quantity + int(opening_stock_details['quantity'])
             inventory_item.unit_price = opening_stock_details['unit_price']
             inventory_item.selling_price = opening_stock_details['selling_price']
             inventory_item.save()
