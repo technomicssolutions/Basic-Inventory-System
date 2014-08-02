@@ -15,7 +15,7 @@
 					{% csrf_token %}
 					<p> <label for="username" >Username:</label> <input type="text" name="username" /></p>
 					<p> <label for="password">Password : </label><input type="password" name="password" /></p>
-					<p> {{message}} </p>
+					<p class="error_message"> {{message}} </p>
 					<p> <input type="submit" name="submit" value="Login" />
 				</form>
 			</div>

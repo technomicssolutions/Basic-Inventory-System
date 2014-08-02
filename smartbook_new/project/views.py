@@ -3,11 +3,10 @@ import simplejson
 from datetime import datetime
 from django.views.generic.base import View
 from django.shortcuts import render
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import  HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from project.models import *
-
+from project.models import Item,InventoryItem,OpeningStock
 
 
 
@@ -151,13 +150,13 @@ class AddOpeningStock(View):
             item = Item.objects.get(code=opening_stock_details['item_code'])
             inventory_item, created = InventoryItem.objects.get_or_create(item=item)
             
-            opening_stock,opening_stock_created = OpeningStock.objects.get_or_create(item=item)
+            opening_stock,opening_stock_created = OpeningStock.objects.get_or_create(item=inventory_item)
             
             if opening_stock_created:
                 opening_stock.quantity = opening_stock_details['quantity']
             else:
                 opening_stock.quantity = opening_stock.quantity + int(opening_stock_details['quantity'])
-            opening_stock.item = item
+            opening_stock.item = inventory_item
             opening_stock.unit_price = opening_stock_details['unit_price']
             opening_stock.selling_price = opening_stock_details['selling_price']
             opening_stock.save()
@@ -177,7 +176,7 @@ class AddOpeningStock(View):
 class OpeningStocklist(View):
     def  get(self, request, *args, **kwargs):
         opening_stocks = OpeningStock.objects.all()
-        return render(request, 'project/stock.html', {'opening_stocks': opening_stocks})
+        return render(request, 'project/pending_stock.html', {'opening_stocks': opening_stocks})
     
 class DeleteItem(View):
     def get(self,request,*args,**kwargs):
@@ -186,4 +185,71 @@ class DeleteItem(View):
         item.delete()
         return HttpResponseRedirect(reverse('items'))
 
-          
+class StockView(View):
+
+    def get(self, request, *args, **kwargs):
+        stock_items = OpeningStock.objects.all()
+        return render(request, 'project/stock.html', {
+            'stock_items': stock_items
+        })
+
+# class AddStock(View):
+
+#     def get(self, request, *args, **kwargs):
+#         items = InventoryItem.objects.all()
+#         return render(request, 'project/stock.html', {
+#             'items': items
+#         })
+
+#     def post(self, request, *args, **kwargs):
+
+#         item , created= InventoryItem.objects.get_or_create(code=request.POST['item_code'])
+#         opening_stock = OpeningStock()
+#         opening_stock.item = item
+#         opening_stock.quantity = request.POST['quantity']
+#         opening_stock.unit_price = request.POST['unit_price']
+#         opening_stock.selling_price = request.POST['selling_price']
+        
+#         opening_stock.save()
+#         if created:
+#             item.quantity = int(request.POST['quantity'])
+#         else:
+#             item.quantity = item.quantity + int(request.POST['quantity'])
+#         item.unit_price = request.POST['unit_price']
+#         item.selling_price = request.POST['selling_price']
+        
+#         item.save()
+
+#         items = InventoryItem.objects.all()
+#         return render(request, 'project/stock.html', {
+#             'items': items
+#         })
+
+class EditStock(View):
+    def get(self, request, *args, **kwargs):
+        stock = InventoryItem.objects.get(code=request.GET['item_code'])
+        if request.is_ajax():
+            res = {
+                 'stock': {
+                    'item': stock.code,
+                    'quantity': stock.quantity,
+                    'unit_price': stock.unit_price,
+                    'selling_price': stock.selling_price,
+                    
+                 },
+            }
+            response = simplejson.dumps(res)    
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'inventory/edit_stock.html', {
+            'stock': stock
+        })
+
+    def post(self, request, *args, **kwargs):
+
+        inventory = InventoryItem.objects.get(code=request.POST['item_code'])
+        inventory.unit_price = request.POST['unit_price']
+        inventory.selling_price = request.POST['selling_price']
+        
+        inventory.save()
+        return HttpResponseRedirect(reverse('stock'))
+        

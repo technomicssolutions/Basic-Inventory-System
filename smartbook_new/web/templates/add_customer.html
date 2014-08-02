@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %} 
+	{% if user_type == 'supplier' %} 
+		New Supplier
+	{% endif %}
+	{% if user_type == 'customer' %} 
+		New Customer
+	{% endif %}
+{% endblock title %}
+{% block body_id %} new_{{user_type}} {% endblock body_id %}
+{% block content %}
+
+<div id="main-title">
+	<div class="alert alert-info" align="Center">
+			New Customer
+	</div>
+</div>
+<div class="form_container">
+		<form name="staffadd" method="post" action="{% url 'create_customer'  %}">
+			{% csrf_token %}
+			<div class="control">
+				<p class="error_message">{{ message }}</p>
+				<p class="error_message"> {{error_message}} </p> 
+			</div>
+			<div class="control">
+				<label>Name</label>
+				<input name="name" type="text" value="{{name.0}}" />
+			</div>
+			
+			
+			<div class="control">
+				<label>House Name</label>
+				<input name="house" type="text" value="{{house.0}}" />
+			</div>
+			<div class="control">
+				<label>Street</label>
+				<input name="street" type="text" value="{{street.0}}" />
+			</div>
+			<div class="control">
+				<label>City</label>
+				<input name="city" type="text" value="{{city.0}}" />
+			</div>
+
+			<div class="control">
+				<label>District</label>
+				<input name="district" type="text" value="{{district.0}}" />
+			</div>
+			<div class="control">
+				<label>Pin</label>
+				<input name="pin" type="text" value="{{pin.0}}" />
+			</div>
+			<div class="control">
+				<label>Mobile</label>
+				<input name="mobile" type="text" value="{{mobile.0}}" />
+			</div>
+			<div class="control">
+				<label>Land Line</label>
+				<input name="phone" type="text" value="{{phone.0}}" />
+			</div>
+			<div class="control">
+				<label>Email Id</label>
+				<input name="email" type="text" value="{{email.0}}" />
+			</div>
+			<div class="control">
+				<label> </label>
+				
+				<input type="submit" value="Submit" class="btn btn-info">
+			</div>
+		</form>
+</div>
+
+{% endblock content %}

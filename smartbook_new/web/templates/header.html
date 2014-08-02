@@ -17,9 +17,9 @@
 					</span>
 					<ul>
 						
-						<li> <a href="{% url 'users' user_type='supplier' %}"> Suppliers </a> </li>
+						<li> <a href="{% url 'suppliers'  %}"> Suppliers </a> </li>
 
-						<li> <a href="{% url 'users' user_type='customer'  %}"> Customers </a> </li>
+						<li> <a href="{% url 'customers'  %}"> Customers </a> </li>
 						
 						<li> <a href="{% url 'logout' %}"> Logout </a> </li>
 						
@@ -38,6 +38,7 @@
 					<ul> 
 						<li> <a href="{% url 'add_item' %}"> Add Item </a> </li>
 						<li> <a href="{% url 'items' %}"> Items </a> </li>
+						<li> <a href="{% url 'stocks' %}"> Stock </a> </li>
 						<li> <a href="{% url 'stock' %}">Opening Stock </a> </li>
 					</ul>
 				</li>

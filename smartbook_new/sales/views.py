@@ -12,13 +12,13 @@ from django.db.models import Max
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from sales.models import *
-from project.models import *
-from web.models import *
+from sales.models import DeliveryNote,DeliveryNoteItem,Sales,SalesItem,SalesReturn,SalesReturnItem,ReceiptVoucher,CustomerAccount
+from project.models import Item,InventoryItem,OpeningStock
+from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
 
 from reportlab.lib.units import cm
 from reportlab.lib import colors
@@ -452,12 +452,12 @@ class InvoiceDetails(View):
             current_stock = 0
             for s_item in invoice.salesitem_set.all():
                 if s_item.item.item_type == 'item':
-                    if invoice.delivery_note and not invoice.project or not invoice.project and not invoice.delivery_note:
+                    if invoice.delivery_note and  not invoice.delivery_note:
                         inventory = InventoryItem.objects.get(item=s_item.item)
                         current_stock = inventory.quantity
-                    elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
-                        project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
-                        current_stock = project_item.quantity
+                    # elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
+                    #     project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
+                    #     current_stock = project_item.quantity
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -479,7 +479,7 @@ class InvoiceDetails(View):
                 'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
-                'project_name': invoice.project.name if invoice.project else '',
+                
                 'delivery_note_no': invoice.delivery_note.delivery_note_number if invoice.delivery_note else '',
                 'lpo_number': invoice.delivery_note.lpo_number if invoice.delivery_note else '',
                 'sales_items': ctx_item_list,
@@ -494,12 +494,12 @@ class InvoiceDetails(View):
             current_stock = 0
             for s_item in invoice.salesitem_set.all():
                 if s_item.item.item_type == 'item':
-                    if invoice.delivery_note and not invoice.project or not invoice.project and not invoice.delivery_note:
+                    if invoice.delivery_note and  not invoice.delivery_note:
                         inventory = InventoryItem.objects.get(item=s_item.item)
                         current_stock = inventory.quantity
-                    elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
-                        project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
-                        current_stock = project_item.quantity
+                    # elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
+                    #     project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
+                    #     current_stock = project_item.quantity
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -522,7 +522,7 @@ class InvoiceDetails(View):
                 'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
-                'project_name': invoice.project.name if invoice.project else '',
+                
                 'dn_no': invoice.delivery_note.delivery_note_number if invoice.delivery_note else '',
                 'lpo_no': invoice.delivery_note.lpo_number if invoice.delivery_note else '',
                 'sales_items': ctx_item_list,

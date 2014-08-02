@@ -430,46 +430,46 @@ form {
 
 /******************************  Purchase module start *************/
 
-.purchase_form_container {
+.purchase_form_container, .item_form_container, .openingstock_form_container {
 	margin: auto;
     width: 90%;
 }
-.form_contents_purchase {
+.form_contents_purchase, .form_contents_item, .form_contents_openingstock {
 	margin: 10px 5px;
 }
-.section_1_purchase {
+.section_1_purchase , .section_1_item, .section_1_openingstock{
 	float: left;	
 	width: 100%;
 }
-.section_2_purchase {
+.section_2_purchase, .section_2_item, .section_2_openingstock{
 	float: left;	
 	width: 50%;
 }
-.section_3_purchase {
+.section_3_purchase, .section_3_item, .section_3_openingstock {
 	float: left;
 	width: 100%;
 }
-.formrow_purchase {
+.formrow_purchase, .formrow_item, .formrow_openingstock {
 	min-height: 40px;
     width: 50%;
     float: left;
 }
-.formtext_purchase {
+.formtext_purchase, .formtext_item, .formtext_openingstock {
 	float: left;
 
     width: 248px;
 
 }
-.forminput_purchase {
+.forminput_purchase, .forminput_item, .forminput_openingstock {
 	float: left;
 }
-.search_purchase{
+.search_purchase, .search_item, .search_openingstock{
 	width: 100%;
 	height: 100%;
 	padding-bottom: 30px;
 }
 
-.search_purchase .control {
+.search_purchase .control , .search_item.control, .search_openingstock.control{
 	background-color: #ADD8E6;
     float: left;
     padding: 13px;
@@ -538,6 +538,56 @@ form {
 	padding-bottom: 30px;
 }
 
+
+.item_list .item_list_row, .sales_item_list .item_list_row{
+	width: 100%;
+	text-align: center;
+	border-top: 1px solid #ADD8E6;
+	float: left;
+	height: 30px;
+}
+.sales_item_list .header{
+	height: 75px !important;
+}
+.sales_item_list .item_list_row {
+	height: 50px;
+	padding-top: 5px;
+}
+.item_list .item_list_row span, .sales_item_list .item_list_row span {
+	padding: 5px;
+	display: block;
+	float: left;
+	width: 32%;
+}
+.sales_item_list .item_list_row span {
+	width: 14%;
+}
+.sales_item_list .item_list_row span input {
+	width: 70%;
+}
+.sales_item_list .item_list_row span .large_input {
+	width: 100% !important;
+}
+.sales_item_list .item_list_row span .small_input {
+	width: 100% !important;
+}
+.item_list .header, .sales_item_list .header {
+	background-color: #ADD8E6;
+}
+a {
+	text-decoration : none !important;
+}
+.sales_items_list {
+	width: 100%;
+	float: left;
+	min-height: 100px;
+	padding-bottom: 30px;
+}
+
+.sales_items_list .sales_item_list {
+	width: 100% !important;
+	border: 1px solid #ADD8E6;
+}
 
 .search_sales .control {
 	background-color: #ADD8E6;
@@ -838,7 +888,7 @@ a {
 }
 
 .purchase_item_list .item_list_row span {
-    width: 11%;
+    width: 10%;
 }
 
 #add_supplier .formtext {

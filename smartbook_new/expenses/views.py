@@ -8,18 +8,17 @@ from decimal import *
 import math
 import os
 
-from django.db import IntegrityError
+
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import View
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
-
-from sales.models import *
-from project.models import *
-from web.models import *
+from expenses.models import ExpenseHead,Expense
+from sales.models import DeliveryNote,DeliveryNoteItem,Sales,SalesItem,SalesReturn,SalesReturnItem,ReceiptVoucher,CustomerAccount
+from project.models import Item,InventoryItem,OpeningStock
 from .models import *
 
 

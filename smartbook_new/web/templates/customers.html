@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}List-{{user_type}}
+{% endblock title %}
+{% block body_id %}list-{{user_type}}{% endblock %}
+
+{% block content %}
+
+<div class="top_section">
+	
+	<a class="btn btn-info" href="{% url 'create_customer'  %}">New Customer</a> 
+
+</div>
+{% if customers|length > 0 %}
+	<table border="0" class="table_list" cellspacing="0">
+		<tr>
+			<th> Name </th>
+			<th> House Name</th>
+			<th> Street </th>
+			<th> City </th>
+			<th> District </th>
+			<th> Pincode </th>
+			<th> Mobile </th>
+			<th> Phone </th>
+			<th> Email </th>
+			<th>&nbsp;&nbsp;&nbsp;</th>'
+			{% if user.is_superuser %}
+				<th>&nbsp;&nbsp;&nbsp;</th>
+			{% endif %}
+				{% for customer in customers %}
+					<tr class="{% cycle 'odd' 'even' %}">
+						<td> {{ customer.customer_name }} </td>
+						<td> {{ customer.house_name }} </td>
+						<td> {{ customer.street }}</td>
+						<td> {{ customer.city }} </td>
+						<td> {{ customer.district }} </td>
+						<td> {{ customer.pin }} </td>
+						<td> {{ customer.mobile_number }} </td>
+						<td> {{ customer.land_line }} </td>
+						<td> {{ customer.email_id }} </td>
+						
+						<td><a href="{% url 'edit_customer'  customer.id %}">
+							<img src="/static/images/edit.png">
+							</a>
+						</td>
+						{% if user.is_superuser %}
+							<td>
+								<a href="{% url 'delete_customer'  customer.id %}"><img src="/static/images/delete.png"></a>
+							</td>
+							
+						{% endif %}	
+					</tr>
+			{% endfor %}
+		</tr>
+	</table>
+{% else %}
+	
+	<div class="message"><p>No customers</p></div>
+
+{% endif %}
+
+{% endblock content %}

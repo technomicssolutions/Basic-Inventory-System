@@ -12,20 +12,13 @@
 
 <div id="main-title">
 	<div class="alert alert-info" align="Center">
-		{% if user_type == 'supplier' %} 
 			New Supplier
-		{% endif %}
-		{% if user_type == 'customer' %} 
-			New Customer
-		{% endif %}
 	</div>
 </div>
 <div class="form_container">
-	{% if user_type == 'customer' %}
-		<form name="staffadd" method="post" action="{% url 'create_customer'%}">
-	{% else %}
-		<form name="staffadd" method="post" action="{% url 'register_user' user_type=user_type %}">
-	{% endif %}
+	
+		<form name="staffadd" method="post" action="{% url 'create_supplier'  %}">
+	
 			{% csrf_token %}
 			<div class="control">
 				<p class="error_message">{{ message }}</p>
@@ -35,12 +28,11 @@
 				<label>Name</label>
 				<input name="name" type="text" value="{{name.0}}" />
 			</div>
-			{% if user_type == 'supplier' %}
-				<div class="control">
-					<label>Contact Person</label>
-					<input name="contact_person" type="text" value="{{contact_person.0}}" />
-				</div>
-			{% endif %}
+			<div class="control">
+				<label>Contact Person</label>
+				<input name="contact_person" type="text" value="{{contact_person.0}}" />
+			</div>
+			
 			
 			<div class="control">
 				<label>House Name</label>

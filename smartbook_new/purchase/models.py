@@ -14,7 +14,7 @@ class Purchase(models.Model):
     
     supplier = models.ForeignKey(Supplier, null=True, blank=True)
     transportation_company = models.ForeignKey(TransportationCompany, null=True, blank=True)
-    project = models.ForeignKey(Project, null=True, blank=True)
+    
 
     purchase_invoice_number = models.IntegerField('Purchase Invoice Number', unique=True)
     supplier_invoice_number = models.CharField('Supplier Invoice Number', default='1', max_length=10)

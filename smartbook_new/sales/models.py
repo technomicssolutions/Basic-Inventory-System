@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from datetime import datetime
 
-from project.models import Project, ProjectItem, Item, InventoryItem
+from project.models import  Item,InventoryItem
 from web.models import Customer
 
 
@@ -14,7 +14,7 @@ PAYMENT_MODE = (
 )
 
 class DeliveryNote(models.Model):
-    project = models.ForeignKey(Project, null=True, blank=True)
+    
     customer = models.ForeignKey(Customer, null=True, blank=True)
     delivery_note_number = models.CharField('Delivery Note Serial number', max_length=50, null=True, blank=True, unique=True)
     date = models.DateField('Date', null=True, blank=True)
@@ -52,7 +52,7 @@ class DeliveryNoteItem(models.Model):
 
 class Sales(models.Model): 
 
-    project = models.ForeignKey(Project, null=True, blank=True)
+   
     customer = models.ForeignKey(Customer, null=True, blank=True)
     delivery_note = models.ForeignKey(DeliveryNote, null=True, blank=True)
 

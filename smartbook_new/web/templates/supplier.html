@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}List-{{user_type}}
+{% endblock title %}
+{% block body_id %}list-{{user_type}}{% endblock %}
+
+{% block content %}
+
+<div class="top_section">
+		<a class="btn btn-info" href="{% url 'create_supplier'  %}">New Supplier</a>
+</div>
+{% if suppliers|length > 0 %}
+	<table border="0" class="table_list" cellspacing="0">
+		<tr>
+					
+			<th> Name </th>
+			<th> House Name</th>
+			<th> Street </th>
+			<th> City </th>
+			<th> District </th>
+			<th> Pincode </th>
+			<th> Mobile </th>
+			<th> Phone </th>
+			<th> Email </th>
+			<th>&nbsp;&nbsp;&nbsp;</th>
+			{% if user.is_superuser %}
+				<th>&nbsp;&nbsp;&nbsp;</th>
+			{% endif %}
+			{% for supplier in suppliers %}
+				<tr class="{% cycle 'odd' 'even' %}">
+					<td> {{ supplier.name }} </td>
+					<td> {{ supplier.house_name }} </td>
+					<td> {{ supplier.street }}</td>
+					<td> {{ supplier.city }} </td>
+					<td> {{ supplier.district }} </td>
+					<td> {{ supplier.pin }} </td>
+					<td> {{ supplier.mobile }} </td>
+					<td> {{ supplier.land_line }} </td>
+					<td> {{ supplier.email_id }} </td>
+					<td><a href="{% url 'edit_supplier' supplier.id %}">
+						<img src="/static/images/edit.png">
+						</a>
+					</td>
+					{% if user.is_superuser %}
+						<td>
+							<a href="{% url 'delete_supplier' supplier.id %}"><img src="/static/images/delete.png"></a>
+						</td>
+						
+					{% endif %}
+				</tr>
+			{% endfor %}
+		</tr>
+	</table>
+{% else %}
+	
+	<div class="message"><p>No Suppliers</p></div>
+
+{% endif %}
+
+
+{% endblock content %}

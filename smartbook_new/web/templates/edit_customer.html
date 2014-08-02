@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %} 
+	{% if user_type == 'supplier' %} 
+		Edit Supplier
+	{% endif %}
+	{% if user_type == 'customer' %} 
+		Edit Customer
+	{% endif %}
+{% endblock title %}
+{% block body_id %} edit_{{user_type}} {% endblock body_id %}
+
+{% block content %}
+
+<div id="main-title">
+	<div class="alert alert-info" align="Center">
+			Edit Customer
+	</div>
+</div>
+
+<div class="form_container">
+	
+		<form name="staffadd" method="post" action="{% url 'edit_customer' customer.id%}">
+		{% csrf_token %}
+		<p class="error_message">{{ message }}</p>
+		<div class="control">
+			<label>Name</label>
+				<input name="name" type="text" value="{{customer.customer_name}}" />
+		</div>
+		
+		<div class="control">
+			<label>House Name</label>
+			<input name="house" type="text" value="{{customer.house_name}}" />
+		</div>
+		<div class="control">
+			<label>Street</label>
+			<input name="street" type="text" value="{{customer.street}}" />
+		</div>
+		<div class="control">
+			<label>City</label>
+			<input name="city" type="text" value="{{customer.city}}" />
+		</div>
+		<div class="control">
+			<label>District</label>
+			<input name="district" type="text" value="{{customer.district}}" />
+		</div>
+		<div class="control">
+			<label>Pin</label>
+			<input name="pin" type="text" value="{{customer.pin}}" />
+		</div>
+		<div class="control">
+			<label>Mobile</label>
+				<input name="mobile" type="text" value="{{customer.mobile_number}}" />
+		</div>
+		<div class="control">
+			<label>Land Line</label>
+			<input name="phone" type="text" value="{{customer.land_line}}" />
+		</div>
+		<div class="control">
+			<label>Email Id</label>
+			
+				<input name="email" type="text" value="{{customer.email_id}}" />
+
+		</div>
+		<div class="control">
+			<label>&nbsp; &nbsp; </label>
+			<p class="error_message"> {{error_message}} </p> 
+			<input type="submit" value="Submit" class="btn btn-info">
+		</div>
+	</form>
+</div>
+
+{% endblock content %}

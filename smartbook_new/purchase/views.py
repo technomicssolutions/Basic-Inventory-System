@@ -5,14 +5,15 @@ from datetime import datetime
 
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import View
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.http import  HttpResponse, HttpResponseRedirect
+
 from django.contrib.auth.models import User
 from django.db.models import Max
 
-from web.models import *
-from purchase.models import *
-from project.models import *
+from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
+from purchase.models import Purchase,PurchaseItem,SupplierAccount
+from project.models import Item,InventoryItem,OpeningStock
+
 from expenses.models import Expense, ExpenseHead
 
 class PurchaseEntry(View):
@@ -20,9 +21,7 @@ class PurchaseEntry(View):
     def get(self, request, *args, **kwargs):
         
         purchase_type = request.GET.get('purchase_type', '')
-        if purchase_type == 'project_based':
-            template_name = 'purchase/purchase_entry.html'
-        elif purchase_type == 'inventory_based':
+        if purchase_type == 'inventory_based':
             template_name = 'purchase/inventory_purchase_entry.html'
         if Purchase.objects.exists():
             invoice_number = int(Purchase.objects.aggregate(Max('purchase_invoice_number'))['purchase_invoice_number__max']) + 1
@@ -53,6 +52,12 @@ class PurchaseEntry(View):
             purchase.cheque_no = purchase_dict['cheque_no']
         if purchase_dict['cheque_date']:
             purchase.cheque_date = datetime.strptime(purchase_dict['cheque_date'], '%d/%m/%Y')
+        if purchase_dict['supplier_name'] != 'other' or purchase_dict['supplier_name'] != 'select' or purchase_dict['supplier_name'] != '': 
+            try:     
+                supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
+                
+            except:
+                pass
         supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
         if purchase_dict['transport'] != 'other' or purchase_dict['transport'] != 'select' or purchase_dict['transport'] != '': 
             try:     
@@ -205,10 +210,12 @@ class SupplierAccountDetails(View):
             response = simplejson.dumps(res)
             status_code = 200
         except:
-            response = {
-                'result': 'Vendor or SupplierAccount does not exists',
+            res = {
+                'result': 'error',
+                'message': 'Vendor does not have any purchase details',
             }
-            status_code = 201
+            response = simplejson.dumps(res)
+            status_code = 200
         return HttpResponse(response, status = status_code, mimetype="application/json")
 
     def post(self, request, *args, **kwargs):
