@@ -101,6 +101,7 @@ class CreateSupplier(View):
         context={}
         message = ''
         template = 'add_supplier.html'
+        print request.POST
         email_validation = (re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", request.POST['email']) )
         if not request.is_ajax():
             if request.POST['name'] == '':
@@ -137,7 +138,7 @@ class CreateSupplier(View):
                 if request.is_ajax():
                     res = {
                         'result': 'error',
-                        'message': 'Supplier with this email is already exists'
+                        'message': 'Supplier with this name is already exists'
                     }
                     response = simplejson.dumps(res)
                     return HttpResponse(response, status = 200, mimetype="application/json")
@@ -156,6 +157,7 @@ class CreateSupplier(View):
                 supplier.land_line = request.POST['phone']
                 supplier.email_id = request.POST['email']
                 supplier.contact_person = request.POST['contact_person']
+                print request.POST['email']
                 supplier.save()
                 if request.is_ajax():
                     res = {

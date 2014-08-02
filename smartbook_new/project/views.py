@@ -188,43 +188,10 @@ class DeleteItem(View):
 class StockView(View):
 
     def get(self, request, *args, **kwargs):
-        stock_items = OpeningStock.objects.all()
+        stock_items = InventoryItem.objects.all()
         return render(request, 'project/stock.html', {
             'stock_items': stock_items
         })
-
-# class AddStock(View):
-
-#     def get(self, request, *args, **kwargs):
-#         items = InventoryItem.objects.all()
-#         return render(request, 'project/stock.html', {
-#             'items': items
-#         })
-
-#     def post(self, request, *args, **kwargs):
-
-#         item , created= InventoryItem.objects.get_or_create(code=request.POST['item_code'])
-#         opening_stock = OpeningStock()
-#         opening_stock.item = item
-#         opening_stock.quantity = request.POST['quantity']
-#         opening_stock.unit_price = request.POST['unit_price']
-#         opening_stock.selling_price = request.POST['selling_price']
-        
-#         opening_stock.save()
-#         if created:
-#             item.quantity = int(request.POST['quantity'])
-#         else:
-#             item.quantity = item.quantity + int(request.POST['quantity'])
-#         item.unit_price = request.POST['unit_price']
-#         item.selling_price = request.POST['selling_price']
-        
-#         item.save()
-
-#         items = InventoryItem.objects.all()
-#         return render(request, 'project/stock.html', {
-#             'items': items
-#         })
-
 class EditStock(View):
     def get(self, request, *args, **kwargs):
         stock = InventoryItem.objects.get(code=request.GET['item_code'])

@@ -27,29 +27,15 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'project', ['InventoryItem'])
 
-        # Adding model 'Project'
-        db.create_table(u'project_project', (
+        # Adding model 'OpeningStock'
+        db.create_table(u'project_openingstock', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('start_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('expected_end_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=20, unique=True, null=True, blank=True)),
-            ('budget_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-            ('expense_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-            ('sales_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-            ('purchase_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-        ))
-        db.send_create_signal(u'project', ['Project'])
-
-        # Adding model 'ProjectItem'
-        db.create_table(u'project_projectitem', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['project.Project'])),
-            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['project.Item'], null=True, blank=True)),
+            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['project.InventoryItem'], null=True, blank=True)),
+            ('selling_price', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
             ('quantity', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('unit_price', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('selling_price', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
         ))
-        db.send_create_signal(u'project', ['ProjectItem'])
+        db.send_create_signal(u'project', ['OpeningStock'])
 
     def backwards(self, orm):
         # Deleting model 'Item'
@@ -58,11 +44,8 @@ class Migration(SchemaMigration):
         # Deleting model 'InventoryItem'
         db.delete_table(u'project_inventoryitem')
 
-        # Deleting model 'Project'
-        db.delete_table(u'project_project')
-
-        # Deleting model 'ProjectItem'
-        db.delete_table(u'project_projectitem')
+        # Deleting model 'OpeningStock'
+        db.delete_table(u'project_openingstock')
 
     models = {
         u'project.inventoryitem': {
@@ -80,22 +63,10 @@ class Migration(SchemaMigration):
             'item_type': ('django.db.models.fields.CharField', [], {'default': "'item'", 'max_length': '50'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        u'project.project': {
-            'Meta': {'object_name': 'Project'},
-            'budget_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '25', 'decimal_places': '2'}),
-            'expected_end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'expense_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '25', 'decimal_places': '2'}),
+        u'project.openingstock': {
+            'Meta': {'object_name': 'OpeningStock'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'purchase_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '25', 'decimal_places': '2'}),
-            'sales_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '25', 'decimal_places': '2'}),
-            'start_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'})
-        },
-        u'project.projectitem': {
-            'Meta': {'object_name': 'ProjectItem'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['project.Item']", 'null': 'True', 'blank': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['project.Project']"}),
+            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['project.InventoryItem']", 'null': 'True', 'blank': 'True'}),
             'quantity': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'selling_price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             'unit_price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'})

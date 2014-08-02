@@ -107,7 +107,7 @@ class WholeSalesReport(View):
                     p.drawString(50, y1, sale.sales_invoice_date.strftime('%d/%m/%y'))
                     p.drawString(120, y1, str(sale.sales_invoice_number))
 
-                    p.drawString(250, y1, sale.customer.customer_name)
+                    p.drawString(240, y1, sale.customer.customer_name)
                     p.drawString(400, y1, str(sale.net_amount))
                     p.drawString(500, y1, str(sale.discount_for_sale))
                     p.drawString(600, y1, str(sale.round_off))
@@ -196,9 +196,7 @@ class ExpenseReport(View):
                 expenses = Expense.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
             if len(expenses) > 0: 
                 for expense in expenses:
-                    
-                    
-
+                    p.setFontSize(12)
                     p.drawString(50, y1, expense.date.strftime('%d/%m/%Y'))
                     p.drawString(150, y1, str(expense.voucher_no))
                     p.drawString(250, y1, expense.expense_head.expense_head[:38] if len(expense.expense_head.expense_head) > 40 else expense.expense_head.expense_head)

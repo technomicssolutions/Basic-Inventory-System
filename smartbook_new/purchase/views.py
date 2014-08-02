@@ -108,7 +108,7 @@ class PurchaseEntry(View):
                     voucher_no = 1
                 if not voucher_no:
                     voucher_no = 1
-                expense = Expense.objects.create(purchase=purchase, created_by=request.user, voucher_no=voucher_no, project=project)
+                expense = Expense.objects.create(purchase=purchase, created_by=request.user, voucher_no=voucher_no)
             expense.created_by = request.user
             expense.expense_head, created = ExpenseHead.objects.get_or_create(expense_head = 'purchase')
             expense.date = dt.datetime.now().date().strftime('%Y-%m-%d')
@@ -121,44 +121,25 @@ class PurchaseEntry(View):
 
         purchase_items = purchase_dict['purchase_items']
         deleted_items = purchase_dict['deleted_items']
-
-        if project:
-            purchase.project = project
-            project.purchase_amount = float(project.purchase_amount) + float(purchase.grant_total)
-            project.expense_amount = float(project.expense_amount) + float(purchase_dict['purchase_expense'])
-            project.save()
         purchase.save()
         
         for purchase_item in purchase_items:
 
             item = Item.objects.get(code=purchase_item['item_code'])
             p_item, item_created = PurchaseItem.objects.get_or_create(item=item, purchase=purchase)
-            if project:
-                project_item, project_item_created = ProjectItem.objects.get_or_create(project=project, item=item)
-                if project_item_created:
-                    project_item.quantity = int(purchase_item['qty_purchased'])                
-                else:
-                    if purchase_created:
-                        project_item.quantity = project_item.quantity + int(purchase_item['qty_purchased'])
-                    else:
-                        project_item.quantity = project_item.quantity - p_item.quantity_purchased + int(purchase_item['qty_purchased'])
-                project_item.selling_price = purchase_item['selling_price']
-                project_item.unit_price = purchase_item['unit_price']
-                project_item.save()  
+            
+            item = Item.objects.get(code=purchase_item['item_code'])
+            inventory, created = InventoryItem.objects.get_or_create(item=item)
+            if created:
+                inventory.quantity = int(purchase_item['qty_purchased'])                
             else:
-                item = Item.objects.get(code=purchase_item['item_code'])
-                inventory, created = InventoryItem.objects.get_or_create(item=item)
-                print "created == ", created
-                if created:
-                    inventory.quantity = int(purchase_item['qty_purchased'])                
+                if purchase_created:
+                    inventory.quantity = inventory.quantity + int(purchase_item['qty_purchased'])
                 else:
-                    if purchase_created:
-                        inventory.quantity = inventory.quantity + int(purchase_item['qty_purchased'])
-                    else:
-                        inventory.quantity = inventory.quantity - p_item.quantity_purchased + int(purchase_item['qty_purchased'])
-                inventory.selling_price = purchase_item['selling_price']
-                inventory.unit_price = purchase_item['unit_price']
-                inventory.save()    
+                    inventory.quantity = inventory.quantity - p_item.quantity_purchased + int(purchase_item['qty_purchased'])
+            inventory.selling_price = purchase_item['selling_price']
+            inventory.unit_price = purchase_item['unit_price']
+            inventory.save()    
             p_item.purchase = purchase
             p_item.item = item
             p_item.quantity_purchased = purchase_item['qty_purchased']
@@ -193,16 +174,16 @@ class SupplierAccountDetails(View):
             res = {
                 'result': 'Ok',
                 'vendor_account': {
-                    'vendor_account_date' : vendor_account.date.strftime('%d/%m/%Y') if vendor_account.date else '',
-                    'payment_mode': vendor_account.payment_mode,
-                    'narration': vendor_account.narration,
+                    # 'vendor_account_date' : vendor_account.date.strftime('%d/%m/%Y') if vendor_account.date else '',
+                    'payment_mode': 'cash',
+                    # 'narration': vendor_account.narration,
                     'total_amount': vendor_account.total_amount,
                     'amount_paid': vendor_account.paid_amount,
                     'balance_amount': vendor_account.balance,
-                    'cheque_date': vendor_account.cheque_date.strftime('%d/%m/%Y') if vendor_account.cheque_date else '',
-                    'cheque_no': vendor_account.cheque_no,
-                    'bank_name': vendor_account.bank_name,
-                    'branch_name': vendor_account.branch_name,
+                    # 'cheque_date': vendor_account.cheque_date.strftime('%d/%m/%Y') if vendor_account.cheque_date else '',
+                    # 'cheque_no': vendor_account.cheque_no,
+                    # 'bank_name': vendor_account.bank_name,
+                    # 'branch_name': vendor_account.branch_name,
                     'vendor': vendor_account.supplier.name
                 }
             } 

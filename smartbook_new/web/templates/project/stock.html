@@ -17,14 +17,11 @@
 		
 		{% for stock in stock_items %}
 		 	<tr>
-		 		<td> {{stock.item.item.code}} </td>
-		 		<td> {{stock.item.item.name}} </td>
+		 		<td> {{stock.item.code}} </td>
+		 		<td> {{stock.item.name}} </td>
 		 		<td> {{stock.unit_price}} </td>
-		 		<td> {{stock.item.quantity}} </td>
+		 		<td> {{stock.quantity}} </td>
 		 		<td> {{stock.selling_price}} </td>
-
-		 		
-
 		 	</tr>
 		{% endfor %}
 	</table>

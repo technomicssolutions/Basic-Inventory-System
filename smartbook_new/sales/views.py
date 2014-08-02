@@ -436,7 +436,7 @@ class InvoiceDetails(View):
         ctx_whole_invoices = []
         invoice_details = Sales.objects.filter(sales_invoice_number__istartswith=invoice_no, is_processed=False, payment_mode='credit')
         try:
-            invoices = Sales.objects.filter(sales_invoice_number__istartswith=invoice_no, is_processed=False)
+            invoices = Sales.objects.filter(sales_invoice_number=invoice_no, is_processed=False)
         except Exception as ex:
             invoices = []
         whole_invoices = Sales.objects.filter(sales_invoice_number=invoice_no)
@@ -455,12 +455,13 @@ class InvoiceDetails(View):
             current_stock = 0
             for s_item in invoice.salesitem_set.all():
                 if s_item.item.item_type == 'item':
-                    if invoice.delivery_note and  not invoice.delivery_note:
-                        inventory = InventoryItem.objects.get(item=s_item.item)
-                        current_stock = inventory.quantity
+                    # if invoice.delivery_note and  not invoice.delivery_note:
+                    inventory = InventoryItem.objects.get(item=s_item.item)
+                    current_stock = inventory.quantity
                     # elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
                     #     project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
                     #     current_stock = project_item.quantity
+                print s_item.item.name, current_stock
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -469,7 +470,7 @@ class InvoiceDetails(View):
                     'qty_sold': s_item.quantity_sold,
                     'net_amount': s_item.net_amount,
                 })
-                current_stock = 0
+                # current_stock = 0
             ctx_invoice_details.append({
                 'invoice_no': invoice.sales_invoice_number,
                 'date': invoice.sales_invoice_date.strftime('%d/%m/%Y') if invoice.sales_invoice_date else '',
@@ -498,12 +499,13 @@ class InvoiceDetails(View):
             current_stock = 0
             for s_item in invoice.salesitem_set.all():
                 if s_item.item.item_type == 'item':
-                    if invoice.delivery_note and  not invoice.delivery_note:
-                        inventory = InventoryItem.objects.get(item=s_item.item)
-                        current_stock = inventory.quantity
+                    # if invoice.delivery_note and  not invoice.delivery_note:
+                    inventory = InventoryItem.objects.get(item=s_item.item)
+                    current_stock = inventory.quantity
                     # elif invoice.delivery_note and invoice.project or invoice.project and not invoice.delivery_note:
                     #     project_item = ProjectItem.objects.get(item=s_item.item, project=invoice.project)
                     #     current_stock = project_item.quantity
+                
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -814,13 +816,8 @@ class EditSalesInvoice(View):
         for r_item in removed_items:
             item = Item.objects.get(code=r_item['item_code'])
             if item.item_type == 'item':
-                if sales.project:
-                    project_item = ProjectItem.objects.get(item=item, project=sales.project)
-                    project_item.quantity = int(project_item.quantity) + int(r_item['qty_sold'])
-                    project_item.save()
-                else:
-                    inventory = InventoryItem.objects.get(item=item)
-                    inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
+                inventory = InventoryItem.objects.get(item=item)
+                inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
                 s_item = SalesItem.objects.get(item=item, sales=sales)
                 s_item.delete()
 
@@ -829,14 +826,9 @@ class EditSalesInvoice(View):
             s_item = SalesItem.objects.get(item=item_obj, sales=sales)
             if int(s_item.quantity_sold) != int(item['qty_sold']):
                 if item_obj.item_type == 'item':
-                    if sales.project:
-                        project_item = ProjectItem.objects.get(item=item_obj, project=sales.project)
-                        project_item.quantity = int(project_item.quantity) + int(s_item.quantity_sold) - int(item['qty_sold'])
-                        project_item.save()
-                    else:
-                        inventory = InventoryItem.objects.get(item=item_obj)
-                        inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(item['qty_sold'])
-                        inventory.save()
+                    inventory = InventoryItem.objects.get(item=item_obj)
+                    inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(item['qty_sold'])
+                    inventory.save()
                 s_item.quantity_sold = item['qty_sold']
             s_item.net_amount = item['net_amount']
             s_item.selling_price = item['unit_price']
