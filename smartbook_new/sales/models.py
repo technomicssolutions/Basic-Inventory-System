@@ -13,6 +13,11 @@ PAYMENT_MODE = (
     ('credit', 'Credit'),
 )
 
+STATUS  = (
+    ('estimate', 'Estimate'),
+    ('invoice', 'Invoice'),
+)
+
 class DeliveryNote(models.Model):
     
     customer = models.ForeignKey(Customer, null=True, blank=True)
@@ -58,6 +63,8 @@ class Sales(models.Model):
 
     sales_invoice_number = models.CharField('Sales Invoice Number', null=True, blank=True, max_length=10, unique=True)
     sales_invoice_date = models.DateField('Sales Invoice Date', null=True, blank=True)
+
+    status = models.CharField('Status', max_length=100, choices=STATUS, default='estimate')
 
     po_no = models.CharField('P O Number', null=True, blank=True, max_length=25)
     terms = models.CharField('Terms', null=True, blank=True, max_length=50)

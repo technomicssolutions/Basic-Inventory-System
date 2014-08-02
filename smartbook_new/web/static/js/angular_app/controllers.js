@@ -2796,6 +2796,7 @@ function InventorySalesController($scope, $http, $element, $location) {
         'rep': '',
         'via': '',
         'fob': '',
+        'status': 'estimate',
         
     }
     $scope.init = function(csrf_token, invoice_no) {
@@ -2986,8 +2987,8 @@ function InventorySalesController($scope, $http, $element, $location) {
         } else if($scope.sales.customer =='select'){
             $scope.validation_error = "Choose Customer";
             return false;
-        } else if($scope.sales.project_id =='select') {
-            $scope.validation_error = "Choose Project";
+        } else if($scope.sales.status == '' || $scope.sales.status == undefined) {
+            $scope.validation_error = "Choose Type";
             return false;
         } else if($scope.sales.sales_items.length == 0){
             $scope.validation_error = "Choose Item";

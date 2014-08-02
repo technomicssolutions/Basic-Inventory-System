@@ -48,9 +48,11 @@ def header(canvas, y):
 
 def invoice_body_layout(canvas, y, sales):
 
-    canvas.setFont("Helvetica-Bold", 40)  
-    canvas.drawString(350, y - 80, 'Estimate')
-
+    canvas.setFont("Helvetica-Bold", 40)
+    if sales.status == 'estimate':
+        canvas.drawString(350, y - 80, 'Estimate')
+    else:
+        canvas.drawString(350, y - 80, 'Invoice')
     canvas.setFont("Helvetica", 15)
 
     # Date and Invoice Box start
@@ -260,6 +262,7 @@ class SalesEntry(View):
         sales.rep = sales_dict['rep']
         sales.via = sales_dict['via']
         sales.fob = sales_dict['fob']
+        sales.status = sales_dict['status']
 
         if sales_dict['payment_mode'] == 'cheque':
             sales.cheque_no = sales_dict['cheque_no'] 
@@ -488,6 +491,7 @@ class InvoiceDetails(View):
                 'rep': invoice.rep if invoice.rep else '',
                 'via': invoice.via if invoice.via else '',
                 'fob': invoice.fob if invoice.fob else '',
+                'status': invoice.status if invoice.status else '',
             })
         for invoice in whole_invoices:
             ctx_item_list = []
@@ -531,6 +535,7 @@ class InvoiceDetails(View):
                 'rep': invoice.rep if invoice.rep else '',
                 'via': invoice.via if invoice.via else '',
                 'fob': invoice.fob if invoice.fob else '',
+                'status': invoice.status if invoice.status else '',
             })
 
         res = {
@@ -782,6 +787,7 @@ class EditSalesInvoice(View):
         sales.rep = sales_dict['rep']
         sales.via = sales_dict['via']
         sales.fob = sales_dict['fob']
+        sales.status = sales_dict['status']
 
         sales.discount_for_sale = sales_dict['discount_sale']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
@@ -981,6 +987,7 @@ class SalesInvoicePDF(View):
 
         total_amount = 0
         y1 = y - 400
+        p.setFont('Helvetica', 14)
         for s_item in sales.salesitem_set.all():
                         
             if y1 <= 170:
@@ -1001,19 +1008,25 @@ class SalesInvoicePDF(View):
             y1 = y1 - 30
 
         #  total box start 
-        p.line(50, y - 1020, 950, y - 1020)
-        p.line(650, y - 980, 650, y - 1020)
-        p.line(50, y - 980, 50, y - 1020)
-        p.line(950, y - 980, 950, y - 1020)
+        p.line(50, y - 1040, 950, y - 1040)
+        p.line(650, y - 980, 650, y - 1040)
+        p.line(50, y - 980, 50, y - 1040)
+        p.line(950, y - 980, 950, y - 1040)
 
         # total box end
-        p.drawString(820, y - 1010, 'Rs')
-        p.drawString(850, y - 1010, str(total_amount))
+        p.drawString(820, y - 995, 'Rs')
+        p.drawString(850, y - 995, str(total_amount))
 
-        p.setFont("Helvetica-Bold", 30)  
-        p.drawString(660, y - 1010, 'Total')
+        # p.setFont("Helvetica-Bold", 30)  
+        p.drawString(660, y - 995, 'Total')
         
+        p.drawString(820, y - 1015, 'Rs')
+        p.drawString(850, y - 1015, str(sales.discount_for_sale))
+        p.drawString(660, y - 1015, 'Discount')
 
+        p.drawString(820, y - 1035, 'Rs')
+        p.drawString(850, y - 1035, str(sales.grant_total))
+        p.drawString(660, y - 1035, 'Grant Total')
         # Item Box end
 
         p.showPage()
