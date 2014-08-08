@@ -218,3 +218,148 @@ class ExpenseReport(View):
             p.showPage()
             p.save()
         return response
+class VendorAccountsReport(View):
+    def get(self, request, *args, **kwargs):
+
+        status_code = 200
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1100))
+        y = 1150
+        report_type = request.GET.get('report_type', '')
+
+        if not report_type:
+            return render(request, 'reports/vendor_accounts_report.html', {
+                'report_type' : 'date',
+                })
+
+        if report_type == 'date':             
+                                
+            start_date = request.GET['start_date']
+            end_date = request.GET['end_date']
+
+            if start_date is None:
+                return render(request, 'reports/vendor_accounts_report.html', {})
+            if not start_date:            
+                ctx = {
+                    'msg' : 'Please Select Start Date',
+                    'start_date' : start_date,
+                    'end_date' : end_date,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/vendor_accounts_report.html', ctx)
+            elif not end_date:
+                ctx = {
+                    'msg' : 'Please Select End Date',
+                    'start_date' : start_date,
+                    'end_date' : end_date,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/vendor_accounts_report.html', ctx) 
+            else:
+                start_date = datetime.strptime(start_date, '%d/%m/%Y')
+                end_date = datetime.strptime(end_date, '%d/%m/%Y')
+                p = header(p,y)
+
+                p.drawString(350, 900, 'Date Wise Vendor Accounts')
+
+                p.setFontSize(13)
+
+                p.drawString(50, 875, "Date")
+                p.drawString(150, 875, "Vendor Name")
+                p.drawString(250, 875, "Payment Mode")
+                p.drawString(350, 875, "Narration")
+                p.drawString(470, 875, "Opening Balance")
+                p.drawString(580, 875, "Paid Amount")
+                p.drawString(650, 875, "Closing Balance") 
+
+                
+                y = 850
+
+                purchase_accounts = SupplierAccountDetail.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
+                if len(purchase_accounts) > 0:
+                    for purchase_account in purchase_accounts:
+
+                        y = y - 30
+                        if y <= 270:
+                            y = 850
+                            p.showPage()
+                            p = header(p,y)
+
+                        p.drawString(50, y, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
+                        p.drawString(150, y, purchase_account.supplier_account.supplier.name)
+                        p.drawString(250, y, purchase_account.supplier_account.payment_mode)
+                        p.drawString(350, y, purchase_account.supplier_account.narration if purchase_account.supplier_account.narration else '')
+
+                        p.drawString(470, y, str(purchase_account.opening_balance))
+                        p.drawString(580, y, str(purchase_account.amount))
+                        p.drawString(660, y, str(purchase_account.closing_balance)) 
+                    # y = y - 50
+                    # if y <= 270:
+                    #     y = 850
+                    #     p.showPage()
+                    #     p = header(p)
+                    # p.drawString(470, y, 'Current Balance:')
+                    # p.drawString(580, y, str(purchase_account.supplier_account.balance))
+                
+                p.showPage()
+                p.save()
+            
+        
+                
+        elif report_type == 'vendor':
+
+            supplier_name = request.GET['vendor']
+            print supplier_name
+            if supplier_name == 'select':            
+                ctx = {
+                    'msg' : 'Please Select Vendor',
+                    'report_type' : 'vendor',
+                }
+                return render(request, 'reports/vendor_accounts_report.html', ctx)
+            else:               
+                p = header(p,y)
+
+                p.drawString(350, 900, 'Vendor Wise Vendor Accounts')
+
+                p.setFontSize(13)
+
+                p.drawString(50, 875, "Date")
+                p.drawString(150, 875, "Payment Mode")
+                p.drawString(250, 875, "Narration")
+                p.drawString(380, 875, "Opening Balance")
+                p.drawString(480, 875, "Paid Amount")
+                p.drawString(580, 875, "Closing Balance") 
+
+                y = 850
+
+                vendor = SupplierAccount.objects.get(supplier__name = supplier_name)
+                purchase_accounts = SupplierAccountDetail.objects.filter(supplier_account__supplier = vendor)[:10]
+
+                if len(purchase_accounts) > 0:
+                    for purchase_account in purchase_accounts:
+
+                        y = y-30
+                        if y <= 270:
+                            y = 850
+                            p.showPage()
+                            p = header(p,y)
+
+
+                        p.drawString(50, y, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
+                        p.drawString(150, y, purchase_account.supplier_account.payment_mode)
+                        p.drawString(250, y, purchase_account.supplier_account.narration if purchase_account.supplier_account.narration else '')
+                        p.drawString(380, y, str(purchase_account.opening_balance))
+                        p.drawString(480, y, str(purchase_account.amount))
+                        p.drawString(580, y, str(purchase_account.closing_balance))
+                    y = y - 50
+                    if y <= 270:
+                        y = 850
+                        p.showPage()
+                        p = header(p,y)
+                    p.drawString(470, y, 'Current Balance:')
+                    p.drawString(580, y, str(purchase_account.supplier_account.balance)) 
+                p.showPage()
+                p.save()
+            
+        return response 
+

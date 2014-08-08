@@ -3512,6 +3512,7 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
             'bank_name': '',
             'branch_name': '',
             'narration': '',
+
      }
         $scope.date_picker = new Picker.Date($$('#vendor_account_date'), {
             timePicker: false,
@@ -3616,7 +3617,9 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         $scope.vendor_account.vendor_account_date = $$('#vendor_account_date')[0].get('value');
         
         if($scope.validate_vendor_account()) {
+            console.log($scope.vendor_account)
             params = { 
+
                 'vendor_account': angular.toJson($scope.vendor_account),
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
@@ -3636,6 +3639,76 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         }
           
     }
+}
+function VendorAccountReportController($scope, $element, $http, $location) {
+      
+    $scope.report_date_wise_flag = true;
+    $scope.report_vendor_wise_flag = false;
+    
+    $scope.init = function(csrf_token,report_type) {
+        $scope.report_type = report_type;
+        $scope.csrf_token = csrf_token;
+        $scope.get_report_type();
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y', 
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y', 
+        });
+        
+        $scope.get_vendors();
+
+    }
+    $scope.get_vendors = function() {
+        $http.get('/suppliers/').success(function(data)
+        {   
+            $scope.suppliers = data.suppliers;
+            console.log($scope.suppliers)
+            $scope.supplier_name = 'select';
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+
+    $scope.get_report_type = function(){
+        console.log($scope.report_type)
+        if($scope.report_type == 'date') {
+            $scope.report_date_wise_flag = true;
+            $scope.report_vendor_wise_flag = false;
+        } else if ($scope.report_type == 'vendor') {
+            $scope.report_date_wise_flag = false;
+            $scope.report_vendor_wise_flag = true;
+        }
+    }
+    
+}
+function VendorReportController($http, $scope, $location, $element) {
+
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        $scope.get_vendors()
+    }
+    $scope.get_vendors = function() {
+        $http.get('/suppliers/').success(function(data)
+        {
+            $scope.suppliers = data.suppliers[0];
+            console.log($scope.suppliers)
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+        $scope.supplier_name = 'select';
+    }
+
 }
 function StockEditController($scope, $http, $element, $location, $timeout) {
     $scope.init = function(csrf_token, item_code) {

@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.db.models import Max
 
 from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
-from purchase.models import Purchase,PurchaseItem,SupplierAccount
+from purchase.models import Purchase,PurchaseItem,SupplierAccount,SupplierAccountDetail
 from project.models import Item,InventoryItem,OpeningStock
 
 from expenses.models import Expense, ExpenseHead
@@ -203,20 +203,27 @@ class SupplierAccountDetails(View):
 
         vendor_account_dict = ast.literal_eval(request.POST['vendor_account'])
         vendor = Supplier.objects.get(name=vendor_account_dict['vendor'])
+        vendor_detail = SupplierAccountDetail()
         vendor_account, created =  SupplierAccount.objects.get_or_create(supplier=vendor) 
         vendor_account.date = datetime.strptime(vendor_account_dict['vendor_account_date'], '%d/%m/%Y')
+        vendor_detail.date = vendor_account.date
         vendor_account.payment_mode = vendor_account_dict['payment_mode']
         vendor_account.narration = vendor_account_dict['narration']
         vendor_account.amount = int(vendor_account_dict['amount'])
+        vendor_detail.amount = vendor_account.amount
         # vendor_account.total_amount = int(vendor_account_dict['total_amount'])
         vendor_account.paid_amount = vendor_account.paid_amount + vendor_account.amount  #int(vendor_account_dict['amount_paid'])
-        vendor_account.balance = vendor_account.balance - vendor_account.amount  #int(vendor_account_dict['balance_amount'])        
+        vendor_detail.opening_balance = vendor_account.balance
+        vendor_account.balance = vendor_account.balance - vendor_account.amount  #int(vendor_account_dict['balance_amount'])
+        vendor_detail.closing_balance = vendor_account.balance
+        vendor_detail.supplier_account = vendor_account
         if vendor_account_dict['cheque_date']:
             vendor_account.cheque_no = vendor_account_dict['cheque_no']
             vendor_account.cheque_date = datetime.strptime(vendor_account_dict['cheque_date'], '%d/%m/%Y') 
             vendor_account.bank_name = vendor_account_dict['bank_name']
             vendor_account.branch_name = vendor_account_dict['branch_name']
         vendor_account.save()
+        vendor_detail.save()
         response = {
                 'result': 'Ok',
             }
