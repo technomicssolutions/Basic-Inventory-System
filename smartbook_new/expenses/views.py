@@ -1,24 +1,15 @@
 
-import sys
 import ast
 import simplejson
 import datetime as dt
 from datetime import datetime
 from decimal import *
-import math
-import os
 
 
-from django.db.models import Max
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.views.generic.base import View
-from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from django.conf import settings
+from django.http import HttpResponse
 from expenses.models import ExpenseHead,Expense
-from sales.models import DeliveryNote,DeliveryNoteItem,Sales,SalesItem,SalesReturn,SalesReturnItem,ReceiptVoucher,CustomerAccount
-from project.models import Item,InventoryItem,OpeningStock
 from .models import *
 
 

@@ -12,7 +12,7 @@ from django.db.models import Max
 
 from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
 from purchase.models import Purchase,PurchaseItem,SupplierAccount,SupplierAccountDetail
-from project.models import Item,InventoryItem,OpeningStock
+from inventory.models import Item,InventoryItem,OpeningStock
 
 from expenses.models import Expense, ExpenseHead
 

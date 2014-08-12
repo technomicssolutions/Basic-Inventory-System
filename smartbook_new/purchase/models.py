@@ -2,7 +2,7 @@ from django.db import models
 
 
 from web.models import *
-from project.models import *
+from inventory.models import *
 
 PAYMENT_MODE = (
 	('cheque', 'Cheque'),

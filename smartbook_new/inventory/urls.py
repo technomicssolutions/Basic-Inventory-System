@@ -4,12 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 
-from project.views import *
+from inventory.views import *
 
 urlpatterns = patterns('',
 	
-	url(r'add_item/$', AddItem.as_view(), name='add_item'),
-	
+	url(r'add_item/$', AddItem.as_view(), name='add_item'),	
 	url(r'items/$', ItemList.as_view(), name='items'),
 	url(r'add_stock/$',AddOpeningStock.as_view(),name='add_stock'),
 	url(r'stock/$', OpeningStocklist.as_view(), name='stock'),

@@ -128,7 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'south',
     'web',
-    'project',
+    'inventory',
     'purchase',
     'sales',
     'expenses',

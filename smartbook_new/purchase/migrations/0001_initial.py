@@ -35,7 +35,7 @@ class Migration(SchemaMigration):
         # Adding model 'PurchaseItem'
         db.create_table(u'purchase_purchaseitem', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['project.Item'], null=True, blank=True)),
+            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['inventory.Item'], null=True, blank=True)),
             ('purchase', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['purchase.Purchase'], null=True, blank=True)),
             ('quantity_purchased', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('cost_price', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
@@ -60,6 +60,17 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'purchase', ['SupplierAccount'])
 
+        # Adding model 'SupplierAccountDetail'
+        db.create_table(u'purchase_supplieraccountdetail', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('supplier_account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['purchase.SupplierAccount'])),
+            ('date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('opening_balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
+            ('closing_balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
+            ('amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
+        ))
+        db.send_create_signal(u'purchase', ['SupplierAccountDetail'])
+
     def backwards(self, orm):
         # Deleting model 'Purchase'
         db.delete_table(u'purchase_purchase')
@@ -70,8 +81,11 @@ class Migration(SchemaMigration):
         # Deleting model 'SupplierAccount'
         db.delete_table(u'purchase_supplieraccount')
 
+        # Deleting model 'SupplierAccountDetail'
+        db.delete_table(u'purchase_supplieraccountdetail')
+
     models = {
-        u'project.item': {
+        u'inventory.item': {
             'Meta': {'object_name': 'Item'},
             'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -104,7 +118,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'PurchaseItem'},
             'cost_price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['project.Item']", 'null': 'True', 'blank': 'True'}),
+            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inventory.Item']", 'null': 'True', 'blank': 'True'}),
             'net_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
             'purchase': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['purchase.Purchase']", 'null': 'True', 'blank': 'True'}),
             'quantity_purchased': ('django.db.models.fields.IntegerField', [], {'default': '0'})
@@ -124,23 +138,32 @@ class Migration(SchemaMigration):
             'supplier': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Supplier']", 'unique': 'True'}),
             'total_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'})
         },
+        u'purchase.supplieraccountdetail': {
+            'Meta': {'object_name': 'SupplierAccountDetail'},
+            'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
+            'closing_balance': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
+            'date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'opening_balance': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
+            'supplier_account': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['purchase.SupplierAccount']"})
+        },
         u'web.supplier': {
             'Meta': {'object_name': 'Supplier'},
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'contact_person': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'district': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'email_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30', 'blank': 'True'}),
-            'house_name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'contact_person': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'district': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'email_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'house_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'land_line': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
             'mobile': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '75', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'pin': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
-            'street': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'pin': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            'street': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         u'web.transportationcompany': {
             'Meta': {'object_name': 'TransportationCompany'},
-            'company_name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            'company_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         }
     }

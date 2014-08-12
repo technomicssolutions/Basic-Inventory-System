@@ -24,7 +24,7 @@ function get_items($scope, $http, from) {
             $scope.project_id = $scope.purchase.project_id;
         }
     }
-    $http.get('/project/items/?project_id='+$scope.project_id).success(function(data)
+    $http.get('/inventory/items/?project_id='+$scope.project_id).success(function(data)
     {   
         if (from == 'sales' || from == 'dn') {
             $scope.items = data.project_items;
@@ -38,7 +38,7 @@ function get_items($scope, $http, from) {
 }
 
 function get_inventory_items($scope, $http, parameter, param){
-    $http.get('/project/items/?inventory_item=true&'+parameter+'='+param).success(function(data)
+    $http.get('/inventory/items/?inventory_item=true&'+parameter+'='+param).success(function(data)
     {
         if (data.inventory_items.length == 0) {
             $scope.item_select_error = 'Item not found';
@@ -78,7 +78,7 @@ function add_item($scope, $http, from) {
         }
         $http({
             method : 'post',
-            url : "/project/add_item/",
+            url : "/inventory/add_item/",
             data : $.param(params),
             headers : {
                 'Content-Type' : 'application/x-www-form-urlencoded'
@@ -98,7 +98,7 @@ function add_item($scope, $http, from) {
                 $scope.validation_error = data.message;
             } else {
                 if (from == 'add_item') {
-                    document.location.href = '/project/items/';
+                    document.location.href = '/inventory/items/';
                 } else {
                     get_items($scope, $http, 'purchase');
                     $scope.item = data.item;
@@ -499,7 +499,7 @@ function check_sales_invoice_no_exists($scope, $http) {
     });
 }
 function get_service_charges($scope, $http, parameter, param){
-    $http.get('/project/service_charges/?'+parameter+'='+param).success(function(data)
+    $http.get('/inventory/service_charges/?'+parameter+'='+param).success(function(data)
     {
         if (data.service_charges.length == 0) {
             $scope.sc_item_select_error = 'Service charge not found';
@@ -544,7 +544,7 @@ function CreateProjectController($scope, $element, $http, $timeout, $location) {
             format:'%d/%m/%Y',
         });
         if (project_id) {
-            $http.get("/project/create_project/?project_id="+project_id).success(function(data)
+            $http.get("/inventory/create_project/?project_id="+project_id).success(function(data)
             {
                 $scope.project.id = data.project.id;
                 $scope.project = data.project[0];
@@ -3713,7 +3713,7 @@ function VendorReportController($http, $scope, $location, $element) {
 function StockEditController($scope, $http, $element, $location, $timeout) {
     $scope.init = function(csrf_token, item_code) {
         $scope.scrf_token = csrf_token;
-        $http.get('/project/edit_stock/?openingstock_item_code='+openingstock_item_code).success(function(data)
+        $http.get('/inventory/edit_stock/?openingstock_item_code='+openingstock_item_code).success(function(data)
         {
             $scope.stock = data.stock;
         }).error(function(data, status)
@@ -3780,14 +3780,14 @@ function AddOpeningStockController($scope, $http, $element) {
             }
             $http({
                 method : 'post',
-                url : "/project/add_stock/",
+                url : "/inventory/add_stock/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
                 
-                document.location.href = '/project/stocks/';
+                document.location.href = '/inventory/stocks/';
             }).error(function(data, success){
                 console.log('error', data);
                 

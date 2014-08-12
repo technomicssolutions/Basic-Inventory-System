@@ -1,13 +1,9 @@
+
 from django.db import models
-from django.contrib.auth.models import User
-from django.conf import settings
-
-
 
 class Supplier(models.Model):
 
     name = models.CharField('Name', max_length=200, unique=True, null=True, blank=True)
-    
     house_name = models.CharField('House name', null=True, blank=True, max_length=200)
     street = models.CharField('Street', null=True, blank=True, max_length=200)
     city = models.CharField('City', null=True, blank=True, max_length=200)
@@ -21,16 +17,12 @@ class Supplier(models.Model):
     def __unicode__(self):
         return "supplier - "+str(self.name)
     
-
     class Meta:
-
         verbose_name = 'Supplier'
         verbose_name_plural = 'Supplier'
 
     
-class Customer(models.Model):
-    
-   
+class Customer(models.Model):  
     customer_name = models.CharField('Name of the customer', null=True, blank=True, max_length=200)
     house_name = models.CharField('House name', null=True, blank=True, max_length=200)
     street = models.CharField('Street', null=True, blank=True, max_length=200)

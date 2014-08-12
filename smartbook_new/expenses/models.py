@@ -1,9 +1,9 @@
+
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from purchase.models import *
-from project.models import *
+from inventory.models import *
 
 class ExpenseHead(models.Model):
 	expense_head = models.CharField('Expense Head', max_length=75, unique=True)
