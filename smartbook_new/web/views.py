@@ -396,7 +396,7 @@ class CreateCustomer(View):
                 context.update(request.POST)
                 return render(request, 'add_customer.html',context)
         except Exception as ex:
-            customer = Customer.objects.create(customer_name = request.POST['name'])
+            customer = Customer.objects.create(customer_name=request.POST['name'])
             customer.customer_name = request.POST['name']
             customer.house_name = request.POST['house'] 
             customer.street = request.POST['street']

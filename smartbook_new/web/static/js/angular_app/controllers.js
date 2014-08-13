@@ -1447,7 +1447,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
     $scope.expense_head = '';
     
     $scope.payment_mode_selection = true;
-    $
+    
     $scope.is_valid = false;
     $scope.error_flag = false;
     $scope.error_message = '';
