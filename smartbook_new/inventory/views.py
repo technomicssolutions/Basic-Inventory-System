@@ -88,7 +88,7 @@ class ItemList(View):
 
 class AddOpeningStock(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'inventory/add_stock.html', {})
+        return render(request, 'inventory/add_opening_stock.html', {})
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -125,7 +125,7 @@ class AddOpeningStock(View):
 class OpeningStocklist(View):
     def  get(self, request, *args, **kwargs):
         opening_stocks = OpeningStock.objects.all()
-        return render(request, 'inventory/pending_stock.html', {'opening_stocks': opening_stocks})
+        return render(request, 'inventory/opening_stock.html', {'opening_stocks': opening_stocks})
     
 class DeleteItem(View):
     def get(self,request,*args,**kwargs):
@@ -147,33 +147,6 @@ class StockView(View):
         return render(request, 'inventory/stock.html', {
             'stock_items': stock_items
         })
-class EditStock(View):
-    def get(self, request, *args, **kwargs):
-        stock = InventoryItem.objects.get(code=request.GET['item_code'])
-        if request.is_ajax():
-            res = {
-                 'stock': {
-                    'item': stock.code,
-                    'quantity': stock.quantity,
-                    'unit_price': stock.unit_price,
-                    'selling_price': stock.selling_price,
-                    
-                 },
-            }
-            response = simplejson.dumps(res)    
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'inventory/edit_stock.html', {
-            'stock': stock
-        })
-
-    def post(self, request, *args, **kwargs):
-
-        inventory = InventoryItem.objects.get(code=request.POST['item_code'])
-        inventory.unit_price = request.POST['unit_price']
-        inventory.selling_price = request.POST['selling_price']
-        
-        inventory.save()
-        return HttpResponseRedirect(reverse('stock'))
 
 class EditItem(View):
 
