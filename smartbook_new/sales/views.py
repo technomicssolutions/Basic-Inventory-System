@@ -13,19 +13,22 @@ from django.http import HttpResponse
 from sales.models import Sales, SalesItem, \
     ReceiptVoucher, CustomerAccount
 from inventory.models import Item, InventoryItem
-from web.models import Customer
+from web.models import Customer, OwnerCompany
 
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import black
 
 def header(canvas, y):
-
-    canvas.setFont("Helvetica", 30)  
-    canvas.setFillColor(black)
-    canvas.drawString(50, y + 21, 'Mubeena Furniture and Home Appliances')
+    try:
+        owner_company = OwnerCompany.objects.latest('id')
+    except:
+        owner_company = None
+    canvas.setFont("Helvetica", 30) 
+    canvas.drawString(50, y + 21, (owner_company.company_name if owner_company else ''))
     canvas.setFont("Helvetica", 18)  
-    canvas.drawString(50, y - 15, 'Karimpulli')
-    canvas.drawString(50, y - 35, 'Shop: 8086 615 615')
+    address = (owner_company.address1 + (' , '+owner_company.street if owner_company.street else '') if owner_company else '')
+    canvas.drawString(50, y - 15, address)
+    city_state_country = (owner_company.city + (' , '+owner_company.state if owner_company.state else '')+(' , '+owner_company.country if owner_company.country else '') if owner_company else '')
+    canvas.drawString(50, y - 35, city_state_country)
     return canvas
 
 def invoice_body_layout(canvas, y, sales):
@@ -107,89 +110,8 @@ def invoice_body_layout(canvas, y, sales):
     canvas.drawString(605, y - 220, ',' if sales.customer.city and sales.customer.street else '')
     canvas.drawString(612, y - 220, sales.customer.city)
 
-
     canvas.setFont('Times-Roman', 14)
-   
-
     return canvas 
-
-def dn_body_layout(canvas, y, delivery_note):
-
-    canvas.setFont("Helvetica-Bold", 40)  
-    canvas.drawString(350, y - 80, 'Delivery Note')
-    canvas.setFont("Helvetica", 15)
-
-    # Date and Invoice Box start
-    canvas.line(700, y - 45, 950, y - 45)
-    canvas.line(700, y - 100, 950, y - 100)  
-    canvas.line(700, y - 70, 950, y - 70)  
-
-    canvas.line(700, y - 45, 700, y - 100)  
-    canvas.line(950, y - 45, 950, y - 100)
-    canvas.line(825, y - 45, 825, y - 100)
-    # Date and Invoice Box end
-
-    # Bill and Ship Box start
-
-    canvas.line(50, y - 130, 400, y - 130)
-    canvas.line(50, y - 160, 400, y - 160)
-    canvas.line(50, y - 250, 400, y - 250)
-
-    canvas.line(500, y - 130, 900, y - 130)
-    canvas.line(500, y - 160, 900, y - 160)
-    canvas.line(500, y - 250, 900, y - 250)
-    
-    canvas.line(50, y - 130, 50, y - 250)  
-    canvas.line(400, y - 130, 400, y - 250)
-    canvas.line(500, y - 130, 500, y - 250)  
-    canvas.line(900, y - 130, 900, y - 250)
-
-    # Bill and Ship Box end
-
-    canvas.setFont("Helvetica", 14)
-    canvas.drawString(745,  y - 60, 'Date')
-    canvas.drawString(865,  y - 60, 'DN No #')
-
-    canvas.drawString(100, y - 150, 'Bill To')
-    canvas.drawString(550, y - 150, 'Ship To')
-
-    canvas.drawString(725,  y - 85, delivery_note.date.strftime('%d-%b-%Y'))
-    canvas.drawString(865,  y - 85, delivery_note.delivery_note_number)
-
-    canvas.drawString(70, y - 180, delivery_note.customer.customer_name)
-    canvas.drawString(70, y - 200, delivery_note.customer.house_name)
-    canvas.drawString(70, y - 220, delivery_note.customer.street)
-    canvas.drawString(165, y - 220, ',' if delivery_note.customer.street and delivery_note.customer.city else '')
-    canvas.drawString(172, y - 220, delivery_note.customer.city)
-
-    canvas.drawString(510, y - 180, delivery_note.customer.customer_name)
-    canvas.drawString(510, y - 200, delivery_note.customer.house_name)
-    canvas.drawString(510, y - 220, delivery_note.customer.street)
-    canvas.drawString(605, y - 220, ',' if delivery_note.customer.street and delivery_note.customer.city else '')
-    canvas.drawString(612, y - 220, delivery_note.customer.city)
-
-    canvas.line(50, y - 270, 950, y - 270)  
-
-    canvas.line(50, y - 270, 50, y - 980) 
-    canvas.line(950, y - 270, 950, y - 980) 
-
-    canvas.line(50, y - 300, 950, y - 300) 
-    
-    canvas.line(150, y - 270, 150, y - 980) 
-    canvas.line(300, y - 270, 300, y - 980)
-    canvas.line(675, y - 270, 675, y - 980)  
-    canvas.line(815, y - 270, 815, y - 980) 
-
-    canvas.line(50, y - 980, 950, y - 980)
-
-    canvas.drawString(60, y - 290, 'Quantity')
-    canvas.drawString(190, y - 290, 'Item Code')
-    canvas.drawString(450, y - 290, 'Item Name')
-    canvas.drawString(710, y - 290, 'Price Each')
-    canvas.drawString(850, y - 290, 'Amount')
-
-    return canvas
-
 
 class SalesEntry(View):
     def get(self, request, *args, **kwargs):
@@ -373,12 +295,9 @@ class InvoiceDetails(View):
             })
         for invoice in invoices:
             ctx_item_list = []
-            current_stock = 0
             for s_item in invoice.salesitem_set.all():
-                if s_item.item.item_type == 'item':
-                    inventory = InventoryItem.objects.get(item=s_item.item)
-                    current_stock = inventory.quantity
-                    
+                inventory = InventoryItem.objects.get(item=s_item.item)
+                current_stock = inventory.quantity
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -399,25 +318,15 @@ class InvoiceDetails(View):
                 'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
-                
-                'delivery_note_no': invoice.delivery_note.delivery_note_number if invoice.delivery_note else '',
-                'lpo_number': invoice.delivery_note.lpo_number if invoice.delivery_note else '',
                 'sales_items': ctx_item_list,
-                'po_no': invoice.po_no if invoice.po_no else '',
-                'terms': invoice.terms if invoice.terms else '',
-                'rep': invoice.rep if invoice.rep else '',
-                'via': invoice.via if invoice.via else '',
-                'fob': invoice.fob if invoice.fob else '',
                 'status': invoice.status if invoice.status else '',
             })
         for invoice in whole_invoices:
             ctx_item_list = []
             current_stock = 0
             for s_item in invoice.salesitem_set.all():
-                if s_item.item.item_type == 'item':
-                    inventory = InventoryItem.objects.get(item=s_item.item)
-                    current_stock = inventory.quantity
-                    
+                inventory = InventoryItem.objects.get(item=s_item.item)
+                current_stock = inventory.quantity
                 ctx_item_list.append({
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
@@ -440,16 +349,8 @@ class InvoiceDetails(View):
                 'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
-                
-                'dn_no': invoice.delivery_note.delivery_note_number if invoice.delivery_note else '',
-                'lpo_no': invoice.delivery_note.lpo_number if invoice.delivery_note else '',
-                'sales_items': ctx_item_list,
-                'po_no': invoice.po_no if invoice.po_no else '',
-                'terms': invoice.terms if invoice.terms else '',
-                'rep': invoice.rep if invoice.rep else '',
-                'via': invoice.via if invoice.via else '',
-                'fob': invoice.fob if invoice.fob else '',
                 'status': invoice.status if invoice.status else '',
+                'sales_items': ctx_item_list,
             })
 
         res = {
@@ -502,20 +403,18 @@ class EditSalesInvoice(View):
 
         for r_item in removed_items:
             item = Item.objects.get(code=r_item['item_code'])
-            if item.item_type == 'item':
-                inventory = InventoryItem.objects.get(item=item)
-                inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
-                s_item = SalesItem.objects.get(item=item, sales=sales)
-                s_item.delete()
+            inventory = InventoryItem.objects.get(item=item)
+            inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
+            s_item = SalesItem.objects.get(item=item, sales=sales)
+            s_item.delete()
 
         for item in sales_items:
             item_obj = Item.objects.get(code=item['item_code'])
             s_item = SalesItem.objects.get(item=item_obj, sales=sales)
             if int(s_item.quantity_sold) != int(item['qty_sold']):
-                if item_obj.item_type == 'item':
-                    inventory = InventoryItem.objects.get(item=item_obj)
-                    inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(item['qty_sold'])
-                    inventory.save()
+                inventory = InventoryItem.objects.get(item=item_obj)
+                inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(item['qty_sold'])
+                inventory.save()
                 s_item.quantity_sold = item['qty_sold']
             s_item.net_amount = item['net_amount']
             s_item.selling_price = item['unit_price']
@@ -591,36 +490,12 @@ class SalesInvoicePDF(View):
          
         return response
 
-class PrintDeliveryNotes(View):
-
-    def get(self, request, *args, **kwargs):
-
-        return render(request, 'sales/print_delivery_note.html', {})
-
 class PrintSalesInvoice(View):
 
     def get(self, request, *args, **kwargs):
 
         return render(request, 'sales/print_invoice.html', {})
 
-class CheckDeliverynoteExistence(View):
-
-    def get(self, request, *args, **kwargs):
-
-        delivery_no = request.GET.get('delivery_no', '')
-        try:
-            delivery_note = DeliveryNote.objects.get(delivery_note_number=delivery_no)
-            res = {
-                'result': 'error',
-            }
-        except Exception as ex:
-
-            res = {
-                'result': 'ok',
-            }
-
-        response = simplejson.dumps(res)
-        return HttpResponse(response, status=200, mimetype='application/json')
 
 class CheckInvoiceExistence(View):
 
@@ -640,7 +515,6 @@ class CheckInvoiceExistence(View):
 
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
-
 
 class CheckReceiptVoucherExistence(View):
 

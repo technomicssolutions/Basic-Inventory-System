@@ -56,7 +56,12 @@ class TransportationCompany(models.Model):
 
 class OwnerCompany(models.Model):
 
-    company_name = models.CharField('Company Name', max_length=200)
+    company_name = models.CharField('Company Name', max_length=200, null=True, blank=True)
+    address1 = models.CharField('Address1', max_length=500, null=True, blank=True)
+    street = models.CharField('Street', max_length=200, null=True, blank=True)
+    city = models.CharField('City', max_length=200, null=True, blank=True)
+    state = models.CharField('State', max_length=200, null=True, blank=True)
+    country = models.CharField('Country', max_length=200, null=True, blank=True)
     logo = models.FileField('Logo', upload_to = "uploads/logo/", null=True, blank=True)
 
     def __unicode__(self):

@@ -16,25 +16,24 @@ from django.views.generic.base import View
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 
-from sales.models import *
-from expenses.models import *
-from purchase.models import *
+from sales.models import Sales
+from expenses.models import Expense, ExpenseHead
+from purchase.models import SupplierAccount, SupplierAccountDetail
+from web.models import OwnerCompany
 
 def header(canvas, y):
-
+    try:
+        owner_company = OwnerCompany.objects.latest('id')
+    except:
+        owner_company = None
     canvas.setFont("Helvetica", 30)  
     canvas.setFillColor(black)
-    canvas.drawString(50, y + 21, 'Mubeena Furniture and Home Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawString(200, y + 21, 'Furniture and Home')
-    # canvas.setFillColor(red)
-    # canvas.drawString(250, y + 21, 'Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawImage(path, 50, y, width=33*cm, height=3*cm, preserveAspectRatio=True)
-
+    canvas.drawString(50, y + 21, (owner_company.company_name if owner_company else ''))
     canvas.setFont("Helvetica", 18)  
-    canvas.drawString(50, y - 15, 'Karimpulli')
-    canvas.drawString(50, y - 35, 'Shop: 8086 615 615')
+    address = (owner_company.address1 + (' , '+owner_company.street if owner_company.street else '') if owner_company else '')
+    canvas.drawString(50, y - 15, address)
+    city_state_country = (owner_company.city + (' , '+owner_company.state if owner_company.state else '')+(' , '+owner_company.country if owner_company.country else '') if owner_company else '')
+    canvas.drawString(50, y - 35, city_state_country)
 
     return canvas
 
@@ -292,13 +291,6 @@ class VendorAccountsReport(View):
                         p.drawString(470, y, str(purchase_account.opening_balance))
                         p.drawString(580, y, str(purchase_account.amount))
                         p.drawString(660, y, str(purchase_account.closing_balance)) 
-                    # y = y - 50
-                    # if y <= 270:
-                    #     y = 850
-                    #     p.showPage()
-                    #     p = header(p)
-                    # p.drawString(470, y, 'Current Balance:')
-                    # p.drawString(580, y, str(purchase_account.supplier_account.balance))
                 
                 p.showPage()
                 p.save()

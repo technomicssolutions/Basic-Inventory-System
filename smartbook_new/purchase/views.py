@@ -3,7 +3,7 @@ import simplejson
 import datetime as dt
 from datetime import datetime
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import  HttpResponse, HttpResponseRedirect
 
@@ -13,7 +13,6 @@ from django.db.models import Max
 from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
 from purchase.models import Purchase,PurchaseItem,SupplierAccount,SupplierAccountDetail
 from inventory.models import Item, InventoryItem, OpeningStock
-
 from expenses.models import Expense, ExpenseHead
 
 class PurchaseEntry(View):
@@ -140,7 +139,6 @@ class PurchaseEntry(View):
         res = {
             'result': 'Ok',
         } 
-
         response = simplejson.dumps(res)
         status_code = 200
         return HttpResponse(response, status = status_code, mimetype="application/json")
@@ -164,16 +162,10 @@ class SupplierAccountDetails(View):
             res = {
                 'result': 'Ok',
                 'vendor_account': {
-                    # 'vendor_account_date' : vendor_account.date.strftime('%d/%m/%Y') if vendor_account.date else '',
                     'payment_mode': 'cash',
-                    # 'narration': vendor_account.narration,
                     'total_amount': vendor_account.total_amount,
                     'amount_paid': vendor_account.paid_amount,
                     'balance_amount': vendor_account.balance,
-                    # 'cheque_date': vendor_account.cheque_date.strftime('%d/%m/%Y') if vendor_account.cheque_date else '',
-                    # 'cheque_no': vendor_account.cheque_no,
-                    # 'bank_name': vendor_account.bank_name,
-                    # 'branch_name': vendor_account.branch_name,
                     'vendor': vendor_account.supplier.name
                 }
             } 
@@ -201,7 +193,6 @@ class SupplierAccountDetails(View):
         vendor_account.narration = vendor_account_dict['narration']
         vendor_account.amount = int(vendor_account_dict['amount'])
         vendor_detail.amount = vendor_account.amount
-        # vendor_account.total_amount = int(vendor_account_dict['total_amount'])
         vendor_account.paid_amount = vendor_account.paid_amount + vendor_account.amount  #int(vendor_account_dict['amount_paid'])
         vendor_detail.opening_balance = vendor_account.balance
         vendor_account.balance = vendor_account.balance - vendor_account.amount  #int(vendor_account_dict['balance_amount'])

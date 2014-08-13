@@ -501,7 +501,7 @@ form {
 /*sales module */
 .sales_form_container {
 	margin: auto;
-    width: 100%;
+    width: 90%;
 }
 .form_contents_sales {
 	margin: 10px 5px;
@@ -854,16 +854,15 @@ a {
 .align_top {
 	margin-top: -21px !important;
 }
-#direct_delivery_note .purchase_item_list .item_list_row span {
-    width: 12.5%;
-}
-
 #edit_sales_invoice .purchase_item_list .item_list_row span {
-    width: 9.5%;
+    width: 14.5%;
 }
 
 #edit_expense .delivery_note {
 	margin-left: 94px !important;
+}
+#print_invoice .purchase_item_list .item_list_row span{
+	width: 18%;
 }
 
 /* purchase dialogue popup */
