@@ -1851,7 +1851,6 @@ function VendorAccountReportController($scope, $element, $http, $location) {
             console.log(data || "Request failed");
         });
     }
-
     $scope.get_report_type = function(){
         if($scope.report_type == 'date') {
             $scope.report_date_wise_flag = true;
@@ -1881,40 +1880,6 @@ function VendorReportController($http, $scope, $location, $element) {
         $scope.supplier_name = 'select';
     }
 
-}
-function StockEditController($scope, $http, $element, $location, $timeout) {
-    $scope.init = function(csrf_token, item_code) {
-        $scope.scrf_token = csrf_token;
-        $http.get('/inventory/edit_stock/?openingstock_item_code='+openingstock_item_code).success(function(data)
-        {
-            $scope.stock = data.stock;
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-    }
-    $scope.validate = function() {
-        $scope.validation_error = '';
-        if( $scope.stock.quantity != Number($scope.stock.quantity)){
-            $scope.validation_error = "Please enter digits as quantity ";
-            return false;
-        } else if( $scope.stock.unit_price != Number($scope.stock.unit_price)){
-            $scope.validation_error = "Please enter digits as unit price ";
-            return false;
-        } else if( $scope.stock.selling_price != Number($scope.stock.selling_price)){
-            $scope.validation_error = "Please enter digits as selling price ";
-            return false;
-        }else if( $scope.stock.discount_permit_amount != '' && $scope.stock.discount_permit_amount != Number($scope.stock.discount_permit_amount)){
-            $scope.validation_error = "Please enter digits as discount amount ";
-            return false;
-        }else if( $scope.stock.discount_permit_percent != '' && $scope.stock.discount_permit_percent != Number($scope.stock.discount_permit_percent)){
-            $scope.validation_error = "Please enter digits as discount percent ";
-            return false;
-        } else {
-            document.getElementById("edit_stock_form").submit();
-            return true;
-        }
-    }
 }
 function AddOpeningStockController($scope, $http, $element) {
     $scope.openingstock = {
@@ -1950,14 +1915,14 @@ function AddOpeningStockController($scope, $http, $element) {
             }
             $http({
                 method : 'post',
-                url : "/inventory/add_stock/",
+                url : "/inventory/add_opening_stock/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
                 
-                document.location.href = '/inventory/stocks/';
+                document.location.href = '/inventory/opening_stock/';
             }).error(function(data, success){
                 console.log('error', data);
             });

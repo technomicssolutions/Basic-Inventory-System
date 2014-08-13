@@ -2,37 +2,34 @@
 {% block title %}Opening Stock{% endblock title %}
 {% block body_id %}stock{% endblock %}
 {% block content %}
-
-<div id="main-title">
-	<div class="alert alert-info" align="Center"><h4>Opening Stock</h4></div>
-</div>
-
-<div class="top_section">
-	<a class="btn btn-info" href="{% url 'add_opening_stock' %}"> New opening stock </a>
-</div>
-{% if opening_stocks.count == 0 %}
-	<p class="error_message"> No stocks </p>
-{% else %}
-	<table class="table table-striped">
-		<tr>
-			<th> Name </th> 
-			<th> Code</th> 
-			<th>Quantity</th>
-			<th>Unit Price</th>
-			<th>Selling Price</th>
-		</tr>
-		
-		{% for openingstock in opening_stocks %}
-		 	<tr>
-		 		<td> {{openingstock.item.item.name}} </td>
-		 		<td> {{openingstock.item.item.code}} </td>
-		 		<td>{{openingstock.quantity}}</td>
-		 		<td>{{openingstock.unit_price}}</td>
-		 		<td>{{openingstock.selling_price}}</td>
-		 	</tr>
-		{% endfor %}
-	</table>
-{% endif %}
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Opening Stock</h4></div>
+	</div>
+	<div class="top_section">
+		<a class="btn btn-info" href="{% url 'add_opening_stock' %}"> New opening stock </a>
+	</div>
+	{% if opening_stocks.count == 0 %}
+		<p class="error_message"> No stocks </p>
+	{% else %}
+		<table class="table table-striped">
+			<tr>
+				<th> Name </th> 
+				<th> Code</th> 
+				<th>Quantity</th>
+				<th>Unit Price</th>
+				<th>Selling Price</th>
+			</tr>
+			{% for openingstock in opening_stocks %}
+			 	<tr>
+			 		<td> {{openingstock.item.item.name}} </td>
+			 		<td> {{openingstock.item.item.code}} </td>
+			 		<td>{{openingstock.quantity}}</td>
+			 		<td>{{openingstock.unit_price}}</td>
+			 		<td>{{openingstock.selling_price}}</td>
+			 	</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
 
 
 {% endblock content %}
