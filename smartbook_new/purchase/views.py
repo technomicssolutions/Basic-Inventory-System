@@ -12,7 +12,7 @@ from django.db.models import Max
 
 from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
 from purchase.models import Purchase,PurchaseItem,SupplierAccount,SupplierAccountDetail
-from inventory.models import Item,InventoryItem,OpeningStock
+from inventory.models import Item, InventoryItem, OpeningStock
 
 from expenses.models import Expense, ExpenseHead
 
@@ -93,10 +93,7 @@ class PurchaseEntry(View):
         supplier_account.save()       
         purchase.supplier_amount = purchase_dict['supplier_amount']
         purchase.save()
-        if purchase_dict['purchase_mode'] == 'project_purchase':
-            project = Project.objects.get(id=purchase_dict['project_id'])
-        else:
-            project = None
+        
         if float(purchase_dict['purchase_expense']) > 0:
             # Save purchase_expense in Expense
             try: 
@@ -126,9 +123,7 @@ class PurchaseEntry(View):
         for purchase_item in purchase_items:
 
             item = Item.objects.get(code=purchase_item['item_code'])
-            p_item, item_created = PurchaseItem.objects.get_or_create(item=item, purchase=purchase)
-            
-            item = Item.objects.get(code=purchase_item['item_code'])
+            p_item, created = PurchaseItem.objects.get_or_create(item=item, purchase=purchase)
             inventory, created = InventoryItem.objects.get_or_create(item=item)
             if created:
                 inventory.quantity = int(purchase_item['qty_purchased'])                

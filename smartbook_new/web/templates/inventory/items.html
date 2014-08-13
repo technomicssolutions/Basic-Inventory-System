@@ -10,6 +10,7 @@
 <div class="top_section">
 	<a class="btn btn-info" href="{% url 'add_item' %}"> New Item </a>
 </div>
+<p class="error_message"> {{message}} </p>
 {% if items.count == 0 %}
 	<p class="error_message"> No Items </p>
 {% else %}
@@ -18,22 +19,21 @@
 			<th> Name </th> 
 			<th> Code</th> 
 			<th> &nbsp;</th> 
+			<th> &nbsp;</th> 
 		</tr>
-		
 		{% for item in items %}
 		 	<tr>
 		 		<td> {{item.name}} </td>
 		 		<td> {{item.code}} </td>
-		 		<!-- <td> {{project.barcode}} </td> -->
-		 		<!-- <td> {{item.tax}} </td> -->
-		 		<td><a href="{% url 'delete_item' item_id=item.id %}">Delete</a></td>
-		 		<!-- <td>{% comment %} 
+		 		<td>
 		 			<a href="{% url 'edit_item' item_id=item.id %}">
 						<img src="/static/images/edit.png">
 					</a>
-					{% endcomment %} 
-				 </td> -->
-
+				</td>
+		 		<td><a href="{% url 'delete_item' item_id=item.id %}">
+		 			<img src="/static/images/delete.png"></a>
+		 		</td>
+		 		
 		 	</tr>
 		{% endfor %}
 	</table>

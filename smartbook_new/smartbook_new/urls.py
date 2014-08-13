@@ -13,7 +13,5 @@ urlpatterns = patterns('',
     url(r'^expenses/', include('expenses.urls')),
     url(r'^inventory/', include('inventory.urls')),
     url(r'^reports/', include('reports.urls')),
-
-
     url(r'^admin/', include(admin.site.urls)),
 )

@@ -1,19 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.conf import settings
-
-from web.models import *
 
 ITEM_TYPE = (
 	('item', 'item'),
-	('service_charge', 'service_charge'),
 )
 
 class Item(models.Model):
 
 	code = models.CharField('Item Code', max_length=200, unique=True)
 	name = models.CharField('Name', max_length=200)
-	item_type = models.CharField('Type', max_length=50, choices=ITEM_TYPE, default='item')
 	
 	def __unicode__(self):
 		return self.code
