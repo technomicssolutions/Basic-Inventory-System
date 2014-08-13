@@ -214,16 +214,19 @@ function get_customers($scope, $http) {
     });
 }
 function customer_validation($scope) {
+    console.log($scope.email_id);
     $scope.error_message = "";
     $scope.error_flag = false;
     if($scope.customer_name == '') {
         $scope.error_message = "Please enter customer name";
         $scope.error_flag = true;
         return false;
-    } else if($scope.email_id != undefined && !validateEmail($scope.email_id)) {
-        $scope.error_message = "Please enter a valid email id";
-        $scope.error_flag = true;
-        return false;
+    } else if($scope.email_id != undefined) {
+        if (!validateEmail($scope.email_id)) {
+            $scope.error_message = "Please enter a valid email id";
+            $scope.error_flag = true;
+            return false;
+        }
     }
     return true;
 }
@@ -253,7 +256,7 @@ function add_new_customer($http, $scope) {
             
             if (data.result == 'error'){
                 $scope.error_flag=true;
-                $scope.message = data.message;
+                $scope.error_message = data.message;
             } else {
                 $scope.customer = data.customer_name;
                 $scope.popup.hide_popup();
@@ -1310,6 +1313,8 @@ function InventorySalesController($scope, $http, $element, $location) {
             $scope.popup.set_overlay_height(height);
             $scope.popup.show_content();
         }
+        $scope.email_id = undefined;
+        console.log($scope.email_id);
     }
     $scope.close_popup = function(){
         $scope.popup.hide_popup();

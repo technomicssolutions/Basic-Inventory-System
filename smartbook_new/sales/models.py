@@ -1,13 +1,7 @@
 from django.db import models
 
 from inventory.models import  Item
-from web.models import Customer
-
-PAYMENT_MODE = (
-    ('cash', 'Cash'),
-    ('cheque', 'Cheque'),
-    ('credit', 'Credit'),
-)
+from web.models import Customer, PAYMENT_MODE
 
 STATUS  = (
     ('estimate', 'Estimate'),
@@ -62,7 +56,6 @@ class SalesReturn(models.Model):
     return_invoice_number = models.IntegerField('Sales Return invoice number', unique=True)
     date = models.DateField('Date', null=True, blank=True)
     net_amount = models.DecimalField('Total', max_digits=14, decimal_places=2, default=0)
-    
 
     def __unicode__(self):
         return str(self.sales.sales_invoice_number)
@@ -100,7 +93,6 @@ class CustomerAccount(models.Model):
     paid = models.DecimalField('Paid', max_digits=14, decimal_places=2, default=0)
     balance = models.DecimalField('Balance', max_digits=14, decimal_places=2, default=0)
     is_complted = models.BooleanField('Is Completed', default=False)
-
 
     class Meta:
         verbose_name_plural = 'Customer Account'

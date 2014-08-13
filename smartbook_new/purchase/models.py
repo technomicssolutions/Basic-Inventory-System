@@ -1,14 +1,6 @@
 from django.db import models
-
-
-from web.models import *
-from inventory.models import *
-
-PAYMENT_MODE = (
-	('cheque', 'Cheque'),
-	('cash', 'Cash'),
-    ('credit', 'Credit'),
-)
+from web.models import Supplier, TransportationCompany, PAYMENT_MODE
+from inventory.models import Item
 
 class Purchase(models.Model):
     
@@ -38,8 +30,6 @@ class Purchase(models.Model):
         return str(self.purchase_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Purchase'
         verbose_name_plural = 'Purchase'
 
 class PurchaseItem(models.Model):
@@ -52,12 +42,9 @@ class PurchaseItem(models.Model):
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=3, default=0)
 
     def __unicode__(self):
-
         return str(self.purchase.purchase_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Purchase Items'
         verbose_name_plural = 'Purchase Items'
 
 class SupplierAccount(models.Model):

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from sales.models import *
+from sales.models import Sales, SalesItem, CustomerAccount, ReceiptVoucher
 
 admin.site.register(Sales)
 admin.site.register(SalesItem)

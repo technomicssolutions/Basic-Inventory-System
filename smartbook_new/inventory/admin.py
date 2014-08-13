@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from inventory.models import OpeningStock, Item, InventoryItem
 

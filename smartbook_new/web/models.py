@@ -1,6 +1,12 @@
 
 from django.db import models
 
+PAYMENT_MODE = (
+    ('cash', 'Cash'),
+    ('cheque', 'Cheque'),
+    ('credit', 'Credit'),
+) 
+
 class Supplier(models.Model):
 
     name = models.CharField('Name', max_length=200, unique=True, null=True, blank=True)
@@ -23,7 +29,7 @@ class Supplier(models.Model):
 
     
 class Customer(models.Model):  
-    customer_name = models.CharField('Name of the customer', null=True, blank=True, max_length=200)
+    customer_name = models.CharField('Name of the customer', null=True, blank=True, max_length=200, unique=True)
     house_name = models.CharField('House name', null=True, blank=True, max_length=200)
     street = models.CharField('Street', null=True, blank=True, max_length=200)
     city = models.CharField('City', null=True, blank=True, max_length=200)

@@ -39,12 +39,7 @@ class Logout(View):
 
 class CustomerList(View):
     def get(self, request, *args, **kwargs):
-        
-        ctx_suppliers = []
         ctx_customers = []
-        
-       
-   
         customers = Customer.objects.all()
         
         if request.is_ajax():
@@ -68,7 +63,6 @@ class SupplierList(View):
     def get(self, request, *args, **kwargs):
         
         ctx_suppliers = []
-  
         suppliers = Supplier.objects.all()
         if request.is_ajax():
             if len(suppliers) > 0:
@@ -81,7 +75,6 @@ class SupplierList(View):
                 'suppliers': ctx_suppliers,
                 
             } 
-            
             response = simplejson.dumps(res)
             status_code = 200
             return HttpResponse(response, status = status_code, mimetype="application/json")
@@ -195,25 +188,17 @@ class EditCustomer(View):
             }
             context.update(request.POST)
             return render(request, 'edit_customer.html',context)
-        elif request.POST['email'] == '':
-            context = {
-                'message': 'Email cannot be null',
-                'customer': customer,
-                'customer_id': customer_id,
-            }
-            context.update(request.POST)
-            return render(request, 'edit_user.html',context)
-        if email_validation == None:
-            message = "Please enter a valid email id"
-            context = {
-                'message': message,
-                'customer': customer,
-                'customer_id': customer_id,
-            }
-            context.update(request.POST)
-            return render(request, 'edit_customer.html',context)  
-
-        
+        if request.POST['email'] != '':
+            if email_validation == None:
+                message = "Please enter a valid email id"
+                context = {
+                    'message': message,
+                    'customer': customer,
+                    'customer_id': customer_id,
+                }
+                context.update(request.POST)
+                return render(request, 'edit_customer.html',context)
+          
         customer.customer_name = request.POST['name']
         customer.house_name =request.POST['house']
         customer.street = request.POST['street']
@@ -223,12 +208,15 @@ class EditCustomer(View):
         customer.mobile_number = request.POST['mobile']
         customer.land_line = request.POST['phone']
         customer.email_id = request.POST['email']
-        customer.save()
-        context = {
-            'message' : 'Customer edited correctly',
-            'customer': customer,
-            'customer_id': customer_id,
-        }
+        try:
+            customer.save()
+            return HttpResponseRedirect(reverse('customers'))
+        except:
+            context = {
+                'message' : 'Customer with this name already exists',
+                'customer': customer,
+                'customer_id': customer_id,
+            }
         return render(request, 'edit_customer.html',context)
         
 class EditSupplier(View):
@@ -336,23 +324,15 @@ class CreateCustomer(View):
                 }
                 context.update(request.POST)
                 return render(request, 'add_customer.html',context)
-            elif request.POST['email'] == '':
-                context = {
-                    'error_message': 'Please enter the email id',
-                    
-                }
-                context.update(request.POST)
-                return render(request, 'add_customer.html',context)
-
-            elif email_validation == None:
-                message = "Please enter a valid email id"
-                context = {
-                    'error_message': 'Please enter a valid email id',
-                    
-                }
-                context.update(request.POST)
-                return render(request, 'add_customer.html',context)
-
+            if request.POST['email'] != '':
+                if email_validation == None:
+                    message = "Please enter a valid email id"
+                    context = {
+                        'error_message': 'Please enter a valid email id',
+                        
+                    }
+                    context.update(request.POST)
+                    return render(request, 'add_customer.html',context)
             elif request.POST['mobile'] != '':
                 if len(request.POST['mobile']) > 15:
                     context = {
