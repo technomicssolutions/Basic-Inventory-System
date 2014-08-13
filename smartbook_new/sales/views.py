@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse
 
-from sales.models import DeliveryNote, DeliveryNoteItem, Sales, SalesItem, \
+from sales.models import Sales, SalesItem, \
     ReceiptVoucher, CustomerAccount
 from inventory.models import Item, InventoryItem
 from web.models import Customer
@@ -26,7 +26,6 @@ def header(canvas, y):
     canvas.setFont("Helvetica", 18)  
     canvas.drawString(50, y - 15, 'Karimpulli')
     canvas.drawString(50, y - 35, 'Shop: 8086 615 615')
-
     return canvas
 
 def invoice_body_layout(canvas, y, sales):
@@ -223,11 +222,9 @@ class SalesEntry(View):
 
         sales_dict = ast.literal_eval(request.POST['sales'])
         sales, sales_created = Sales.objects.get_or_create(sales_invoice_number=sales_dict['sales_invoice_number'])
-        project = None
-
-        if sales_dict['sales_mode'] == 'project_direct' or sales_dict['sales_mode'] == 'inventory_sales':
-            customer = Customer.objects.get(customer_name=sales_dict['customer'])
-            sales.customer = customer
+        
+        customer = Customer.objects.get(customer_name=sales_dict['customer'])
+        sales.customer = customer
         sales.sales_invoice_number = sales_dict['sales_invoice_number']
         sales.payment_mode = sales_dict['payment_mode']
         
@@ -239,12 +236,6 @@ class SalesEntry(View):
         sales.net_amount = sales_dict['net_total']
         sales.grant_total = sales_dict['grant_total']
         sales.paid = sales_dict['paid']
-
-        sales.po_no = sales_dict['po_no']
-        sales.terms = sales_dict['terms']
-        sales.rep = sales_dict['rep']
-        sales.via = sales_dict['via']
-        sales.fob = sales_dict['fob']
         sales.status = sales_dict['status']
 
         if sales_dict['payment_mode'] == 'cheque':
@@ -261,78 +252,25 @@ class SalesEntry(View):
 
         sales_items = sales_dict['sales_items']
         removed_items = sales_dict['removed_items']
-
-        if sales_dict['sales_mode'] == 'project_direct':
-            project = Project.objects.get(id=int(sales_dict['project_id']))
-            sales.project=project
-            project.sales_amount =  float(project.sales_amount) + float(sales.grant_total)
-            project.save()
-        elif sales_dict['sales_mode'] == 'dn_sales':
-            delivery_note = DeliveryNote.objects.get(id=sales_dict['dn_id'])
-            sales.delivery_note = delivery_note
-            if delivery_note.project:
-                sales.project = delivery_note.project
-                project = delivery_note.project
-                project.sales_amount =  float(project.sales_amount) + float(sales.grant_total)
-                project.save()
-            sales.customer = delivery_note.customer
-            delivery_note.is_completed = True
-            delivery_note.save()
         sales.save()
 
         for r_item in removed_items:
             item = Item.objects.get(code=r_item['item_code'])
-            if item.item_type == 'item':
-                if sales_dict['sales_mode'] == 'dn_sales':
-                    d_item = DeliveryNoteItem.objects.get(id=r_item['dn_item_id'])
-                    if d_item.delivery_note.project:
-                        project_item = ProjectItem.objects.get(item=d_item.item, project=d_item.delivery_note.project)
-                        project_item.quantity = int(project_item.quantity) + int(r_item['qty_sold'])
-                        project_item.save()
-                    else:
-                        inventory = InventoryItem.objects.get(item=d_item.item)
-                        inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
-                        inventory.save()
+            inventory = InventoryItem.objects.get(item=d_item.item)
+            inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
+            inventory.save()
 
          
         for sales_item in sales_items:
             item = Item.objects.get(code=sales_item['item_code'])
             s_item, item_created = SalesItem.objects.get_or_create(item=item, sales=sales)
-            if sales_dict['sales_mode'] == 'project_direct':
-                if item.item_type == 'item':
-                    project_item = ProjectItem.objects.get(item=item, project=project)
-                    if sales_created:
-
-                        project_item.quantity = project_item.quantity - int(sales_item['qty_sold'])
-                    else:
-                        project_item.quantity = project_item.quantity + s_item.quantity_sold - int(sales_item['qty_sold'])      
-
-                    project_item.save()
-            elif sales_dict['sales_mode'] == 'dn_sales':
-                d_item = DeliveryNoteItem.objects.get(id=sales_item['dn_item_id'])
-
-                # Update Quantity
-                if item.item_type == 'item':
-                    if d_item.quantity_sold != sales_item['qty_sold']:
-                        if d_item.delivery_note.project:
-                            project_item = ProjectItem.objects.get(item=item, project=d_item.delivery_note.project)
-                            project_item.quantity = int(project_item.quantity) + int(d_item.quantity_sold) - int(sales_item['qty_sold'])
-                            project_item.save()
-                        else:
-                            inventory = InventoryItem.objects.get(item=d_item.item)
-                            inventory.quantity = int(inventory.quantity) + int(d_item.quantity_sold) - int(sales_item['qty_sold'])
-                            inventory.save()
-            elif sales_dict['sales_mode'] == 'inventory_sales':
-                
-                if item.item_type == 'item':
-                    inventory = InventoryItem.objects.get(item=item)
-                    if item_created:
-
-                        inventory.quantity = inventory.quantity - int(sales_item['qty_sold'])
-                    else:
-                        inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(sales_item['qty_sold'])      
-
-                    inventory.save()
+            
+            inventory = InventoryItem.objects.get(item=item)
+            if item_created:
+                inventory.quantity = inventory.quantity - int(sales_item['qty_sold'])
+            else:
+                inventory.quantity = int(inventory.quantity) + int(s_item.quantity_sold) - int(sales_item['qty_sold'])      
+            inventory.save()
             s_item.quantity_sold = sales_item['qty_sold']
             s_item.net_amount = sales_item['net_amount']
             s_item.selling_price = sales_item['unit_price']

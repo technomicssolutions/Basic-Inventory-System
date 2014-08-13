@@ -178,7 +178,6 @@ class ExpenseReport(View):
             p.drawString(150, y - 100, "Voucher No")
             p.drawString(250, y - 100, "Particulars")
             p.drawString(500, y - 100, "Narration")
-            # p.drawString(650, 870, "Project") 
             p.drawString(650, y - 100, "Amount") 
             
             p.setFontSize(12)

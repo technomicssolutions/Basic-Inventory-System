@@ -111,10 +111,7 @@ class PurchaseEntry(View):
             expense.date = dt.datetime.now().date().strftime('%Y-%m-%d')
             expense.amount = purchase_dict['purchase_expense']
             expense.payment_mode = 'cash'
-            expense.narration = 'By purchase'
-            if project:
-                expense.project = project
-            expense.save()        
+            expense.narration = 'By purchase'      
 
         purchase_items = purchase_dict['purchase_items']
         deleted_items = purchase_dict['deleted_items']

@@ -14,59 +14,14 @@ STATUS  = (
     ('invoice', 'Invoice'),
 )
 
-class DeliveryNote(models.Model):
-    
-    customer = models.ForeignKey(Customer, null=True, blank=True)
-    delivery_note_number = models.CharField('Delivery Note Serial number', max_length=50, null=True, blank=True, unique=True)
-    date = models.DateField('Date', null=True, blank=True)
-    lpo_number = models.CharField('LPO Number', null=True, blank=True, max_length=20)
-    net_total = models.DecimalField('Net Total',max_digits=14, decimal_places=2, default=0)
-    is_completed = models.BooleanField('Sales Created', default=False)
-
-
-    def __unicode__(self):
-
-        return str(self.delivery_note_number)
-
-    class Meta:
-
-        verbose_name = 'Delivery Note'
-        verbose_name_plural = 'Delivery Note'
-
-
-class DeliveryNoteItem(models.Model):
-
-    item = models.ForeignKey(Item, null=True, blank=True)
-    delivery_note = models.ForeignKey(DeliveryNote, null=True, blank=True)
-    net_amount = models.DecimalField('Net Amount', max_digits=14, decimal_places=2, default=0)
-    quantity_sold = models.IntegerField('Quantity Sold', default=0)
-    selling_price = models.DecimalField('Selling Price', max_digits=14, decimal_places=2, default=0) 
-
-    def __unicode__(self):
-
-        return str(self.delivery_note.delivery_note_number)
-
-    class Meta:
-
-        verbose_name = 'Delivery Note Item'
-        verbose_name_plural = 'Delivery Note Item'
-
 class Sales(models.Model): 
-
    
     customer = models.ForeignKey(Customer, null=True, blank=True)
-    delivery_note = models.ForeignKey(DeliveryNote, null=True, blank=True)
 
     sales_invoice_number = models.CharField('Sales Invoice Number', null=True, blank=True, max_length=10, unique=True)
     sales_invoice_date = models.DateField('Sales Invoice Date', null=True, blank=True)
 
     status = models.CharField('Status', max_length=100, choices=STATUS, default='estimate')
-
-    po_no = models.CharField('P O Number', null=True, blank=True, max_length=25)
-    terms = models.CharField('Terms', null=True, blank=True, max_length=50)
-    rep = models.CharField('Rep', null=True, blank=True, max_length=30)
-    via = models.CharField('Via', null=True, blank=True, max_length=50)
-    fob = models.CharField('FOB', null=True, blank=True, max_length=75)
     
     payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=25)
     cheque_no = models.CharField('Cheque Number',null=True, blank=True, max_length=25)
@@ -83,13 +38,11 @@ class Sales(models.Model):
     discount_percentage_for_sale = models.DecimalField('Discount percentage for sale',max_digits=14, decimal_places=2, default=0)
 
     is_processed = models.BooleanField('Processed', default=False)
-    def __unicode__(self):
 
+    def __unicode__(self):
         return str(self.sales_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Sales'
         verbose_name_plural = 'Sales'
 
 class SalesItem(models.Model):
@@ -100,14 +53,10 @@ class SalesItem(models.Model):
     selling_price = models.DecimalField('Selling Price', max_digits=14, decimal_places=2, default=0) 
     net_amount = models.DecimalField('Sold Net Amount', max_digits=14, decimal_places=2, default=0)
     
-    
     def __unicode__(self):
-
         return str(self.sales.sales_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Sales Items'
         verbose_name_plural = 'Sales Items'
 
 class SalesReturn(models.Model):
@@ -127,7 +76,6 @@ class SalesReturnItem(models.Model):
     amount = models.DecimalField('Amount', max_digits=14, decimal_places=2, default=0)
 
     def __unicode__(self):
-
         return str(self.sales_return.return_invoice_number)
 
 class ReceiptVoucher(models.Model):
@@ -143,12 +91,9 @@ class ReceiptVoucher(models.Model):
     payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=40, choices=PAYMENT_MODE)
     
     def __unicode__(self):
-
         return str(self.sales_invoice.sales_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Receipt Voucher'
         verbose_name_plural = 'Receipt Voucher'
 
 class CustomerAccount(models.Model):
@@ -162,11 +107,8 @@ class CustomerAccount(models.Model):
 
 
     class Meta:
-
-        verbose_name = 'Customer Account'
         verbose_name_plural = 'Customer Account'
 
     def __unicode__(self):
-
         return str(self.invoice_no.sales_invoice_number)
 
