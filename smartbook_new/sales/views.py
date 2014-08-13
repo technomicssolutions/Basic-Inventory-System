@@ -400,11 +400,11 @@ class EditSalesInvoice(View):
 
         sales_items = sales_dict['sales_items']
         removed_items = sales_dict['removed_items']
-
         for r_item in removed_items:
             item = Item.objects.get(code=r_item['item_code'])
             inventory = InventoryItem.objects.get(item=item)
             inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
+            inventory.save()
             s_item = SalesItem.objects.get(item=item, sales=sales)
             s_item.delete()
 

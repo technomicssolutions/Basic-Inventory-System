@@ -1502,6 +1502,7 @@ function EditSalesController($scope, $http, $location, $element) {
     }
 
     $scope.remove_from_item_list = function(item) {
+        console.log(item);
         var index = $scope.sales.sales_items.indexOf(item);
         $scope.sales.removed_items.push(item);
         $scope.sales.sales_items.splice(index, 1);
@@ -1510,7 +1511,6 @@ function EditSalesController($scope, $http, $location, $element) {
             item = $scope.sales.sales_items[i]
             if(item.qty_sold != '' && item.unit_price != ''){
                 item.net_amount = ((parseFloat(item.qty_sold)*parseFloat(item.unit_price))).toFixed(2);
-                $scope.calculate_net_discount_sale();
             }
         }
         $scope.calculate_net_total_sale();
