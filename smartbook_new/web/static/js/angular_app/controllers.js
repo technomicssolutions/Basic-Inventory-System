@@ -1004,6 +1004,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         add_item($scope, $http, '');
     }
     $scope.remove_item_purchase_list = function(item) {
+        $scope.purchase.deleted_items.push(item);
         var index = $scope.purchase.purchase_items.indexOf(item);
         $scope.purchase.purchase_items.splice(index, 1);
         $scope.calculate_net_total();
@@ -1152,7 +1153,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
                 }
             }).success(function(data, status) {
                 console.log(status)
-                document.location.href = '/purchase/entry/?purchase_type=inventory_based';
+                document.location.href = '/purchase/entry/';
                
             }).error(function(data, success){
                 
