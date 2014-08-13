@@ -625,7 +625,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         $scope.expense.date = $$('#date')[0].get('value');
         $scope.expense.cheque_date = $$('#cheque_date')[0].get('value');
 
-        if ($scope.expense.expense_head_id == '' || $scope.expense.expense_head_id == undefined || $scope.expense.expense_head_id == 'select') {
+        if ($scope.expense.expense_head_id == '' || $scope.expense.expense_head_id == undefined || $scope.expense.expense_head_id == 'select' || $scope.expense.expense_head_id == 'other') {
             $scope.error_flag = true;
             $scope.error_message = 'Please choose Expense Head';
             return false;
@@ -687,6 +687,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         }
     }
     $scope.edit_expense = function(){
+        console.log($scope.expense.expense_head_id);
         if ($scope.expense.cheque_date == null) {
             $scope.expense.cheque_date = ''
         }

@@ -7,6 +7,9 @@
 {% block controller %}
 	ng-controller="ExpenseController" ng-init="init('{{csrf_token}}','{{expense.id}}')"   
 {% endblock controller %}
+{% block dialogue_popup %}
+	{% include 'popup/add_expense_head.html' %}          	
+{% endblock %}
 
 {% block content %}
 
