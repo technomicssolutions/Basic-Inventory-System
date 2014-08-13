@@ -16,24 +16,22 @@
 		<table class="table table-striped">
 			<tr>
 				<th> Date </th> 
-				<th> Expense Head</th> 
-				<th> &nbsp;</th> 
+				<th> Expense Head </th> 
+				<th> Voucher No </th>
+				<th> Amount </th>
 				<th> &nbsp;</th> 
 			</tr>
 			{% for expense in expenses %}
 			 	<tr>
 			 		<td> {{expense.date|date:'d/m/y'}} </td>
 			 		<td> {{expense.expense_head.expense_head}} </td>
-			 		{% comment %}
-				 		<td>
-				 			<a href="{% url 'edit_item' item_id=item.id %}">
-								<img src="/static/images/edit.png">
-							</a>
-						</td>
-				 		<td><a href="{% url 'delete_item' item_id=item.id %}">
-				 			<img src="/static/images/delete.png"></a>
-				 		</td>
-			 		{% endcomment %}
+			 		<td> {{expense.voucher_no}} </td>
+			 		<td> {{expense.amount}} </td>
+			 		<td>
+			 			<a href="{% url 'edit_expense' %}?expense_id={{expense.id}}">
+						<img src="/static/images/edit.png">
+					</a>
+					</td>
 			 	</tr>
 			{% endfor %}
 		</table>

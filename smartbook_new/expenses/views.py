@@ -120,3 +120,66 @@ class ExpenseList(View):
     def get(self, request, *args, **kwargs):
         expenses = Expense.objects.all().order_by('date')
         return render(request, 'expenses/expense_list.html', {'expenses': expenses})
+
+class EditExpense(View):
+
+    def get(self, request, *args, **kwargs):
+        expense = Expense.objects.get(id=request.GET['expense_id'])
+        if request.is_ajax():
+            ctx_expense = []
+            status_code = 200
+            if expense:
+                ctx_expense.append({
+                    'expense_head_id': expense.expense_head.id if expense.expense_head else '',
+                    'id': expense.id, 
+                    'date': expense.date.strftime('%d/%m/%Y'),
+                    'voucher_no': expense.voucher_no,
+                    'amount': expense.amount,
+                    'payment_mode': expense.payment_mode,
+                    'branch': expense.branch,
+                    'bank_name': expense.bank_name,
+                    'cheque_no': expense.cheque_no,
+                    'cheque_date': expense.cheque_date.strftime('%d/%m/%Y') if expense.cheque_date else '',
+                    'narration': expense.narration,
+                })
+            res = {
+                'result': 'ok',
+                'expense': ctx_expense
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=status_code, mimetype="application/json")
+        return render(request, 'expenses/edit_expense.html', {'expense': expense,})
+    
+    def post(self, request, *args, **kwargs):
+
+        expense_details = ast.literal_eval(request.POST['expense'])
+        status = 200
+        expense = Expense.objects.get(id=expense_details['id'])
+        try:
+            expense.voucher_no = expense_details['voucher_no']
+            expense.date = datetime.strptime(expense_details['date'], '%d/%m/%Y')
+            expense.payment_mode = expense_details['payment_mode']
+            expense.narration = expense_details['narration']
+            expense.cheque_no = expense_details['cheque_no']
+            if expense_details['cheque_date']:
+                expense.cheque_date = datetime.strptime(expense_details['cheque_date'], '%d/%m/%Y')
+            expense.bank_name = expense_details['bank_name']
+            expense.branch = expense_details['branch']
+            expense_head = ExpenseHead.objects.get(id=expense_details['expense_head_id'])
+            expense.expense_head = expense_head
+            expense.save()
+            if expense.purchase:
+                purchase = expense.purchase
+                purchase.purchase_expense = expense_details['amount']
+                purchase.save()
+            res = {
+                'result': 'ok',
+            }
+        except Exception as ex:
+            print str(ex)
+            res = {
+                'result': 'error',
+                'message': 'Voucher No already existing'
+            }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=status, mimetype='application/json')

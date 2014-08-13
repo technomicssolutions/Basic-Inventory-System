@@ -535,10 +535,27 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
     $scope.is_valid = false;
     $scope.error_flag = false;
     $scope.error_message = '';
-    $scope.init = function(csrf_token)
+    $scope.init = function(csrf_token, expense_id)
     {
         $scope.csrf_token = csrf_token;
         get_expense_head_list($scope, $http);
+        if (expense_id) {
+            $http.get('/expenses/edit_expense/?expense_id='+expense_id).success(function(data){
+                $scope.expense = data.expense[0];
+                $scope.payment_mode_change($scope.expense.payment_mode);
+
+            }).error(function(data, status)
+            {
+                console.log(data || "Request failed");
+            });
+        }
+        new Picker.Date($$('#date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
     }
     $scope.payment_mode_change = function(payment_mode) {
         if(payment_mode == 'cheque') {
@@ -669,6 +686,49 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             });
         }
     }
+    $scope.edit_expense = function(){
+        if ($scope.expense.cheque_date == null) {
+            $scope.expense.cheque_date = ''
+        }
+        if ($scope.expense.cheque_no == null) {
+            $scope.expense.cheque_no = ''
+        }
+        if ($scope.expense.branch == null) {
+            $scope.expense.branch = ''
+        } 
+        if ($scope.expense.bank_name == null) {
+            $scope.expense.bank_name = ''
+        }
+        if ($scope.form_validation()) {
+            $scope.error_flag = false;
+            $scope.error_message = '';
+            params = { 
+                'expense': angular.toJson($scope.expense),
+                "csrfmiddlewaretoken" : $scope.csrf_token
+            }
+            $http({
+                method : 'post',
+                url : "/expenses/edit_expense/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                
+                if (data.result == 'error'){
+                    $scope.error_flag=true;
+                    $scope.error_message = data.message;
+                } else {
+                    $scope.error_flag=false;
+                    $scope.error_message = '';
+                    document.location.href ='/expenses/expenses/';
+                }
+            }).error(function(data, status){
+                console.log(data);
+            });
+        }
+    }
+
 }
 
 function PurchaseReportController($scope, $http, $location) {
