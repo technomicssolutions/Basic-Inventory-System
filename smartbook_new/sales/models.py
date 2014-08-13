@@ -1,11 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-from datetime import datetime
-
-from project.models import  Item,InventoryItem
+from inventory.models import  Item
 from web.models import Customer
-
 
 PAYMENT_MODE = (
     ('cash', 'Cash'),

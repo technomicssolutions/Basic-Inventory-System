@@ -1,45 +1,28 @@
 # -*- coding: utf-8 -*- 
-import sys
 import ast
 import simplejson
 import datetime as dt
 from datetime import datetime
 from decimal import *
-import math
 
-from django.db import IntegrityError
 from django.db.models import Max
 from django.shortcuts import render
 from django.views.generic.base import View
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 
-from django.contrib.auth.models import User
-from django.conf import settings
+from sales.models import DeliveryNote, DeliveryNoteItem, Sales, SalesItem, \
+    ReceiptVoucher, CustomerAccount
+from inventory.models import Item, InventoryItem
+from web.models import Customer
 
-from sales.models import DeliveryNote,DeliveryNoteItem,Sales,SalesItem,SalesReturn,SalesReturnItem,ReceiptVoucher,CustomerAccount
-from project.models import Item,InventoryItem,OpeningStock
-from web.models import Supplier,Customer,TransportationCompany,OwnerCompany
-
-from reportlab.lib.units import cm
-from reportlab.lib import colors
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import green, black, red
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.colors import black
 
-from smartbook_new import arabic_reshaper
 def header(canvas, y):
 
     canvas.setFont("Helvetica", 30)  
     canvas.setFillColor(black)
     canvas.drawString(50, y + 21, 'Mubeena Furniture and Home Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawString(200, y + 21, 'Furniture and Home')
-    # canvas.setFillColor(red)
-    # canvas.drawString(250, y + 21, 'Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawImage(path, 50, y, width=33*cm, height=3*cm, preserveAspectRatio=True)
-
     canvas.setFont("Helvetica", 18)  
     canvas.drawString(50, y - 15, 'Karimpulli')
     canvas.drawString(50, y - 35, 'Shop: 8086 615 615')

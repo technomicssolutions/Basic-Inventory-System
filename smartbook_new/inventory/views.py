@@ -1,12 +1,12 @@
+
 import ast
 import simplejson
-from datetime import datetime
 from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import  HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from project.models import Item,InventoryItem,OpeningStock
+from inventory.models import Item,InventoryItem,OpeningStock
 
 
 

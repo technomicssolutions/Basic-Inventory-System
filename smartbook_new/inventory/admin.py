@@ -1,5 +1,6 @@
+
 from django.contrib import admin
-from project.models import *
+from inventory.models import *
 
 
 admin.site.register(Item)

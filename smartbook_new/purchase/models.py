@@ -2,7 +2,7 @@ from django.db import models
 
 
 from web.models import *
-from project.models import *
+from inventory.models import *
 
 PAYMENT_MODE = (
 	('cheque', 'Cheque'),
@@ -77,3 +77,14 @@ class SupplierAccount(models.Model):
 
     def __unicode__(self):
         return self.supplier.name
+
+class  SupplierAccountDetail(models.Model):
+    
+    supplier_account = models.ForeignKey(SupplierAccount)
+    date = models.DateField('Date' , null=True, blank=True) 
+    opening_balance = models.DecimalField('Opening Balance', max_digits=14, decimal_places=3, default=0) 
+    closing_balance = models.DecimalField('Closing Balance', max_digits=14, decimal_places=3, default=0)
+    amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+
+    def __unicode__(self):
+        return self.supplier_account.supplier.name
