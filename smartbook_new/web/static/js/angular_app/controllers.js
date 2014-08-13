@@ -137,7 +137,7 @@ function get_suppliers($scope, $http) {
 
 function validate_add_supplier($scope) {
     $scope.validation_error = '';
-
+    console.log($scope.email);
     if($scope.name == '' || $scope.name == undefined) {
         $scope.validation_error = "Please Enter the supplier Name" ;
         return false;
@@ -150,10 +150,7 @@ function validate_add_supplier($scope) {
     } else if(!(Number($scope.mobile)) || $scope.mobile.length > 15) {            
         $scope.validation_error = "Please enter a Valid Mobile Number";
         return false;
-    } else if(($scope.email == '' || $scope.email == undefined)){
-        $scope.validation_error = "Please enter an Email Id";
-        return false;         
-    } else if (!(validateEmail($scope.email))) {
+    } else if (($scope.email != undefined) && !(validateEmail($scope.email))) {
         $scope.validation_error = "Please enter a Valid Email Id";
         return false;
     }
