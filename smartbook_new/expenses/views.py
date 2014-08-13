@@ -1,17 +1,11 @@
-
 import ast
 import simplejson
-import datetime as dt
 from datetime import datetime
-from decimal import *
-
 
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse
 from expenses.models import ExpenseHead,Expense
-from .models import *
-
 
 class AddExpenseHead(View):
 
@@ -81,11 +75,11 @@ class ExpenseHeadList(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status_code, mimetype="application/json")
 
-class Expenses(View):
+class AddExpense(View):
 
     def get(self, request, *args, **kwargs):
 
-        current_date = dt.datetime.now().date()
+        current_date = datetime.now().date()
         expenses = Expense.objects.all().count()
         if int(expenses) > 0:
             latest_expense = Expense.objects.latest('id')
@@ -114,18 +108,15 @@ class Expenses(View):
             expense.bank_name = post_dict['bank_name']
             expense.branch = post_dict['branch']
         expense.save()
-        try:
-            project = Project.objects.get(id=post_dict['project_id'])
-            project.expense_amount = float(project.expense_amount) + float(post_dict['amount'])
-            project.save()
-            expense.project = project
-            expense.save()
-        except Exception as ex:
-            print str(ex)
-            project = None
             
         res = {
             'result': 'ok'
         }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype="application/json")
+
+class ExpenseList(View):
+
+    def get(self, request, *args, **kwargs):
+        expenses = Expense.objects.all().order_by('date')
+        return render(request, 'expenses/expense_list.html', {'expenses': expenses})

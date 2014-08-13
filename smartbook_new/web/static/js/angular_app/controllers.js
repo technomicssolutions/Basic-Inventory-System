@@ -662,7 +662,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                 } else {
                     $scope.error_flag=false;
                     $scope.message = '';
-                    document.location.href ='/expenses/new_expense/';
+                    document.location.href ='/expenses/expenses/';
                 }
             }).error(function(data, status){
                 console.log(data);

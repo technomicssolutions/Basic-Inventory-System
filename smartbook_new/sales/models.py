@@ -15,7 +15,6 @@ STATUS  = (
 )
 
 class Sales(models.Model): 
-   
     customer = models.ForeignKey(Customer, null=True, blank=True)
 
     sales_invoice_number = models.CharField('Sales Invoice Number', null=True, blank=True, max_length=10, unique=True)
@@ -46,7 +45,6 @@ class Sales(models.Model):
         verbose_name_plural = 'Sales'
 
 class SalesItem(models.Model):
-
     sales = models.ForeignKey(Sales)
     item = models.ForeignKey(Item, null=True, blank=True)
     quantity_sold = models.IntegerField('Quantity Sold', default=0)
@@ -79,7 +77,6 @@ class SalesReturnItem(models.Model):
         return str(self.sales_return.return_invoice_number)
 
 class ReceiptVoucher(models.Model):
-
     sales_invoice = models.ForeignKey(Sales, null=True, blank=True)
     receipt_voucher_no = models.CharField('Receipt Voucher No', null=True, blank=True, max_length=30, unique=True)
     date = models.DateField('Date', null=True, blank=True)
@@ -97,7 +94,6 @@ class ReceiptVoucher(models.Model):
         verbose_name_plural = 'Receipt Voucher'
 
 class CustomerAccount(models.Model):
-
     invoice_no = models.ForeignKey(Sales, null=True, blank=True)
     customer = models.ForeignKey(Customer, null=True, blank=True)
     total_amount = models.DecimalField('Total amount', max_digits=14, decimal_places=2, default=0)

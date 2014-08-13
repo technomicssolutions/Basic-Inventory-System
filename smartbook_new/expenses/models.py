@@ -1,19 +1,15 @@
-
 from django.db import models
 from django.contrib.auth.models import User
 
-from purchase.models import *
-from inventory.models import *
+from purchase.models import Purchase
 
 class ExpenseHead(models.Model):
 	expense_head = models.CharField('Expense Head', max_length=75, unique=True)
 
 	class Meta:
-		verbose_name = 'Expense Head'
 		verbose_name_plural = 'Expense Head'
 
 	def __unicode__(self):
-
 		return self.expense_head
 
 class Expense(models.Model):
@@ -21,7 +17,6 @@ class Expense(models.Model):
 	created_by = models.ForeignKey(User)
 	expense_head = models.ForeignKey(ExpenseHead, null=True, blank=True)
 	purchase = models.ForeignKey(Purchase, null=True, blank=True)
-	
 
 	voucher_no = models.IntegerField('Voucher No', unique=True)
 	date = models.DateField('Date', null=True, blank=True)
@@ -35,10 +30,8 @@ class Expense(models.Model):
 	branch = models.CharField('Branch', max_length=10, null=True, blank=True)
 	
 	class Meta:
-		verbose_name = 'Expense'
 		verbose_name_plural = 'Expense'
 
 	def __unicode__(self):
-
 		return self.expense_head.expense_head
 
