@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
-from django.conf import settings
-
-from web.views import *
+from web.views import Home, Login, Logout, CreateSupplier, CreateCustomer, CustomerList, SupplierList, \
+EditCustomer, EditSupplier, DeleteCustomer, DeleteSupplier, TransportationCompanyList, AddTransportationCompany
 
 urlpatterns = patterns('',
 	url(r'^$', Home.as_view(), name='home'),
