@@ -62,7 +62,6 @@ function add_item($scope, $http, from) {
                 if (from == 'add_item') {
                     document.location.href = '/inventory/items/';
                 } else {
-                    get_items($scope, $http, 'purchase');
                     $scope.item = data.item;
                     var selected_item = {
                         'item_code': data.item[0].code,

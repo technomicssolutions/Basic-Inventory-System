@@ -55,7 +55,6 @@ class PurchaseEntry(View):
         if purchase_dict['supplier_name'] != 'other' or purchase_dict['supplier_name'] != 'select' or purchase_dict['supplier_name'] != '': 
             try:     
                 supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
-                
             except:
                 pass
         supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
@@ -106,13 +105,12 @@ class PurchaseEntry(View):
                 if not voucher_no:
                     voucher_no = 1
                 expense = Expense.objects.create(purchase=purchase, created_by=request.user, voucher_no=voucher_no)
-            expense.created_by = request.user
             expense.expense_head, created = ExpenseHead.objects.get_or_create(expense_head = 'purchase')
-            expense.date = dt.datetime.now().date().strftime('%Y-%m-%d')
+            expense.date = dt.datetime.now().date()
             expense.amount = purchase_dict['purchase_expense']
             expense.payment_mode = 'cash'
             expense.narration = 'By purchase'      
-
+            expense.save()
         purchase_items = purchase_dict['purchase_items']
         deleted_items = purchase_dict['deleted_items']
         purchase.save()

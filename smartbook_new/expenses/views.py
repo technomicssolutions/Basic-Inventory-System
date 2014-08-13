@@ -132,7 +132,7 @@ class EditExpense(View):
                 ctx_expense.append({
                     'expense_head_id': expense.expense_head.id if expense.expense_head else '',
                     'id': expense.id, 
-                    'date': expense.date.strftime('%d/%m/%Y'),
+                    'date': expense.date.strftime('%d/%m/%Y') if expense.date else '',
                     'voucher_no': expense.voucher_no,
                     'amount': expense.amount,
                     'payment_mode': expense.payment_mode,
@@ -167,6 +167,7 @@ class EditExpense(View):
             expense.branch = expense_details['branch']
             expense_head = ExpenseHead.objects.get(id=expense_details['expense_head_id'])
             expense.expense_head = expense_head
+            expense.amount = expense_details['amount']
             expense.save()
             if expense.purchase:
                 purchase = expense.purchase
