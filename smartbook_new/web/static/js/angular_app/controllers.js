@@ -1020,6 +1020,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
     }
 
     $scope.calculate_net_amount = function(item) {
+        item.net_amount = 0
         if(item.qty_purchased == '' || item.qty_purchased != Number(item.qty_purchased)) {
             item.qty_purchased = 0;
         }
@@ -1039,7 +1040,6 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         for(i=0; i<$scope.purchase.purchase_items.length; i++){
             supplier_amount = supplier_amount + (parseFloat($scope.purchase.purchase_items[i].unit_price)*parseFloat($scope.purchase.purchase_items[i].qty_purchased));
         }
-
         $scope.purchase.supplier_amount = supplier_amount;
     }
 
@@ -1056,6 +1056,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
 
         if ($scope.purchase.discount == '' || $scope.purchase.discount != Number($scope.purchase.discount)) {
             $scope.purchase.discount_percentage = 0;
+            $scope.purchase.discount = 0;
         }
         if ($scope.purchase.net_total == '' || $scope.purchase.net_total != Number($scope.purchase.net_total)) {
             $scope.purchase.discount_percentage = 0;
@@ -1066,6 +1067,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
     $scope.calculate_discount_amount = function() {
         if ($scope.purchase.discount_percentage == '' || $scope.purchase.discount_percentage != Number($scope.purchase.discount_percentage)) {
             $scope.purchase.discount = 0;
+            $scope.purchase.discount_percentage = 0;
         }
         if ($scope.purchase.net_total == '' || $scope.purchase.net_total != Number($scope.purchase.net_total)) {
             $scope.purchase.discount = 0;
@@ -1074,8 +1076,13 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         $scope.calculate_grant_total();
     }
     $scope.calculate_grant_total = function(){
-        $scope.purchase.grant_total = $scope.purchase.net_total - $scope.purchase.discount;
-        $scope.purchase.supplier_amount = $scope.purchase.net_total - $scope.purchase.discount;
+        if ($scope.purchase.net_total > 0) {
+            $scope.purchase.grant_total = $scope.purchase.net_total - $scope.purchase.discount;
+            $scope.purchase.supplier_amount = $scope.purchase.net_total - $scope.purchase.discount;
+        } else {
+            $scope.purchase.grant_total = 0;
+            $scope.purchase.supplier_amount = 0;
+        }
     }
     $scope.close_popup = function(){
         $scope.popup.hide_popup();
@@ -1124,7 +1131,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
             $scope.validation_error = "Please enter a number as discount";
         } else if ($scope.purchase.purchase_items.length > 0) {
             for(i=0; i<$scope.purchase.purchase_items.length; i++){
-                if ($scope.purchase.purchase_items[i].selling_price == 0 || $scope.purchase.purchase_items[i].selling_price == '') {
+                if ($scope.purchase.purchase_items[i].selling_price == 0 || $scope.purchase.purchase_items[i].selling_price == '' || $scope.purchase.purchase_items[i].selling_price != Number($scope.purchase.purchase_items[i].selling_price)) {
                     $scope.validation_error = "Enter selling price for the item with code "+$scope.purchase.purchase_items[i].item_code;
                     return false;
                 } else if ($scope.purchase.purchase_items[i].unit_price == 0 || $scope.purchase.purchase_items[i].unit_price == '') {
