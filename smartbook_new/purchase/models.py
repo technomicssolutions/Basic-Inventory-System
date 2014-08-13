@@ -87,3 +87,21 @@ class  SupplierAccountDetail(models.Model):
 
     def __unicode__(self):
         return self.supplier_account.supplier.name
+
+class PurchaseReturn(models.Model):
+    purchase = models.ForeignKey(Purchase)
+    return_invoice_number = models.IntegerField('Purchase Return invoice number', unique=True)
+    date = models.DateField('Date', null=True, blank=True)
+    net_amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+
+    def __unicode__(self):
+        return str(self.purchase.purchase_invoice_number)
+
+class PurchaseReturnItem(models.Model):
+    purchase_return = models.ForeignKey(PurchaseReturn)
+    item = models.ForeignKey(Item)
+    amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+    quantity = models.IntegerField('Quantity', default=0)
+    
+    def __unicode__(self):
+        return str(self.purchase_return.return_invoice_number)
