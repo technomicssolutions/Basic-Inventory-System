@@ -946,11 +946,9 @@ a {
 #logo {
 	height: 60px;
 }
-
 #create_delivery_note .search_sales .control {
     width: 47.333%;
 }
-
 #project_sales .item_list .item_list_row {
     width: 84%;
 }
@@ -968,4 +966,15 @@ a {
     top: 180px;
     position: absolute;
     width: 17%;
+}
+#sales_report form, #purchase_accounts_reports form, #expense_report form {
+	margin: auto;
+	width: 24%;
+	float: none;
+}
+#expense_report .reporttext {
+	width: 100% !important;
+}
+#create_sales .search_sales .control {
+    width: 41%;
 }

@@ -19,9 +19,7 @@ class PurchaseEntry(View):
 
     def get(self, request, *args, **kwargs):
         
-        purchase_type = request.GET.get('purchase_type', '')
-        if purchase_type == 'inventory_based':
-            template_name = 'purchase/inventory_purchase_entry.html'
+        template_name = 'purchase/inventory_purchase_entry.html'
         if Purchase.objects.exists():
             invoice_number = int(Purchase.objects.aggregate(Max('purchase_invoice_number'))['purchase_invoice_number__max']) + 1
         else:
@@ -209,5 +207,76 @@ class SupplierAccountDetails(View):
                 'result': 'Ok',
             }
         status_code = 200
+        return HttpResponse(response, status = status_code, mimetype="application/json")
+
+class PurchaseEdit(View):
+    def get(self, request, *args, **kwargs):
+        
+        return render(request, 'purchase/edit_purchase.html',{})
+
+class PurchaseDetail(View):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            invoice_number = request.GET.get('invoice_no', '')
+            purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=False)
+            purchase_items = PurchaseItem.objects.filter(purchase=purchase)
+            items_list = []
+            for item in purchase_items:
+                # ret_quantity = 0
+                inventory = InventoryItem.objects.get(item=item.item)
+                # purchase_returns = PurchaseReturn.objects.filter(purchase=purchase)
+                # for ret in purchase_returns:
+                #     ret_items = PurchaseReturnItem.objects.filter(purchase_return=ret, item=item.item)
+                #     for itm in ret_items:
+                #         ret_quantity = ret_quantity + itm.quantity
+                items_list.append({
+                    'item_code': item.item.code,
+                    'item_name': item.item.name,
+                    'current_stock': inventory.quantity,
+                    'selling_price': inventory.selling_price,
+                    'qty_purchased': item.quantity_purchased,
+                    'cost_price': item.cost_price,
+                    'net_amount': item.net_amount,
+                    'unit_price': inventory.unit_price,
+                    # 'already_ret_quantity': ret_quantity
+                })
+
+            purchase_dict = {
+                'purchase_invoice_number': purchase.purchase_invoice_number,
+                'supplier_invoice_number': purchase.supplier_invoice_number,
+                'supplier_do_number': purchase.supplier_do_number,
+                'supplier_name': purchase.supplier.name,
+                'transport': purchase.transportation_company.company_name if purchase.transportation_company else 'select',
+                'supplier_invoice_date': purchase.supplier_invoice_date.strftime('%d/%m/%Y'),
+                'purchase_invoice_date': purchase.purchase_invoice_date.strftime('%d/%m/%Y'), 
+                'purchase_items': items_list,
+                'supplier_amount': purchase.supplier_amount,
+                'net_total': purchase.net_total,
+                'purchase_expense': purchase.purchase_expense,
+                'discount': purchase.discount,
+                'grant_total': purchase.grant_total,
+                'payment_mode': purchase.payment_mode,
+                'bank_name': purchase.bank_name if purchase.bank_name else '',
+                'cheque_no': purchase.cheque_no if purchase.cheque_no else '',
+                'cheque_date': purchase.cheque_date.strftime('%d/%m/%Y') if purchase.cheque_date else '',
+                'discount_percentage': purchase.discount_percentage,
+                'discount': purchase.discount
+            }
+            res = {
+                'result': 'Ok',
+                'purchase': purchase_dict,
+                'message': '',
+            } 
+            response = simplejson.dumps(res)
+            status_code = 200
+        except Exception as ex:
+            res = {
+                'message': 'No purchase with purchase no',
+                'result': 'No item with this purchase no'+ str(ex),
+                'purchase': {}
+            } 
+            response = simplejson.dumps(res)
+            status_code = 200
         return HttpResponse(response, status = status_code, mimetype="application/json")
 

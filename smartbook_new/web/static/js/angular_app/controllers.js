@@ -1159,6 +1159,25 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
             });
         }
     }
+    $scope.get_purchase_details = function() {
+        $scope.entered_purchase_no = $scope.purchase.purchase_invoice_number;
+        $http.get('/purchase/purchase_details/?invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
+        {
+            $scope.selecting_item = true;
+            $scope.item_selected = false;
+            $scope.purchase = data.purchase;
+            
+            if (data.message) {
+                $scope.validation_error = data.message +' - ' +$scope.entered_purchase_no;
+            } else {
+                $scope.validation_error = '';
+            }
+            $scope.purchase.deleted_items = [];
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
 }
 function InventorySalesController($scope, $http, $element, $location) {
     $scope.items = [];

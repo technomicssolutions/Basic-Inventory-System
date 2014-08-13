@@ -1,23 +1,19 @@
 {% extends 'base.html' %}
 
-{% block body_id %}purchase{% endblock %}
+{% block body_id %}purchase_edit{% endblock %}
 
-{% block title %}Purchase Entry{% endblock title %}
-{% block controller %}ng-controller="PurchaseController" ng-init="init('{{csrf_token}}', '{{invoice_number}}')"{% endblock controller %}
+{% block title %}Purchase Edit{% endblock title %}
+{% block controller %}ng-controller="InventoryPurchaseController" ng-init="init('{{csrf_token}}', '{{invoice_number}}')"{% endblock controller %}
 
 {% block dialogue_popup %}
 	{% include 'popup/add_new_supplier.html' %} 
 	{% include 'popup/add_new_company.html' %}      
-	{% include 'popup/add_item.html' %}    
-	{% include 'popup/add_project.html' %}          	
+	{% include 'popup/add_item.html' %}  	
 {% endblock %}
-
 {% block content %}
-
 	<div id="main-title">
-		<div class="alert alert-info" align="Center"><h4>Purchase Entry</h4></div>
+		<div class="alert alert-info" align="Center"><h4>Edit Purchase</h4></div>
 	</div>
-
 	<div class="purchase_form_container">
 		<form name="purchase_entry" method="post">
 			<div class="form_contents_purchase">
@@ -27,11 +23,9 @@
 							<label for="purchase_invoice_number">Purchase Invoice Number</label>
 						</div>
 						<div class="forminput">
-							<input type="text" name="purchase_invoice_number" ng-model="purchase.purchase_invoice_number"  readonly/>
+							<input type="text" name="purchase_invoice_number" ng-model="purchase.purchase_invoice_number"  ng-change="get_purchase_details()"/>
 						</div>
 					</div>
-
-
 					<div class="formrow_purchase">
 						<div class="formtext_purchase">
 							<label for="supplier_invoice_number">Supplier Invoice Number </label>
@@ -81,20 +75,6 @@
 							</select>
 						</div>
 					</div>
-
-					<div class="formrow_purchase">
-						<div class="formtext_purchase">
-							<label for="project">Project</label>
-						</div>
-						<div class="forminput">
-							<select name="project_id" ng-model="purchase.project_id" ng-change="add_project()">
-								<option value="select">Select</option>
-								<option ng-repeat="project in projects" value="[[project.id]]" ng-selected="project.id == purchase.project_id">[[project.name]]</option>
-								<option value="other">Other</option>
-							</select>
-						</div>
-					</div>
-
 					<div class="formrow_purchase">
 						<div class="formtext_purchase">
 							<label for="transport">Transport</label>
@@ -147,23 +127,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="section_3_purchase">
-					<div class="formtext_purchase">
-						<label for="transport">Items</label>
-					</div>
-					<div class="forminput">
-						<select name="items" ng-model="item_name">
-							<option value="select">Select</option>
-							<option ng-repeat="item in items" value="[[item.id]]" ng-click="add_item_to_list(item)">[[item.name]] - [[item.code]]</option>
-							<option value="other" ng-click="add_new_item()">Other</option>
-						</select>
-						<p class="error_message">[[project_validation_error]]</p>
-					</div>
-					
-    				<div class="clear"></div>
-    				<p class="error_message"> [[item_select_error]] </p>
-   				</div>
-
    				<div class="purchase_items_list" ng-show="purchase.purchase_items.length > 0">
    					<div class="purchase_item_list">
    						<div class="item_list_row header">

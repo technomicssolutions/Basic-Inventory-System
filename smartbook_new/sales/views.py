@@ -116,16 +116,8 @@ def invoice_body_layout(canvas, y, sales):
 class SalesEntry(View):
     def get(self, request, *args, **kwargs):
         
-        sales_type = request.GET.get('sales_type', '')
-
-        if sales_type == 'project_sales':
-            template_name = 'sales/sales_entry.html'
-        elif sales_type == 'dn_sales':
-            template_name = 'sales/DN_sales_entry.html'
-        elif sales_type == 'inventory_sales':
-            template_name = 'sales/inventory_sales_entry.html'
+        template_name = 'sales/inventory_sales_entry.html'
         current_date = dt.datetime.now().date()
-
         inv_number = Sales.objects.aggregate(Max('id'))['id__max']
 
         if not inv_number:
