@@ -107,7 +107,6 @@ class WholeSalesReport(View):
                     is_return_exists = False
                     try:
                         sales_return = SalesReturn.objects.filter(sales=sale)
-                        print sales_return.count()
                         if sales_return.count() == 0:
                             is_return_exists = False
                             total = float(total) + float(sale.net_amount)
