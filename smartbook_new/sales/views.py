@@ -551,7 +551,6 @@ class SalesReturnView(View):
         sales_return.save() 
         
         sales.net_amount_after_return = float(sales.net_amount) - (float(return_amount) + float(post_dict['net_return_total']))
-        print sales.net_amount_after_return
         if sales.net_amount_after_return > 0 and sales.net_amount_after_return >= sales.discount_for_sale:
             sales.grant_total_after_return = float(sales.net_amount_after_return) - float(sales.discount_for_sale)
         else:
