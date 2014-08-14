@@ -306,7 +306,6 @@ function get_sales_invoice_details($scope, $http, from) {
                 'bank_name': '',
                 'net_total': '',
                 'net_discount': '',
-                'roundoff': 0,
                 'grant_total': '',
                 'paid': 0,
                 'balance': 0,
@@ -1204,7 +1203,6 @@ function InventorySalesController($scope, $http, $element, $location) {
         'customer':'',
         'net_total': 0,
         'net_discount': 0,
-        'roundoff': 0,
         'grant_total': 0,
         'bank_name': '',
         'branch': '',
@@ -1382,13 +1380,10 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.net_total == '' || $scope.sales.net_total == undefined || !Number($scope.sales.net_total)){
             $scope.sales.net_total = 0;
         }
-        if ($scope.sales.roundoff == '' || $scope.sales.roundoff == undefined || !Number($scope.sales.roundoff)){
-            $scope.sales.roundoff = 0;
-        }
         if ($scope.sales.discount == '' || $scope.sales.discount == undefined || !Number($scope.sales.discount)){
             $scope.sales.discount = 0;
         }
-        $scope.sales.grant_total = (parseFloat($scope.sales.net_total) - (parseFloat($scope.sales.roundoff) + parseFloat($scope.sales.discount))).toFixed(2);
+        $scope.sales.grant_total = (parseFloat($scope.sales.net_total) - (parseFloat($scope.sales.discount))).toFixed(2);
         $scope.calculate_balance_sale();
     }
     $scope.calculate_balance_sale = function () {
@@ -1489,7 +1484,6 @@ function EditSalesController($scope, $http, $location, $element) {
         'bank_name': '',
         'net_total': '',
         'net_discount': '',
-        'roundoff': 0,
         'grant_total': '',
         'paid': 0,
         'balance': 0,
@@ -1600,7 +1594,7 @@ function EditSalesController($scope, $http, $location, $element) {
         
     }
     $scope.calculate_grant_total_sale = function(){
-        $scope.sales.grant_total = $scope.sales.net_total - $scope.sales.roundoff - $scope.sales.discount_sale;
+        $scope.sales.grant_total = $scope.sales.net_total - $scope.sales.discount_sale;
         $scope.sales.balance = (parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid);
     }
     $scope.calculate_balance_sale = function () {
@@ -1730,7 +1724,6 @@ function PrintInvoiceController($scope, $http, $element) {
         'customer': '',
         'invoice_no': '',
         'net_discount': 0,
-        'roundoff': 0,
         'grant_total': 0,
         'bank_name': '',
         'branch': '',

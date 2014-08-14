@@ -24,7 +24,6 @@ class Sales(models.Model):
     
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=2, default=0)
     net_amount_after_return = models.DecimalField('Net Amount after return',max_digits=14, decimal_places=2, default=0)
-    round_off = models.DecimalField('Net Round Off',max_digits=14, decimal_places=2, default=0)
     grant_total = models.DecimalField('Grand Total',max_digits=14, decimal_places=2, default=0)
     grant_total_after_return = models.DecimalField('Grand Total after return',max_digits=14, decimal_places=2, default=0)
     balance = models.DecimalField('Balance', null=True, blank=True, decimal_places=2, default=0, max_digits=14)

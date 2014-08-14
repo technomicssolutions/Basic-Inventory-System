@@ -146,7 +146,6 @@ class SalesEntry(View):
         
         sales.discount_for_sale = sales_dict['discount']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
-        sales.round_off = sales_dict['roundoff']
         sales.net_amount = sales_dict['net_total']
         sales.grant_total = sales_dict['grant_total']
         sales.paid = sales_dict['paid']
@@ -307,7 +306,6 @@ class InvoiceDetails(View):
                 'grant_total': invoice.grant_total,
                 'discount_sale': invoice.discount_for_sale,
                 'discount_percentage': invoice.discount_percentage_for_sale,
-                'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
                 'sales_items': ctx_item_list,
@@ -338,7 +336,6 @@ class InvoiceDetails(View):
                 'grant_total': invoice.grant_total,
                 'discount_sale': invoice.discount_for_sale,
                 'discount_percentage': invoice.discount_percentage_for_sale,
-                'roundoff': invoice.round_off,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
                 'status': invoice.status if invoice.status else '',
@@ -373,7 +370,6 @@ class EditSalesInvoice(View):
 
         sales.discount_for_sale = sales_dict['discount_sale']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
-        sales.round_off = sales_dict['roundoff']
         sales.net_amount = sales_dict['net_total']
         sales.grant_total = sales_dict['grant_total']
         sales.paid = float(sales.paid) + float(sales_dict['paid'])
@@ -545,12 +541,18 @@ class SalesReturnView(View):
     def post(self, request, *args, **kwargs):
         post_dict = ast.literal_eval(request.POST['sales_return'])
         sales = Sales.objects.get(sales_invoice_number=post_dict['sales_invoice_number'])
+        return_items = SalesReturn.objects.filter(sales=sales)
+        return_amount = 0
+        for return_item in return_items:
+            return_amount = float(return_amount) + float(return_item.net_amount)
         sales_return, created = SalesReturn.objects.get_or_create(sales=sales, return_invoice_number = post_dict['invoice_number'])
         sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
         sales_return.net_amount = post_dict['net_return_total']
         sales_return.save() 
-        sales.net_amount_after_return = float(sales.net_amount) - float(post_dict['net_return_total'])
-        if sales.net_amount_after_return > 0 and sales.net_amount_after_return > sales.discount_for_sale:
+        
+        sales.net_amount_after_return = float(sales.net_amount) - (float(return_amount) + float(post_dict['net_return_total']))
+        print sales.net_amount_after_return
+        if sales.net_amount_after_return > 0 and sales.net_amount_after_return >= sales.discount_for_sale:
             sales.grant_total_after_return = float(sales.net_amount_after_return) - float(sales.discount_for_sale)
         else:
             sales.grant_total_after_return = sales.net_amount_after_return
@@ -606,7 +608,6 @@ class SalesDetails(View):
                     'sales_invoice_date': sales.sales_invoice_date.strftime('%d/%m/%Y'),
                     'customer': sales.customer.customer_name,
                     'net_amount': sales.net_amount,
-                    'round_off': sales.round_off,
                     'grant_total': sales.grant_total,
                     'discount': sales.discount_for_sale,
                     'sales_items': sl_items
