@@ -13,30 +13,27 @@
 			</div>
 		</div>
 			
-		<div class="error_message">
+		<div class="message">
 			<p>{{msg}}</p>
 		</div>
-		<form name="purchase_form" method="get" action="{% url 'purchase_report' %}">
-			
+
+		<form name="salesreport_form" method="get" action="{% url 'purchase_report' %}">
+			<input type="hidden" value="{{report_type}}" name="report_type">
 			<div>
-				<div class="reporttext">
-					<label for="e_date">Project </label>
-				</div>
-
 				<div class="reportinput">
-					<input type="hidden" value="{{report_type}}" name="report_type">
-					<select name="project_name" ng-model="project_name">
-						<option value="select">Select Project</option>
-						<option ng-repeat="project in projects" value="[[project.id]]">[[project.name]]</option>
-
-					</select>
+					<label for="s_date">Start Date</label>
+					<input type="text" name="start_date" id="start_date" value="{{start_date}}">
+				</div>					
+				<div class="reportinput">
+					<label for="e_date">End Date</label>
+					<input type="text" name="end_date" id="end_date" value="{{end_date}}">
 				</div>
 			</div>
-			
-			<div class="reporttext">
-				<input type="submit" value="View Report" class="btn btn-info " style="border-top-width: 0px; margin-top: 3px;" />
-			</div>
-		</form>
+			<div class="reportinput">
+				<label> &nbsp; &nbsp;</label>
+				<input type="submit" value="View Report" class="btn btn-info report_button " style="border-top-width: 0px; margin-top: 3px;">
+			</div>	
+		</form>	
 		<p class="error_message"> {{validation_error}} </p>
 	</div>
 	

@@ -18,7 +18,7 @@ from django.http import HttpResponse
 
 from sales.models import Sales, SalesReturn
 from expenses.models import Expense, ExpenseHead
-from purchase.models import SupplierAccount, SupplierAccountDetail
+from purchase.models import SupplierAccount, SupplierAccountDetail, Purchase, PurchaseReturn
 from web.models import OwnerCompany
 
 def header(canvas, y):
@@ -373,4 +373,120 @@ class VendorAccountsReport(View):
                 p.save()
             
         return response 
+
+class PurchaseReport(View):
+
+    def get(self, request, *args, **kwargs):    
+
+        status_code = 200
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1250))
+        y = 1150
+        p.setFontSize(15)
+        p = header(p, y)
+
+        report_type = request.GET.get('report_type', '')
+
+        if not report_type:
+            return render(request, 'reports/purchase_reports.html', {
+                'report_type' : 'date',
+                })
+
+        if report_type == 'date': 
+
+            start = request.GET['start_date']
+            end = request.GET['end_date']
+           
+            if not start:            
+                ctx = {
+                    'msg' : 'Please Select Start Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_reports.html', ctx)
+            elif not end:
+                ctx = {
+                    'msg' : 'Please Select End Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_reports.html', ctx)                  
+            else:
+                total = 0
+                total_discount = 0
+                total_discount_after_return = 0
+                grant_total = 0
+                p.setFont('Helvetica', 20)
+                report_heading = 'Date Wise Purchase Report' + ' - '+ start + ' - ' + end
+                start_date = datetime.strptime(start, '%d/%m/%Y')
+                end_date = datetime.strptime(end, '%d/%m/%Y')
+                p.drawString(270, y - 70, report_heading)
+                p.setFontSize(13)
+                p.drawString(50, y - 100, "Date")
+                p.drawString(110, y - 100, "Invoice Number")
+                p.drawString(240, y - 100, "Supplier")
+                p.drawString(400, y - 100, "Net Total")
+                p.drawString(580, y - 100, "Discount")
+                p.drawString(480, y - 100, "Grant Total")
+                p.drawString(680, y - 100, "NetTotal- return")
+                p.drawString(780, y - 100, "GrantTotal - return")
+
+                purchases = Purchase.objects.filter(purchase_invoice_date__gte=start_date,purchase_invoice_date__lte=end_date).order_by('purchase_invoice_date')
+                y1 = y - 110
+                for purchase in purchases:
+                    y1 = y1 - 30
+                    if y1 <= 135:
+                        y1 = y - 110
+                        p.showPage()
+                        p = header(p, y)
+                    is_return_exists = False
+                    try:
+                        purchase_return = PurchaseReturn.objects.filter(purchase=purchase)
+                        if purchase_return.count() == 0:
+                            is_return_exists = False
+                            total = float(total) + float(purchase.net_total)
+                            grant_total = float(grant_total) + float(purchase.grant_total)
+                            total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                        else:
+                            is_return_exists = True
+                            total = float(total) + float(purchase.net_total_after_return)
+                            grant_total = float(grant_total) + float(purchase.grant_total_after_return)
+                            if purchase.net_total_after_return > 0 and purchase.net_total_after_return > purchase.discount:
+                                total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                            
+                    except Exception as ex:
+                        is_return_exists = False
+                        total = float(total) + float(purchase.net_total)
+                        grant_total = float(grant_total) + float(purchase.grant_total)
+                        total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                    total_discount = float(total_discount) + float(purchase.discount)
+                    p.drawString(50, y1, purchase.purchase_invoice_date.strftime('%d/%m/%y'))
+                    p.drawString(120, y1, str(purchase.purchase_invoice_number))
+
+                    p.drawString(240, y1, purchase.supplier.name)
+                    p.drawString(400, y1, str(purchase.net_total))
+                    p.drawString(580, y1, str(purchase.discount))
+                    p.drawString(480, y1, str(purchase.grant_total))
+                    if is_return_exists:
+                        p.drawString(680, y1, str(purchase.net_total_after_return))
+                        p.drawString(780, y1, str(purchase.grant_total_after_return))
+                    else:
+                        p.drawString(680, y1, str('No Return'))
+                        p.drawString(780, y1, str('No Return'))
+                if y1 <= 135:
+                    y1 = y - 110
+                    p.showPage()
+                    p = header(p, y)
+                p.drawString(50, y1 - 60, 'Total Discount:')
+                p.drawString(150, y1 - 60, str(total_discount))
+                p.drawString(50, y1 - 80, 'Total Amount:')
+                p.drawString(150, y1 - 80, str(total))
+                p.drawString(50, y1 - 100, 'Grant Total:')
+                p.drawString(150, y1 - 100, str(grant_total))
+                p.showPage()
+                p.save()
+                return response
+
 
