@@ -2172,3 +2172,129 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
         }
     }
 }
+
+function SalesReturnController($scope, $element, $http, $timeout, share, $location) {
+    
+    $scope.sales_return = {
+        'invoice_number': '',
+        'sales_return_date': '',
+        'net_amount': '',
+        'tax_amount':0,
+        'sales_items': [],
+    }
+    $scope.init = function(csrf_token, invoice_number){
+        $scope.csrf_token = csrf_token;
+        $scope.sales_return.invoice_number = invoice_number;
+        new Picker.Date($$('#sales_return_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y', 
+        });
+    }
+    $scope.validate_salesreturn = function() {
+            
+        if($scope.sales_return.invoice_number == '') {
+            
+            $scope.validation_error = "Please Choose an invoice number" ;
+            return false;
+        } else if($$('#sales_return_date')[0].get('value') == '') {
+            $scope.validation_error = "Please enter a Date";
+            return false;
+        } 
+        else {
+            return true;
+        }        
+    }
+    $scope.load_sales = function() {
+        var invoice = $scope.sales.sales_invoice_number;
+        $http.get('/sales/sales_details/?invoice_no='+$scope.sales.sales_invoice_number).success(function(data)
+        {
+            $scope.selecting_item = true;
+            $scope.item_selected = false;
+            if(data.sales) {
+                $scope.sales = data.sales;
+                $scope.sales.deleted_items = [];
+                $scope.sales.sales_invoice_number = invoice;
+                $scope.message = ''
+            } else {
+                $scope.message = data.result;
+            }
+                
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+
+    $scope.add_sales_return_items = function(item) {
+        var index = $scope.sales_return.sales_items.indexOf(item)
+        if(index >= 0){
+            $scope.sales_return.sales_items.splice(index, 1);
+        } else {
+
+            $scope.sales_return.sales_items.push(item);
+        } 
+               
+    }
+    $scope.calculate_return_amount = function(item){
+        if($scope.check_return(item)) {
+            $scope.validation_error = "";
+            item.returned_amount = parseFloat(item.returned_quantity) * (parseFloat(item.unit_price) + parseFloat(item.tax_amount) - parseFloat(item.discount_given) ) ;
+            $scope.calculate_net_return_amount();
+        }
+        else{
+                item.returned_amount= 0;
+        }
+
+
+    }
+    $scope.calculate_net_return_amount = function() {
+
+        var amount = 0;
+        for(var i=0;i<$scope.sales_return.sales_items.length;i++) {
+            amount = amount + $scope.sales_return.sales_items[i].returned_amount;
+        }
+        
+        $scope.sales_return.net_return_total = amount;
+    }
+    $scope.check_return = function(item) {
+
+        
+        if(parseInt(item.returned_quantity) > parseInt(item.quantity_sold)) {
+            $scope.validation_error = "Check Quantity Entered with invoice";
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    $scope.save_sales_return = function() {
+
+        if($scope.validate_salesreturn()) {
+            $scope.sales_return.sales_return_date = $$('#sales_return_date')[0].get('value');
+            $scope.sales_return.sales_invoice_number = $scope.sales.sales_invoice_number;
+            for(var i=0; i< $scope.sales_return.sales_items.length; i++){
+                $scope.sales_return.sales_items[i].selected = "selected";
+            }
+            params = {
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+                'sales_return': angular.toJson($scope.sales_return),
+            }
+            $http({
+                method : 'post',
+                url : "/sales/return/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                document.location.href = '/sales/return/';
+               
+            }).error(function(data, success){
+                
+            });
+        }
+    }    
+}

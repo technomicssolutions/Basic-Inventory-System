@@ -978,3 +978,6 @@ a {
 #create_sales .search_sales .control {
     width: 41%;
 }
+#return_entry .purchase_item_list .item_list_row span {
+    width: 15% !important;
+}

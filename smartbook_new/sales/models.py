@@ -63,6 +63,7 @@ class SalesReturn(models.Model):
 class SalesReturnItem(models.Model):
     sales_return = models.ForeignKey(SalesReturn, null=True, blank=True)
     item = models.ForeignKey(Item, null=True, blank=True)
+    sold_quantity = models.IntegerField('Sold Quantity', default=0)
     return_quantity = models.IntegerField('Return Quantity', null=True, blank=True)
     amount = models.DecimalField('Amount', max_digits=14, decimal_places=2, default=0)
 

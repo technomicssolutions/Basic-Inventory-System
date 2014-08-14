@@ -11,7 +11,7 @@ from django.views.generic.base import View
 from django.http import HttpResponse
 
 from sales.models import Sales, SalesItem, \
-    ReceiptVoucher, CustomerAccount
+    ReceiptVoucher, CustomerAccount, SalesReturn, SalesReturnItem
 from inventory.models import Item, InventoryItem
 from web.models import Customer, OwnerCompany
 
@@ -526,3 +526,91 @@ class CheckReceiptVoucherExistence(View):
 
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
+
+class SalesReturnView(View):
+    def get(self, request, *args, **kwargs):
+        if SalesReturn.objects.exists():
+            invoice_number = int(SalesReturn.objects.aggregate(Max('return_invoice_number'))['return_invoice_number__max']) + 1
+        else:
+            invoice_number = 1
+        if not invoice_number:
+            invoice_number = 1
+        return render(request, 'sales/sales_return.html', {
+            'invoice_number' : invoice_number,
+        })
+
+    def post(self, request, *args, **kwargs):
+
+
+        post_dict = request.POST['sales_return']
+
+        post_dict = ast.literal_eval(post_dict)
+        sales = Sales.objects.get(sales_invoice_number=post_dict['sales_invoice_number'])
+        sales_return, created = SalesReturn.objects.get_or_create(sales=sales, return_invoice_number = post_dict['invoice_number'])
+        sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
+        sales_return.net_amount = post_dict['net_return_total']
+        sales_return.save()        
+
+        return_items = post_dict['sales_items']
+
+        for item in return_items:
+            return_item = Item.objects.get(code=item['item_code'])
+            s_return_item, created = SalesReturnItem.objects.get_or_create(item=return_item, sales_return=sales_return)
+            s_return_item.amount = item['returned_amount']
+            s_return_item.return_quantity = item['returned_quantity']
+            s_return_item.save()
+
+            inventory = Inventory.objects.get(item=return_item)
+            inventory.quantity = inventory.quantity + int(item['returned_quantity'])
+            inventory.save()
+        response = {
+                'result': 'Ok',
+            }
+        status_code = 200
+        return HttpResponse(response, status = status_code, mimetype="application/json")
+
+class SalesDetails(View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            invoice_number = request.GET['invoice_no']
+            try:
+                sales = Sales.objects.get(sales_invoice_number=invoice_number)
+            except:
+                sales = None
+            if sales:
+                sales_items = SalesItem.objects.filter(sales=sales)
+
+                sl_items = []
+
+                for item in sales_items:
+                    sl_items.append({
+                        'item_code': item.item.code,
+                        'item_name': item.item.name,
+                        'stock': item.item.inventoryitem_set.all()[0].quantity,
+                        'unit_price': item.item.inventoryitem_set.all()[0].selling_price,
+                        'quantity_sold': item.quantity_sold,
+                    })
+
+                sales_dict = {
+                    'invoice_number': sales.sales_invoice_number,
+                    'sales_invoice_date': sales.sales_invoice_date.strftime('%d/%m/%Y'),
+                    'customer': sales.customer.customer_name,
+                    'net_amount': sales.net_amount,
+                    'round_off': sales.round_off,
+                    'grant_total': sales.grant_total,
+                    'discount': sales.discount_for_sale,
+                    'sales_items': sl_items
+                }
+                res = {
+                    'result': 'Ok',
+                    'sales': sales_dict
+                }
+            else:
+                res = {
+                    'result': 'No Sales entry for this invoice number',
+                }
+            response = simplejson.dumps(res)
+            status_code = 200
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+
+        return render(request, 'sales/view_sales.html',{})
