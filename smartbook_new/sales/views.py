@@ -540,27 +540,31 @@ class SalesReturnView(View):
         })
 
     def post(self, request, *args, **kwargs):
-
-
-        post_dict = request.POST['sales_return']
-
-        post_dict = ast.literal_eval(post_dict)
+        post_dict = ast.literal_eval(request.POST['sales_return'])
         sales = Sales.objects.get(sales_invoice_number=post_dict['sales_invoice_number'])
         sales_return, created = SalesReturn.objects.get_or_create(sales=sales, return_invoice_number = post_dict['invoice_number'])
         sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
         sales_return.net_amount = post_dict['net_return_total']
-        sales_return.save()        
+        sales_return.save() 
+        sales.net_amount = float(sales.net_amount) - float(post_dict['net_return_total'])
+        sales.grant_total = float(sales.grant_total) - float(post_dict['net_return_total'])
+        sales.paid = float(sales.paid) - float(post_dict['net_return_total'])
+        sales.save()
 
         return_items = post_dict['sales_items']
 
         for item in return_items:
             return_item = Item.objects.get(code=item['item_code'])
+            sales_return_item = SalesItem.objects.get(sales=sales, item=return_item)
             s_return_item, created = SalesReturnItem.objects.get_or_create(item=return_item, sales_return=sales_return)
             s_return_item.amount = item['returned_amount']
             s_return_item.return_quantity = item['returned_quantity']
+            s_return_item.sold_quantity = sales_return_item.quantity_sold
             s_return_item.save()
-
-            inventory = Inventory.objects.get(item=return_item)
+            sales_return_item.quantity_sold = int(sales_return_item.quantity_sold) - int(item['returned_quantity'])
+            sales_return_item.net_amount = float(sales_return_item.net_amount) - float(item['returned_amount'])
+            sales_return_item.save()
+            inventory = InventoryItem.objects.get(item=return_item)
             inventory.quantity = inventory.quantity + int(item['returned_quantity'])
             inventory.save()
         response = {

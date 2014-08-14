@@ -2182,6 +2182,11 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         'tax_amount':0,
         'sales_items': [],
     }
+    $scope.sales = {
+        'sales_invoice_number': '',
+        'customer': '',
+        'sales_items': [],
+    }
     $scope.init = function(csrf_token, invoice_number){
         $scope.csrf_token = csrf_token;
         $scope.sales_return.invoice_number = invoice_number;
@@ -2194,18 +2199,26 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         });
     }
     $scope.validate_salesreturn = function() {
-            
-        if($scope.sales_return.invoice_number == '') {
-            
-            $scope.validation_error = "Please Choose an invoice number" ;
+        if($scope.sales.sales_invoice_number == '' || $scope.sales.sales_invoice_number == undefined) {
+            $scope.validation_error = "Please enter sales invoice number" ;
             return false;
         } else if($$('#sales_return_date')[0].get('value') == '') {
             $scope.validation_error = "Please enter a Date";
             return false;
-        } 
-        else {
-            return true;
-        }        
+        } else if ($scope.sales_return.sales_items.length == 0) {
+            $scope.validation_error = 'Please choose items';
+            return false;
+        } else if ($scope.sales_return.sales_items.length > 0) { 
+            for (var i=0; i<$scope.sales_return.sales_items.length; i++) {
+                if ($scope.sales_return.sales_items[i].returned_quantity == '' || $scope.sales_return.sales_items[i].returned_quantity == undefined || $scope.sales_return.sales_items[i].returned_quantity == 0) {
+                    $scope.validation_error = 'Please enter quantity for item '+$scope.sales_return.sales_items[i].item_code;
+                    return false;
+                } else if ($scope.sales_return.sales_items[i].returned_quantity > $scope.sales_return.sales_items[i].quantity_sold) {
+                    $scope.validation_error = 'Quantity exceeds Quantity Sold for item '+$scope.sales_return.sales_items[i].item_code;
+                    return false;
+                }
+            }
+        } return true;
     }
     $scope.load_sales = function() {
         var invoice = $scope.sales.sales_invoice_number;
@@ -2213,6 +2226,7 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         {
             $scope.selecting_item = true;
             $scope.item_selected = false;
+            var invoice_no = $scope.sales.sales_invoice_number;
             if(data.sales) {
                 $scope.sales = data.sales;
                 $scope.sales.deleted_items = [];
@@ -2220,58 +2234,51 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                 $scope.message = ''
             } else {
                 $scope.message = data.result;
+                $scope.sales = {}
+                $scope.sales.sales_invoice_number = invoice_no;
             }
-                
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
         });
     }
-
     $scope.add_sales_return_items = function(item) {
         var index = $scope.sales_return.sales_items.indexOf(item)
         if(index >= 0){
             $scope.sales_return.sales_items.splice(index, 1);
         } else {
-
             $scope.sales_return.sales_items.push(item);
-        } 
-               
+        }   
+        $scope.calculate_net_return_amount();
     }
     $scope.calculate_return_amount = function(item){
         if($scope.check_return(item)) {
             $scope.validation_error = "";
-            item.returned_amount = parseFloat(item.returned_quantity) * (parseFloat(item.unit_price) + parseFloat(item.tax_amount) - parseFloat(item.discount_given) ) ;
-            $scope.calculate_net_return_amount();
+            item.returned_amount = parseFloat(item.returned_quantity) * (parseFloat(item.unit_price)) ;
+        } else {
+            item.returned_amount= 0;
         }
-        else{
-                item.returned_amount= 0;
-        }
-
-
+        $scope.calculate_net_return_amount();
     }
     $scope.calculate_net_return_amount = function() {
-
         var amount = 0;
         for(var i=0;i<$scope.sales_return.sales_items.length;i++) {
-            amount = amount + $scope.sales_return.sales_items[i].returned_amount;
+            if ($scope.sales_return.sales_items[i].returned_amount == Number($scope.sales_return.sales_items[i].returned_amount))
+                amount = amount + $scope.sales_return.sales_items[i].returned_amount;
         }
-        
+        console.log(amount);
         $scope.sales_return.net_return_total = amount;
     }
     $scope.check_return = function(item) {
-
-        
-        if(parseInt(item.returned_quantity) > parseInt(item.quantity_sold)) {
-            $scope.validation_error = "Check Quantity Entered with invoice";
+        if (item.returned_quantity != Number(item.returned_quantity)) {
+            item.returned_quantity = 0;
+        }
+        if (parseInt(item.returned_quantity) > parseInt(item.quantity_sold)) {
+            $scope.validation_error = "Quantity exceeds Quantity Sold";
             return false;
-        }
-        else{
-            return true;
-        }
+        } return true;
     }
     $scope.save_sales_return = function() {
-
         if($scope.validate_salesreturn()) {
             $scope.sales_return.sales_return_date = $$('#sales_return_date')[0].get('value');
             $scope.sales_return.sales_invoice_number = $scope.sales.sales_invoice_number;
@@ -2284,16 +2291,16 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             }
             $http({
                 method : 'post',
-                url : "/sales/return/",
+                url : "/sales/sales_return/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                document.location.href = '/sales/return/';
+                document.location.href = '/sales/sales_return/';
                
             }).error(function(data, success){
-                
+                console.log('Request failed' || data);
             });
         }
     }    
