@@ -92,7 +92,7 @@ class ItemList(View):
     def get(self, request, *args, **kwargs):
         inventory_items = []
         status = 200
-        items = Item.objects.all().order_by('id')
+        items = Item.objects.all().order_by('name')
         current_stock = 0
         unit_price = 0
         if request.is_ajax():

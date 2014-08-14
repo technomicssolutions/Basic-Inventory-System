@@ -471,9 +471,12 @@ class SalesInvoicePDF(View):
         p.drawString(820, y - 1015, 'Rs')
         p.drawString(850, y - 1015, str(sales.discount_for_sale))
         p.drawString(660, y - 1015, 'Discount')
-
+        if total_amount > 0 and total_amount > sales.discount_for_sale:
+            grant_total = total_amount - sales.discount_for_sale
+        else:
+            grant_total = total_amount
         p.drawString(820, y - 1035, 'Rs')
-        p.drawString(850, y - 1035, str(sales.grant_total))
+        p.drawString(850, y - 1035, str(grant_total))
         p.drawString(660, y - 1035, 'Grant Total')
         # Item Box end
 
@@ -546,9 +549,12 @@ class SalesReturnView(View):
         sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
         sales_return.net_amount = post_dict['net_return_total']
         sales_return.save() 
-        sales.net_amount = float(sales.net_amount) - float(post_dict['net_return_total'])
-        sales.grant_total = float(sales.grant_total) - float(post_dict['net_return_total'])
-        sales.paid = float(sales.paid) - float(post_dict['net_return_total'])
+        sales.net_amount_after_return = float(sales.net_amount) - float(post_dict['net_return_total'])
+        if sales.net_amount_after_return > 0 and sales.net_amount_after_return > sales.discount_for_sale:
+            sales.grant_total_after_return = float(sales.net_amount_after_return) - float(sales.discount_for_sale)
+        else:
+            sales.grant_total_after_return = sales.net_amount_after_return
+        sales.paid = sales.grant_total_after_return
         sales.save()
 
         return_items = post_dict['sales_items']
@@ -578,7 +584,7 @@ class SalesDetails(View):
         if request.is_ajax():
             invoice_number = request.GET['invoice_no']
             try:
-                sales = Sales.objects.get(sales_invoice_number=invoice_number)
+                sales = Sales.objects.get(sales_invoice_number=invoice_number, is_processed=True)
             except:
                 sales = None
             if sales:
