@@ -86,6 +86,7 @@ class PurchaseReturn(models.Model):
 
 class PurchaseReturnItem(models.Model):
     purchase_return = models.ForeignKey(PurchaseReturn)
+    purchased_quantity = models.IntegerField('Purchaed Quantity', default=0)
     item = models.ForeignKey(Item)
     amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
     quantity = models.IntegerField('Quantity', default=0)
