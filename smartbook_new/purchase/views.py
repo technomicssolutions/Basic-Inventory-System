@@ -315,7 +315,7 @@ class PurchaseReturnView(View):
         supplier_account = SupplierAccount.objects.get(supplier=purchase.supplier)
         supplier_account.total_amount = float(supplier_account.total_amount) - float(post_dict['net_return_total'])
         supplier_account.save()
-        purchase.net_total_after_return = float(purchase.net_amount) - (float(return_amount) + float(post_dict['net_return_total']))
+        purchase.net_total_after_return = float(purchase.net_total) - (float(return_amount) + float(post_dict['net_return_total']))
         if purchase.net_total_after_return > 0 and purchase.net_total_after_return >= purchase.discount:
             purchase.grant_total_after_return = float(purchase.net_total_after_return) - float(purchase.discount)
         else:
