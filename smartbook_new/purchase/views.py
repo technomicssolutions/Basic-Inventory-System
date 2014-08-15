@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.db.models import Max
 
 from web.models import Supplier, Customer, TransportationCompany, OwnerCompany
-from purchase.models import Purchase, PurchaseItem, SupplierAccount, SupplierAccountDetail, PurchaseReturn, PurchaseReturnItem
+from purchase.models import Purchase, PurchaseItem, SupplierAccount, SupplierAccountPayment, SupplierAccountPaymentDetail, PurchaseReturn, PurchaseReturnItem
 from inventory.models import Item, InventoryItem, OpeningStock
 from expenses.models import Expense, ExpenseHead
 
@@ -34,12 +34,12 @@ class PurchaseEntry(View):
         
         purchase_dict = ast.literal_eval(request.POST['purchase'])
         purchase, purchase_created = Purchase.objects.get_or_create(purchase_invoice_number=purchase_dict['purchase_invoice_number'])
+
         purchase.purchase_invoice_number = purchase_dict['purchase_invoice_number']
         purchase.supplier_invoice_number = purchase_dict['supplier_invoice_number']
         purchase.supplier_do_number = purchase_dict['supplier_do_number']
         purchase.supplier_invoice_date = datetime.strptime(purchase_dict['supplier_invoice_date'], '%d/%m/%Y')
         purchase.purchase_invoice_date = datetime.strptime(purchase_dict['purchase_invoice_date'], '%d/%m/%Y')
-        
         purchase.payment_mode = purchase_dict['payment_mode']
         if purchase_dict['payment_mode'] == 'cash' or purchase_dict['payment_mode'] == 'cheque':
             purchase.is_paid_completely = True 
@@ -52,16 +52,27 @@ class PurchaseEntry(View):
         if purchase_dict['supplier_name'] != 'other' or purchase_dict['supplier_name'] != 'select' or purchase_dict['supplier_name'] != '': 
             try:     
                 supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
+                purchase.supplier = supplier
             except:
                 pass
+
         supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
+        if purchase_created:
+            supplier_payment_detail = SupplierAccountPaymentDetail()
+        else:
+            print purchase.supplieraccountpaymentdetail_set.all().count()
+            print (purchase.supplieraccountpaymentdetail_set.all())
+            supplier_payment_detail = purchase.supplieraccountpaymentdetail_set.all()[0]
+        supplier_payment_detail.supplier = supplier
+        supplier_payment_detail.date = purchase.purchase_invoice_date 
+        supplier_payment_detail.purchase = purchase
+
         if purchase_dict['transport'] != 'other' or purchase_dict['transport'] != 'select' or purchase_dict['transport'] != '': 
             try:     
                 transport = TransportationCompany.objects.get(company_name=purchase_dict['transport'])
                 purchase.transportation_company = transport
             except:
                 pass
-        purchase.supplier = supplier
         
         if purchase_dict['discount']:
             purchase.discount = purchase_dict['discount']
@@ -74,19 +85,17 @@ class PurchaseEntry(View):
         purchase.net_total = purchase_dict['net_total']
         purchase.purchase_expense = purchase_dict['purchase_expense']
         purchase.grant_total = purchase_dict['grant_total']
-
-        supplier_account, supplier_account_created = SupplierAccount.objects.get_or_create(supplier=supplier)
-        if supplier_account_created:
-            supplier_account.total_amount = purchase_dict['supplier_amount']
-            supplier_account.balance = purchase_dict['supplier_amount']
+        supplier_payment_detail.total_amount = purchase.grant_total
+        if purchase.payment_mode == 'cash':
+            supplier_payment_detail.paid = purchase.grant_total
+            supplier_payment_detail.payment_mode = 'Cash(purchase)'
+        elif purchase.payment_mode == 'cheque':
+            supplier_payment_detail.payment_mode = 'Cheque(purchase)'
+            supplier_payment_detail.paid = purchase.grant_total
         else:
-            if purchase_created:
-                supplier_account.total_amount = supplier_account.total_amount + purchase_dict['supplier_amount']
-                supplier_account.balance = supplier_account.balance + purchase_dict['supplier_amount']
-            else:
-                supplier_account.total_amount = supplier_account.total_amount - purchase.supplier_amount + purchase_dict['supplier_amount']
-                supplier_account.balance = supplier_account.balance - purchase.supplier_amount + purchase_dict['supplier_amount']
-        supplier_account.save()       
+            supplier_payment_detail.payment_mode = 'Credit(purchase)'
+            supplier_payment_detail.balance = purchase_dict['supplier_amount']
+        supplier_payment_detail.save()
         purchase.supplier_amount = purchase_dict['supplier_amount']
         purchase.save()
         

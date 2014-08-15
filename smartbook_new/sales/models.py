@@ -103,7 +103,6 @@ class CustomerAccount(models.Model):
         return str(self.invoice_no.sales_invoice_number)
 
 class CustomerPayment(models.Model):
-
     
     customer_account = models.ForeignKey(Sales, null=True, blank=True)
     payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=25)

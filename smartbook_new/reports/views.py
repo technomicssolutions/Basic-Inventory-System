@@ -16,25 +16,23 @@ from django.views.generic.base import View
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 
-from sales.models import Sales, SalesReturn
+from sales.models import Sales, SalesReturn, CustomerPayment   
 from expenses.models import Expense, ExpenseHead
-from purchase.models import SupplierAccount, SupplierAccountDetail, Purchase, PurchaseReturn
-from web.models import OwnerCompany
+from purchase.models import SupplierAccount, SupplierAccountPayment, SupplierAccountPaymentDetail, Purchase, PurchaseReturn
+from web.models import OwnerCompany, Customer
 
 def header(canvas, y):
     try:
         owner_company = OwnerCompany.objects.latest('id')
     except:
         owner_company = None
-    canvas.setFont("Helvetica", 30)  
-    canvas.setFillColor(black)
+    canvas.setFont("Helvetica", 30) 
     canvas.drawString(50, y + 21, (owner_company.company_name if owner_company else ''))
     canvas.setFont("Helvetica", 18)  
     address = (owner_company.address1 + (' , '+owner_company.street if owner_company.street else '') if owner_company else '')
     canvas.drawString(50, y - 15, address)
     city_state_country = (owner_company.city + (' , '+owner_company.state if owner_company.state else '')+(' , '+owner_company.country if owner_company.country else '') if owner_company else '')
     canvas.drawString(50, y - 35, city_state_country)
-
     return canvas
 
 class WholeSalesReport(View):
@@ -241,10 +239,10 @@ class VendorAccountsReport(View):
 
         status_code = 200
         response = HttpResponse(content_type='application/pdf')
-        p = canvas.Canvas(response, pagesize=(1000, 1100))
+        p = canvas.Canvas(response, pagesize=(1000, 1250))
         y = 1150
         report_type = request.GET.get('report_type', '')
-
+        
         if not report_type:
             return render(request, 'reports/vendor_accounts_report.html', {
                 'report_type' : 'date',
@@ -293,7 +291,7 @@ class VendorAccountsReport(View):
                 
                 y = 850
 
-                purchase_accounts = SupplierAccountDetail.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
+                purchase_accounts = SupplierAccountPaymentDetail.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
                 if len(purchase_accounts) > 0:
                     for purchase_account in purchase_accounts:
 
@@ -318,7 +316,6 @@ class VendorAccountsReport(View):
         
                 
         elif report_type == 'vendor':
-
             supplier_name = request.GET['vendor']
             print supplier_name
             if supplier_name == 'select':            
@@ -327,48 +324,46 @@ class VendorAccountsReport(View):
                     'report_type' : 'vendor',
                 }
                 return render(request, 'reports/vendor_accounts_report.html', ctx)
-            else:               
+            else:      
+                heading = 'Vendor Wise Vendor Accounts' + ' - ' + supplier_name
+                p.setFontSize(20)
+                p.drawString(270, y - 70, heading)
+                p.setFontSize(14)
+                p.drawString(50, y - 100, 'Date')
+                p.drawString(150, y - 100, 'Supplier Name')
+                p.drawString(350, y - 100, 'Invoice No')
+                p.drawString(490, y - 100, 'Total Amount')
+                p.drawString(610, y - 100, 'Payment Mode')
+                p.drawString(740, y - 100, 'Amount Paid')
+                p.drawString(860, y - 100, 'Balance')        
                 p = header(p,y)
-
-                p.drawString(350, 900, 'Vendor Wise Vendor Accounts')
-
-                p.setFontSize(13)
-
-                p.drawString(50, 875, "Date")
-                p.drawString(150, 875, "Payment Mode")
-                p.drawString(250, 875, "Narration")
-                p.drawString(380, 875, "Opening Balance")
-                p.drawString(480, 875, "Paid Amount")
-                p.drawString(580, 875, "Closing Balance") 
-
-                y = 850
-
+                p.setFontSize(12)
+                y1 = y - 110
                 vendor = SupplierAccount.objects.get(supplier__name = supplier_name)
-                purchase_accounts = SupplierAccountDetail.objects.filter(supplier_account__supplier = vendor)[:10]
-
+                purchase_accounts = SupplierAccountPaymentDetail.objects.filter(supplier = vendor)[:10]
                 if len(purchase_accounts) > 0:
                     for purchase_account in purchase_accounts:
 
-                        y = y-30
-                        if y <= 270:
-                            y = 850
+                        y1 = y1 - 30
+                        if y1 <= 270:
+                            y1 = 850
                             p.showPage()
                             p = header(p,y)
 
-
-                        p.drawString(50, y, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
-                        p.drawString(150, y, purchase_account.supplier_account.payment_mode)
-                        p.drawString(250, y, purchase_account.supplier_account.narration if purchase_account.supplier_account.narration else '')
-                        p.drawString(380, y, str(purchase_account.opening_balance))
-                        p.drawString(480, y, str(purchase_account.amount))
-                        p.drawString(580, y, str(purchase_account.closing_balance))
-                    y = y - 50
-                    if y <= 270:
-                        y = 850
+                        p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
+                        p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
+                        p.drawString(350, y1, str(purchase_account.purchase.purchase_invoice_number) if purchase_account.purchase else '')
+                        p.drawString(490, y1, str(purchase_account.total_amount))
+                        p.drawString(610, y1, purchase_account.payment_mode)
+                        p.drawString(740, y1, str(purchase_account.paid))
+                        p.drawString(860, y1, str(purchase_account.balance)) 
+                    y1 = y1 - 50
+                    if y1 <= 270:
+                        y1 = 850
                         p.showPage()
                         p = header(p,y)
-                    p.drawString(470, y, 'Current Balance:')
-                    p.drawString(580, y, str(purchase_account.supplier_account.balance)) 
+                    p.drawString(470, y1, 'Current Balance:')
+                    p.drawString(580, y1, str(purchase_account.balance)) 
                 p.showPage()
                 p.save()
             
@@ -475,7 +470,7 @@ class CustomerPaymentReport(View):
         status_code = 200
         customer_name = request.GET.get('customer_name')
         report_type = request.GET.get('report_type', '')
-        
+        print customer_name
         
         if not report_type:
             return render(request, 'reports/customer_payment_report.html', {
@@ -496,9 +491,11 @@ class CustomerPaymentReport(View):
                     else:
                         try:
                             customer = Customer.objects.get(customer_name=customer_name)
+                            print customer
                             customer_payments = CustomerPayment.objects.filter(customer=customer)
                             
-                        except:
+                        except Exception as ex:
+                            print str(ex)
                             context = {
                                 'message': 'No such customers',
                                 'report_type' : 'customer_payment',

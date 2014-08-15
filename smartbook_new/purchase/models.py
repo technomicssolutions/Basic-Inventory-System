@@ -52,31 +52,41 @@ class PurchaseItem(models.Model):
 
 class SupplierAccount(models.Model):
 
-    supplier = models.ForeignKey(Supplier, unique=True)
-    date = models.DateField('Date', null=True, blank=True)
-    payment_mode = models.CharField('Payment Mode', max_length=10, choices=PAYMENT_MODE, default='cash')
-    narration = models.TextField('Narration', null=True, blank=True)
+    purchase = models.ForeignKey(Purchase, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, unique=False, null=True, blank=True)
     total_amount = models.DecimalField('Total Amount', max_digits=14, decimal_places=2, default=0)
     paid_amount = models.DecimalField('Paid Amount', max_digits=14, decimal_places=2, default=0)
     balance = models.DecimalField('Balance', max_digits=14, decimal_places=2, default=0)
-    cheque_no = models.CharField('Cheque No', null=True, blank=True, max_length=30)
-    cheque_date = models.DateField('Cheque Date', null=True, blank=True)
-    bank_name = models.CharField('Bank Name', max_length=200, null=True, blank=True)
-    branch_name = models.CharField('Branch Name', max_length=200, null=True, blank=True)
+    is_complted = models.BooleanField('Is Completed', default=False)
 
     def __unicode__(self):
-        return self.supplier.name
+        return self.supplier.name + ' - ' + str(self.purchase.purchase_invoice_number)
 
-class  SupplierAccountDetail(models.Model):
+class SupplierAccountPayment(models.Model):
     
-    supplier_account = models.ForeignKey(SupplierAccount)
-    date = models.DateField('Date' , null=True, blank=True) 
-    opening_balance = models.DecimalField('Opening Balance', max_digits=14, decimal_places=3, default=0) 
-    closing_balance = models.DecimalField('Closing Balance', max_digits=14, decimal_places=3, default=0)
-    amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+    purchase = models.ForeignKey(Purchase, null=True, blank=True)
+    voucher_no = models.CharField('Voucher No', null=True, blank=True, max_length=30, unique=True)
+    date = models.DateField('Date', null=True, blank=True)
+    total_amount = models.DecimalField('Total Amount', max_digits=14, decimal_places=2, default=0)
+    paid_amount = models.DecimalField('Paid Amount', max_digits=14, decimal_places=2, default=0)
+    cheque_no = models.CharField('Cheque Number', null=True, blank=True, max_length=50)
+    bank = models.CharField('Bank', null=True, blank=True, max_length=100)
+    dated = models.DateField('Dated', null=True, blank=True)
+    payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=40, choices=PAYMENT_MODE)
 
     def __unicode__(self):
-        return self.supplier_account.supplier.name
+        return str(self.purchase.purchase_invoice_number)
+
+class SupplierAccountPaymentDetail(models.Model):
+
+    purchase = models.ForeignKey(Purchase, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, null=True, blank=True)
+    payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=25)
+    date = models.DateField('Date', null=True, blank=True)
+    total_amount = models.DecimalField('Total amount', max_digits=14, decimal_places=2, default=0)
+    paid = models.DecimalField('Paid', max_digits=14, decimal_places=2, default=0)
+    balance = models.DecimalField('Balance', max_digits=14, decimal_places=2, default=0)
+    amount = models.DecimalField('Amount', max_digits=14, decimal_places=2, default=0)
 
 class PurchaseReturn(models.Model):
     purchase = models.ForeignKey(Purchase)
