@@ -967,7 +967,7 @@ a {
     position: absolute;
     width: 17%;
 }
-#sales_report form, #purchase_accounts_reports form, #expense_report form {
+#sales_report form, #purchase_accounts_reports form, #expense_report form, #purchase_reports_date form {
 	margin: auto;
 	width: 24%;
 	float: none;
