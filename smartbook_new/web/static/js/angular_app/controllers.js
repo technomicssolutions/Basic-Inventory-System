@@ -974,11 +974,11 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
             'item_code': item.code,
             'item_name': item.name,
             'current_stock': item.current_stock,
-            'selling_price': 0,
+            'selling_price': item.selling_price,
             'qty_purchased': 0,
             'net_amount': 0,
-            'unit_price': 0,
-            'cost_price': 0,
+            'unit_price': item.unit_price,
+            'cost_price': item.unit_price,
         }
         $scope.purchase.purchase_items.push(selected_item);
     }
@@ -2166,8 +2166,6 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
     }
 }
 
-
-
 function PendingCustomerReportController($scope, $element, $http, $location) {
       
     $scope.customers = [];
@@ -2200,8 +2198,11 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
-            
-
+        }).error(function(data, success){
+            console.log('Request failed' || data);
+        });
+    }
+}   
 
 function SalesReturnController($scope, $element, $http, $timeout, share, $location) {
     
@@ -2272,46 +2273,6 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             console.log(data || "Request failed");
         });
     }
-
-    
-}
-function CustomerPaymentReportController($scope, $element, $http, $location) {
-      
-    $scope.customers = [];
-    $scope.selected_customer = '';
-    $scope.customer_name = '';
-    $scope.selecting_customer = false;
-    $scope.customer_selected = false;
-    
-    $scope.init = function(csrf_token) {
-        $scope.csrf_token = csrf_token;
-        
-        $scope.get_customers();
-
-    }
-    $scope.addcustomer = function(customer) {
-        $scope.selecting_customer = false;
-        $scope.customer_selected = true;
-        $scope.customer_name = customer.customer_name;
-    }
-    $scope.get_customers = function(parameter) {
-        if(parameter == 'customer_name')
-            var param = $scope.customer_name;
-        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
-        {   
-            $scope.selecting_customer = true;
-            $scope.customer_selected = false;
-            $scope.customers = data.customers;
-            
-
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-    }
-    
-}
-=======
     $scope.add_sales_return_items = function(item) {
         var index = $scope.sales_return.sales_items.indexOf(item)
         if(index >= 0){
@@ -2375,4 +2336,41 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
         }
     }    
 }
->>>>>>> 742efeec4e5986637e6afd8632890b824696cd5f
+
+function CustomerPaymentReportController($scope, $element, $http, $location) {
+      
+    $scope.customers = [];
+    $scope.selected_customer = '';
+    $scope.customer_name = '';
+    $scope.selecting_customer = false;
+    $scope.customer_selected = false;
+    
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        
+        $scope.get_customers();
+
+    }
+    $scope.addcustomer = function(customer) {
+        $scope.selecting_customer = false;
+        $scope.customer_selected = true;
+        $scope.customer_name = customer.customer_name;
+    }
+    $scope.get_customers = function(parameter) {
+        if(parameter == 'customer_name')
+            var param = $scope.customer_name;
+        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
+        {   
+            $scope.selecting_customer = true;
+            $scope.customer_selected = false;
+            $scope.customers = data.customers;
+            
+
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    
+}
+    

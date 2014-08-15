@@ -2,7 +2,8 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 from web.views import Home, Login, Logout, CreateSupplier, CreateCustomer, CustomerList, SupplierList, \
-EditCustomer, EditSupplier, DeleteCustomer, DeleteSupplier, TransportationCompanyList, AddTransportationCompany
+EditCustomer, EditSupplier, DeleteCustomer, DeleteSupplier, TransportationCompanyList, AddTransportationCompany, \
+CustomerSearch
 
 urlpatterns = patterns('',
 	url(r'^$', Home.as_view(), name='home'),

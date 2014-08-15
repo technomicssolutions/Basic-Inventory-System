@@ -11,7 +11,7 @@ from django.views.generic.base import View
 from django.http import HttpResponse
 
 from sales.models import Sales, SalesItem, \
-    ReceiptVoucher, CustomerAccount, SalesReturn, SalesReturnItem
+    ReceiptVoucher, CustomerAccount, SalesReturn, SalesReturnItem, CustomerPayment
 from inventory.models import Item, InventoryItem
 from web.models import Customer, OwnerCompany
 
@@ -138,10 +138,11 @@ class SalesEntry(View):
         sales_dict = ast.literal_eval(request.POST['sales'])
         sales, sales_created = Sales.objects.get_or_create(sales_invoice_number=sales_dict['sales_invoice_number'])
 
-        
+        customer_payment = CustomerPayment()
         customer = Customer.objects.get(customer_name=sales_dict['customer'])
         sales.customer = customer
-
+        customer_payment.customer =customer
+        
         sales.sales_invoice_number = sales_dict['sales_invoice_number']
         sales.payment_mode = sales_dict['payment_mode']
         

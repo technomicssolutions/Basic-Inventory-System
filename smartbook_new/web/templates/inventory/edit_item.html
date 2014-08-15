@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block body_id %}add_item{% endblock %}
-{% block title %}Add Item{% endblock title %}
+{% block body_id %}edit_item{% endblock %}
+{% block title %}Edit Item{% endblock title %}
 {% block controller %}ng-controller="AddItemController" ng-init="init('{{csrf_token}}', '{{item_id}}')"{% endblock controller %}
 
 {% block content %}

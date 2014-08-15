@@ -115,7 +115,8 @@ class ItemList(View):
                         'name': item.name,
                         'code': item.code,
                         'current_stock': inventory.quantity if inventory else 0 ,
-                        'unit_price': inventory.selling_price if inventory else 0, 
+                        'unit_price': inventory.unit_price if inventory else 0, 
+                        'selling_price': inventory.selling_price if inventory else 0, 
                     })
             except Exception as ex:
                 response = simplejson.dumps({'result': 'error', 'error': str(ex)})
