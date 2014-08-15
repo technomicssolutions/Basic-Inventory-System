@@ -2036,6 +2036,12 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
         'invoice_number': '',
         'purchase_items': [],
         'net_return_total': '',
+        'grant_return_total': '',
+        'discount_return': '',
+        'supplier_amount_return': '',
+        'net_total': '',
+        'discount_percentage': 0,
+        'remove_items': [],
     }
     $scope.purchase = {
         'purchase_invoice_number': '',
@@ -2063,6 +2069,10 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
             $scope.purchase = data.purchase;
             $scope.purchase.purchase_invoice_number = invoice;
             $scope.purchase_return.purchase_items = [];
+            $scope.purchase_return.grant_return_total = $scope.purchase.grant_total;
+            $scope.purchase_return.discount_return = $scope.purchase.discount;
+            $scope.purchase_return.net_total = $scope.purchase.net_total;
+            $scope.purchase_return.net_return_total = 0;
             if (data.message) {
                 $scope.validation_error = data.message +' - ' +invoice;
             } else {
@@ -2107,6 +2117,12 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
                 amount = amount + $scope.purchase_return.purchase_items[i].returned_amount;
         }
         $scope.purchase_return.net_return_total = amount;
+        $scope.calculate_grant_total();
+    }
+    $scope.calculate_grant_total = function() {
+        $scope.purchase.net_total = $scope.purchase_return.net_total - $scope.purchase_return.net_return_total;
+        $scope.purchase.grant_total = $scope.purchase.net_total - $scope.purchase.discount;
+        $scope.purchase.supplier_amount = $scope.purchase.grant_total;
     }
     $scope.return_purchase_validation = function() {
         $scope.validation_error = "";
@@ -2121,6 +2137,9 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
             return false;
         } else if($scope.purchase_return.net_return_total == '') {
             $scope.validation_error = "Please enter return quantity";
+            return false;
+        } else if ($scope.purchase.grant_total < 0) {
+            $scope.validation_error = 'Please check the discount amount with the grant total';
             return false;
         } else if ($scope.purchase_return.purchase_items.length > 0) {
             for (var i=0; i<$scope.purchase_return.purchase_items.length; i++) {
@@ -2144,7 +2163,17 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
         if ($scope.return_purchase_validation()) {
             for(var i=0; i< $scope.purchase_return.purchase_items.length; i++){
                 $scope.purchase_return.purchase_items[i].selected = "selected";
+                if ($scope.purchase_return.purchase_items[i].qty_purchased == $scope.purchase_return.purchase_items[i].returned_quantity) {
+                    $scope.purchase_return.remove_items.push($scope.purchase_return.purchase_items[i]);
+                }
             }
+            console.log($scope.purchase.discount, $scope.purchase.net_total)
+            if ($scope.purchase.discount != 0)
+                $scope.purchase_return.discount_percentage = ((parseFloat($scope.purchase.discount)/parseFloat($scope.purchase.net_total))*100).toFixed(2);
+            $scope.purchase_return.net_total = $scope.purchase.net_total;
+            $scope.purchase_return.grant_return_total = $scope.purchase.grant_total;
+            $scope.purchase_return.discount_return = $scope.purchase.discount;
+            $scope.purchase_return.supplier_amount_return = $scope.purchase.supplier_amount;
             params = {
                 "csrfmiddlewaretoken" : $scope.csrf_token,
                 'purchase_return': angular.toJson($scope.purchase_return),
@@ -2413,7 +2442,24 @@ function SupplierAccountEntryController($scope, $http, $element) {
         } else {
             $scope.cash = true;
         }       
-    }   
-
+    }
+    // $scope.get_purchase_details = function() {
+    //     $scope.entered_purchase_no = $scope.invoice_no;
+    //     $http.get('/purchase/purchase_details/?type=edit&invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
+    //     {
+    //         $scope.supplier_account_entry = data.purchase;
+    //         $scope.supplier_account_entry.purchase_invoice_number = $scope.entered_purchase_no;
+            
+    //         if (data.message) {
+    //             $scope.validation_error = data.message +' - ' +$scope.entered_purchase_no;
+    //         } else {
+    //             $scope.validation_error = '';
+    //         }
+    //         $scope.purchase.deleted_items = [];
+    //     }).error(function(data, status)
+    //     {
+    //         console.log(data || "Request failed");
+    //     });
+    // }  
 }
     

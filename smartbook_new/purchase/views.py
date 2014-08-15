@@ -317,17 +317,20 @@ class PurchaseReturnView(View):
         purchase_return, created = PurchaseReturn.objects.get_or_create(purchase=purchase, return_invoice_number = post_dict['invoice_number'])
         purchase_return.date = datetime.strptime(post_dict['purchase_return_date'], '%d/%m/%Y')
         purchase_return.net_amount = post_dict['net_return_total']
+        purchase_return.net_total_before_return = purchase.net_total
+        purchase_return.grant_total_before_return = purchase.grant_total
+        purchase_return.discount_before_return = purchase.discount
         purchase_return.save()
         
-        supplier_account = SupplierAccount.objects.get(supplier=purchase.supplier)
-        supplier_account.total_amount = float(supplier_account.total_amount) - float(post_dict['net_return_total'])
-        supplier_account.save()
-        purchase.net_total_after_return = float(purchase.net_total) - (float(return_amount) + float(post_dict['net_return_total']))
-        if purchase.net_total_after_return > 0 and purchase.net_total_after_return >= purchase.discount:
-            purchase.grant_total_after_return = float(purchase.net_total_after_return) - float(purchase.discount)
-        else:
-            purchase.grant_total_after_return = purchase.net_total_after_return
-        purchase.supplier_amount = purchase.grant_total_after_return
+        # supplier_account = SupplierAccount.objects.get(supplier=purchase.supplier)
+        # supplier_account.total_amount = float(supplier_account.total_amount) - float(post_dict['net_return_total'])
+        # supplier_account.save()
+        
+        purchase.supplier_amount = post_dict['supplier_amount_return']
+        purchase.discount = post_dict['discount_return']
+        purchase.discount_percentage = post_dict['discount_percentage']
+        purchase.net_total = post_dict['net_total']
+        purchase.grant_total = post_dict['grant_return_total']
         purchase.save()
         return_items = post_dict['purchase_items']
 
@@ -346,6 +349,10 @@ class PurchaseReturnView(View):
             inventory = InventoryItem.objects.get(item=return_item)
             inventory.quantity = int(inventory.quantity) - int(item['returned_quantity'])
             inventory.save()
+        removed_items = post_dict['remove_items']
+        for removed_item in removed_items:
+            purchase_item = PurchaseItem.objects.get(item__code=removed_item['item_code'], purchase=purchase)
+            purchase_item.delete()
         response = {
                 'result': 'Ok',
             }

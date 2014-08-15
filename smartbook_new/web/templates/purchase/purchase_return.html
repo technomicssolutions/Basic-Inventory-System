@@ -101,12 +101,46 @@
 				<div class="section_1_purchase">
 					<div class="formrow_purchase">
 						<div class="formtext_purchase">
-							<label for="net_total">Net Total</label>
+							<label for="net_total">Net Return Total</label>
 						</div>
 						<div class="forminput">
 							<input type="text" name="net_return_total" ng-model="purchase_return.net_return_total" readonly />
 						</div>
 					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="discount">Discount</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="discount" ng-model="purchase.discount" ng-change="calculate_grant_total()"/>
+						</div>
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="net_total">Net Total</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="net_total" ng-model="purchase.net_total" readonly />
+						</div>
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="grant_total">Grant Total</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="grant_return_total" ng-model="purchase.grant_total" readonly />
+						</div>
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="supplier_amount">Supplier Amount</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="supplier_amount" ng-model="purchase.supplier_amount" readonly />
+						</div>
+					</div>
+					
+
 				</div>
 			</div>
 			<div  align="Center">
