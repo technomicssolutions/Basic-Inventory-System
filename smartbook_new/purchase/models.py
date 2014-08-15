@@ -1,21 +1,12 @@
 from django.db import models
-
-
-from web.models import *
-from project.models import *
-
-PAYMENT_MODE = (
-	('cheque', 'Cheque'),
-	('cash', 'Cash'),
-    ('credit', 'Credit'),
-)
+from web.models import Supplier, TransportationCompany, PAYMENT_MODE
+from inventory.models import Item
 
 class Purchase(models.Model):
     
     supplier = models.ForeignKey(Supplier, null=True, blank=True)
     transportation_company = models.ForeignKey(TransportationCompany, null=True, blank=True)
     
-
     purchase_invoice_number = models.IntegerField('Purchase Invoice Number', unique=True)
     supplier_invoice_number = models.CharField('Supplier Invoice Number', default='1', max_length=10)
     supplier_do_number = models.CharField('Supplier DO Number', default='1', max_length = 10)
@@ -35,12 +26,13 @@ class Purchase(models.Model):
     purchase_expense = models.DecimalField('Purchase Expense', max_digits=14, decimal_places=2, default=0)
     is_paid_completely = models.BooleanField('Paid Completely', default=False)
     
+    net_total_after_return = models.DecimalField('Net Total after return',max_digits=14, decimal_places=2, default=0)
+    grant_total_after_return = models.DecimalField('Grant Total after return', max_digits=14, decimal_places=2, default=0)
+
     def __unicode__(self):
         return str(self.purchase_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Purchase'
         verbose_name_plural = 'Purchase'
 
 class PurchaseItem(models.Model):
@@ -53,12 +45,9 @@ class PurchaseItem(models.Model):
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=3, default=0)
 
     def __unicode__(self):
-
         return str(self.purchase.purchase_invoice_number)
 
     class Meta:
-
-        verbose_name = 'Purchase Items'
         verbose_name_plural = 'Purchase Items'
 
 class SupplierAccount(models.Model):
@@ -88,3 +77,22 @@ class  SupplierAccountDetail(models.Model):
 
     def __unicode__(self):
         return self.supplier_account.supplier.name
+
+class PurchaseReturn(models.Model):
+    purchase = models.ForeignKey(Purchase)
+    return_invoice_number = models.IntegerField('Purchase Return invoice number', unique=True)
+    date = models.DateField('Date', null=True, blank=True)
+    net_amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+
+    def __unicode__(self):
+        return str(self.purchase.purchase_invoice_number)
+
+class PurchaseReturnItem(models.Model):
+    purchase_return = models.ForeignKey(PurchaseReturn)
+    purchased_quantity = models.IntegerField('Purchased Quantity', default=0)
+    item = models.ForeignKey(Item)
+    amount = models.DecimalField('Amount', max_digits=14, decimal_places=3, default=0)
+    quantity = models.IntegerField('Quantity', default=0)
+    
+    def __unicode__(self):
+        return str(self.purchase_return.return_invoice_number)

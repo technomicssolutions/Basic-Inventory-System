@@ -1,13 +1,15 @@
+
 from django.db import models
-from django.contrib.auth.models import User
-from django.conf import settings
 
-
+PAYMENT_MODE = (
+    ('cash', 'Cash'),
+    ('cheque', 'Cheque'),
+    ('credit', 'Credit'),
+) 
 
 class Supplier(models.Model):
 
     name = models.CharField('Name', max_length=200, unique=True, null=True, blank=True)
-    
     house_name = models.CharField('House name', null=True, blank=True, max_length=200)
     street = models.CharField('Street', null=True, blank=True, max_length=200)
     city = models.CharField('City', null=True, blank=True, max_length=200)
@@ -21,17 +23,13 @@ class Supplier(models.Model):
     def __unicode__(self):
         return "supplier - "+str(self.name)
     
-
     class Meta:
-
         verbose_name = 'Supplier'
         verbose_name_plural = 'Supplier'
 
     
-class Customer(models.Model):
-    
-   
-    customer_name = models.CharField('Name of the customer', null=True, blank=True, max_length=200)
+class Customer(models.Model):  
+    customer_name = models.CharField('Name of the customer', null=True, blank=True, max_length=200, unique=True)
     house_name = models.CharField('House name', null=True, blank=True, max_length=200)
     street = models.CharField('Street', null=True, blank=True, max_length=200)
     city = models.CharField('City', null=True, blank=True, max_length=200)
@@ -64,7 +62,12 @@ class TransportationCompany(models.Model):
 
 class OwnerCompany(models.Model):
 
-    company_name = models.CharField('Company Name', max_length=200)
+    company_name = models.CharField('Company Name', max_length=200, null=True, blank=True)
+    address1 = models.CharField('Address1', max_length=500, null=True, blank=True)
+    street = models.CharField('Street', max_length=200, null=True, blank=True)
+    city = models.CharField('City', max_length=200, null=True, blank=True)
+    state = models.CharField('State', max_length=200, null=True, blank=True)
+    country = models.CharField('Country', max_length=200, null=True, blank=True)
     logo = models.FileField('Logo', upload_to = "uploads/logo/", null=True, blank=True)
 
     def __unicode__(self):

@@ -8,81 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Purchase'
-        db.create_table(u'purchase_purchase', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('supplier', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Supplier'], null=True, blank=True)),
-            ('transportation_company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.TransportationCompany'], null=True, blank=True)),
-            ('purchase_invoice_number', self.gf('django.db.models.fields.IntegerField')(unique=True)),
-            ('supplier_invoice_number', self.gf('django.db.models.fields.CharField')(default='1', max_length=10)),
-            ('supplier_do_number', self.gf('django.db.models.fields.CharField')(default='1', max_length=10)),
-            ('supplier_invoice_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('purchase_invoice_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('payment_mode', self.gf('django.db.models.fields.CharField')(max_length=25, null=True, blank=True)),
-            ('bank_name', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
-            ('cheque_no', self.gf('django.db.models.fields.CharField')(max_length=60, null=True, blank=True)),
-            ('cheque_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('discount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('discount_percentage', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('net_total', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('supplier_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('grant_total', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('purchase_expense', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('is_paid_completely', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal(u'purchase', ['Purchase'])
-
-        # Adding model 'PurchaseItem'
-        db.create_table(u'purchase_purchaseitem', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['inventory.Item'], null=True, blank=True)),
-            ('purchase', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['purchase.Purchase'], null=True, blank=True)),
-            ('quantity_purchased', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('cost_price', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
-            ('net_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
-        ))
-        db.send_create_signal(u'purchase', ['PurchaseItem'])
-
-        # Adding model 'SupplierAccount'
-        db.create_table(u'purchase_supplieraccount', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('supplier', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Supplier'], unique=True)),
-            ('date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('payment_mode', self.gf('django.db.models.fields.CharField')(default='cash', max_length=10)),
-            ('narration', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('total_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('paid_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('cheque_no', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
-            ('cheque_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('bank_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('branch_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-        ))
-        db.send_create_signal(u'purchase', ['SupplierAccount'])
-
-        # Adding model 'SupplierAccountDetail'
-        db.create_table(u'purchase_supplieraccountdetail', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('supplier_account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['purchase.SupplierAccount'])),
-            ('date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('opening_balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
-            ('closing_balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
-            ('amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=3)),
-        ))
-        db.send_create_signal(u'purchase', ['SupplierAccountDetail'])
+        # Adding field 'PurchaseReturnItem.purchased_quantity'
+        db.add_column(u'purchase_purchasereturnitem', 'purchased_quantity',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
 
     def backwards(self, orm):
-        # Deleting model 'Purchase'
-        db.delete_table(u'purchase_purchase')
-
-        # Deleting model 'PurchaseItem'
-        db.delete_table(u'purchase_purchaseitem')
-
-        # Deleting model 'SupplierAccount'
-        db.delete_table(u'purchase_supplieraccount')
-
-        # Deleting model 'SupplierAccountDetail'
-        db.delete_table(u'purchase_supplieraccountdetail')
+        # Deleting field 'PurchaseReturnItem.purchased_quantity'
+        db.delete_column(u'purchase_purchasereturnitem', 'purchased_quantity')
 
     models = {
         u'inventory.item': {
@@ -121,6 +54,23 @@ class Migration(SchemaMigration):
             'net_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
             'purchase': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['purchase.Purchase']", 'null': 'True', 'blank': 'True'}),
             'quantity_purchased': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+        },
+        u'purchase.purchasereturn': {
+            'Meta': {'object_name': 'PurchaseReturn'},
+            'date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'net_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
+            'purchase': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['purchase.Purchase']"}),
+            'return_invoice_number': ('django.db.models.fields.IntegerField', [], {'unique': 'True'})
+        },
+        u'purchase.purchasereturnitem': {
+            'Meta': {'object_name': 'PurchaseReturnItem'},
+            'amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '3'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inventory.Item']"}),
+            'purchase_return': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['purchase.PurchaseReturn']"}),
+            'purchased_quantity': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'quantity': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         u'purchase.supplieraccount': {
             'Meta': {'object_name': 'SupplierAccount'},

@@ -16,40 +16,39 @@
 						{% endif %}
 					</span>
 					<ul>
-						
 						<li> <a href="{% url 'suppliers'  %}"> Suppliers </a> </li>
-
 						<li> <a href="{% url 'customers'  %}"> Customers </a> </li>
-						
 						<li> <a href="{% url 'logout' %}"> Logout </a> </li>
-						
 					</ul>
 				</li>
-
+				<li class="menu"> <a href=""> Inventory </a> 
+					<ul> 
+						<li> <a href="{% url 'add_item' %}"> Add Item </a> </li>
+						<li> <a href="{% url 'items' %}"> Items </a> </li>
+						<li> <a href="{% url 'stock' %}"> Stock </a> </li>
+						<li> <a href="{% url 'opening_stock' %}">Opening Stock </a> </li>
+					</ul>
+				</li>
 				
 				<li class="menu"> <a href=""> Purchase </a> </a> 
 					<ul> 
 						
-						<li> <a href="{% url 'purchase' %}?purchase_type=inventory_based"> Purchase Entry </a> </li>
+						<li> <a href="{% url 'purchase' %}"> Purchase Entry </a> </li>
+						<li> <a href="{% url 'edit_purchase' %}"> Edit Purchase </a> </li>
+						<li> <a href="{% url 'purchase_return' %}"> Purchase Return </a> </li>
 						<li> <a href="{% url 'vendor_accounts' %}"> Vendor Accounts </a> </li>
 					</ul>
 				</li>
-				<li class="menu"> <a href=""> Items </a> 
-					<ul> 
-						<li> <a href="{% url 'add_item' %}"> Add Item </a> </li>
-						<li> <a href="{% url 'items' %}"> Items </a> </li>
-						<li> <a href="{% url 'stocks' %}"> Stock </a> </li>
-						<li> <a href="{% url 'stock' %}">Opening Stock </a> </li>
-					</ul>
-				</li>
+				
 				<li class="menu"> <a href=""> Sales </a>
 					<ul>
 						
 						<li><a href="">Sales</a>
 							<ul class="sub_submenu">
 								
-								<li><a href="{% url 'sales' %}?sales_type=inventory_sales"> Sales Entry</a></li>
+								<li><a href="{% url 'sales' %}"> Sales Entry</a></li>
 								<li> <a href="{% url 'edit_sales_invoice' %}"> Edit Sales  </a> </li>
+								<li><a href="{% url 'sales_return' %}"> Sales Return </a></li>
 								<li> <a href="{% url 'print_invoice' %}"> Print </a> </li>
 							</ul>
 						</li>
@@ -60,23 +59,22 @@
 				</li>
 				<li class="menu"> <a href=""> Expenses </a> 
 					<ul>
-						
-						<li><a href="{% url 'new_expense' %}">Expenses</a></li>
+						<li><a href="{% url 'expenses' %}">Expenses</a></li>
 						<li><a href="{% url 'new_expense_head' %}"> Expense Head</a></li>
-						
 					</ul>
 				</li>
 
 				<li class="menu last"> <a href=""> Reports </a>
 					<ul>
-						
 						<li><a href="{% url 'whole_sales_report' %}"> Sales Report</a> </li>
-						
+						<li><a href="{% url 'purchase_report' %}">Purchase Report</a></li>
 						<li><a href="{% url 'expense_report' %}">Expense Report</a></li>
 						<li> <a href="{% url 'vendor_accounts_report' %}"> Vendor Reports </a> </li>
+
 						<li><a href="{% url 'customer_payment_report' %}">Customer Payment</a> </li>
 						<li><a href="{% url 'pending_customer_report' %}">Outstanding Customer</a> </li>
 						
+
 					</ul>
 				</li>
 			</ul>

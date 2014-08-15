@@ -16,25 +16,24 @@ from django.views.generic.base import View
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 
-from sales.models import *
-from expenses.models import *
-from purchase.models import *
+from sales.models import Sales, SalesReturn
+from expenses.models import Expense, ExpenseHead
+from purchase.models import SupplierAccount, SupplierAccountDetail, Purchase, PurchaseReturn
+from web.models import OwnerCompany
 
 def header(canvas, y):
-
+    try:
+        owner_company = OwnerCompany.objects.latest('id')
+    except:
+        owner_company = None
     canvas.setFont("Helvetica", 30)  
     canvas.setFillColor(black)
-    canvas.drawString(50, y + 21, 'Mubeena Furniture and Home Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawString(200, y + 21, 'Furniture and Home')
-    # canvas.setFillColor(red)
-    # canvas.drawString(250, y + 21, 'Appliances')
-    # canvas.setFillColor(black)
-    # canvas.drawImage(path, 50, y, width=33*cm, height=3*cm, preserveAspectRatio=True)
-
+    canvas.drawString(50, y + 21, (owner_company.company_name if owner_company else ''))
     canvas.setFont("Helvetica", 18)  
-    canvas.drawString(50, y - 15, 'Karimpulli')
-    canvas.drawString(50, y - 35, 'Shop: 8086 615 615')
+    address = (owner_company.address1 + (' , '+owner_company.street if owner_company.street else '') if owner_company else '')
+    canvas.drawString(50, y - 15, address)
+    city_state_country = (owner_company.city + (' , '+owner_company.state if owner_company.state else '')+(' , '+owner_company.country if owner_company.country else '') if owner_company else '')
+    canvas.drawString(50, y - 35, city_state_country)
 
     return canvas
 
@@ -79,8 +78,8 @@ class WholeSalesReport(View):
                 return render(request, 'reports/whole_sales_reports.html', ctx)                  
             else:
                 total = 0
-                round_off = 0
                 total_discount = 0
+                total_discount_after_return = 0
                 grant_total = 0
                 p.setFont('Helvetica', 20)
                 report_heading = 'Date Wise Sales Report' + ' - '+ start + ' - ' + end
@@ -92,9 +91,10 @@ class WholeSalesReport(View):
                 p.drawString(110, y - 100, "Invoice Number")
                 p.drawString(240, y - 100, "Customer")
                 p.drawString(400, y - 100, "Net Total")
-                p.drawString(500, y - 100, "Discount")
-                p.drawString(600, y - 100, "Roundoff")
-                p.drawString(700, y - 100, "Grant Total")
+                p.drawString(580, y - 100, "Discount")
+                p.drawString(480, y - 100, "Grant Total")
+                p.drawString(680, y - 100, "NetTotal- return")
+                p.drawString(780, y - 100, "GrantTotal - return")
 
                 sales = Sales.objects.filter(sales_invoice_date__gte=start_date,sales_invoice_date__lte=end_date).order_by('sales_invoice_date')
                 y1 = y - 110
@@ -104,25 +104,44 @@ class WholeSalesReport(View):
                         y1 = y - 110
                         p.showPage()
                         p = header(p, y)
+                    is_return_exists = False
+                    try:
+                        sales_return = SalesReturn.objects.filter(sales=sale)
+                        if sales_return.count() == 0:
+                            is_return_exists = False
+                            total = float(total) + float(sale.net_amount)
+                            grant_total = float(grant_total) + float(sale.grant_total)
+                            total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
+                        else:
+                            is_return_exists = True
+                            total = float(total) + float(sale.net_amount_after_return)
+                            grant_total = float(grant_total) + float(sale.grant_total_after_return)
+                            if sale.net_amount_after_return > 0 and sale.net_amount_after_return > sale.discount_for_sale:
+                                total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
+                            
+                    except Exception as ex:
+                        is_return_exists = False
+                        total = float(total) + float(sale.net_amount)
+                        grant_total = float(grant_total) + float(sale.grant_total)
+                        total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
+                    total_discount = float(total_discount) + float(sale.discount_for_sale)
                     p.drawString(50, y1, sale.sales_invoice_date.strftime('%d/%m/%y'))
                     p.drawString(120, y1, str(sale.sales_invoice_number))
 
                     p.drawString(240, y1, sale.customer.customer_name)
                     p.drawString(400, y1, str(sale.net_amount))
-                    p.drawString(500, y1, str(sale.discount_for_sale))
-                    p.drawString(600, y1, str(sale.round_off))
-                    p.drawString(700, y1, str(sale.grant_total))
-                    total = float(total) + float(sale.net_amount)
-                    round_off = float(round_off) + float(sale.round_off)
-                    total_discount = float(total_discount) + float(sale.discount_for_sale)
-                    grant_total = float(grant_total) + float(sale.grant_total)
-                                
+                    p.drawString(580, y1, str(sale.discount_for_sale))
+                    p.drawString(480, y1, str(sale.grant_total))
+                    if is_return_exists:
+                        p.drawString(680, y1, str(sale.net_amount_after_return))
+                        p.drawString(780, y1, str(sale.grant_total_after_return))
+                    else:
+                        p.drawString(680, y1, str('No Return'))
+                        p.drawString(780, y1, str('No Return'))
                 if y1 <= 135:
                     y1 = y - 110
                     p.showPage()
                     p = header(p, y)
-                p.drawString(50, y1 - 40, 'Round Off : ')
-                p.drawString(150, y1 - 40, str(round_off))
                 p.drawString(50, y1 - 60, 'Total Discount:')
                 p.drawString(150, y1 - 60, str(total_discount))
                 p.drawString(50, y1 - 80, 'Total Amount:')
@@ -178,7 +197,6 @@ class ExpenseReport(View):
             p.drawString(150, y - 100, "Voucher No")
             p.drawString(250, y - 100, "Particulars")
             p.drawString(500, y - 100, "Narration")
-            # p.drawString(650, 870, "Project") 
             p.drawString(650, y - 100, "Amount") 
             
             p.setFontSize(12)
@@ -293,13 +311,6 @@ class VendorAccountsReport(View):
                         p.drawString(470, y, str(purchase_account.opening_balance))
                         p.drawString(580, y, str(purchase_account.amount))
                         p.drawString(660, y, str(purchase_account.closing_balance)) 
-                    # y = y - 50
-                    # if y <= 270:
-                    #     y = 850
-                    #     p.showPage()
-                    #     p = header(p)
-                    # p.drawString(470, y, 'Current Balance:')
-                    # p.drawString(580, y, str(purchase_account.supplier_account.balance))
                 
                 p.showPage()
                 p.save()
@@ -555,3 +566,120 @@ class CustomerPaymentReport(View):
             p.showPage()
             p.save()
             return response
+
+class PurchaseReport(View):
+
+    def get(self, request, *args, **kwargs):    
+
+        status_code = 200
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1250))
+        y = 1150
+        p.setFontSize(15)
+        p = header(p, y)
+
+        report_type = request.GET.get('report_type', '')
+
+        if not report_type:
+            return render(request, 'reports/purchase_reports.html', {
+                'report_type' : 'date',
+                })
+
+        if report_type == 'date': 
+
+            start = request.GET['start_date']
+            end = request.GET['end_date']
+           
+            if not start:            
+                ctx = {
+                    'msg' : 'Please Select Start Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_reports.html', ctx)
+            elif not end:
+                ctx = {
+                    'msg' : 'Please Select End Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_reports.html', ctx)                  
+            else:
+                total = 0
+                total_discount = 0
+                total_discount_after_return = 0
+                grant_total = 0
+                p.setFont('Helvetica', 20)
+                report_heading = 'Date Wise Purchase Report' + ' - '+ start + ' - ' + end
+                start_date = datetime.strptime(start, '%d/%m/%Y')
+                end_date = datetime.strptime(end, '%d/%m/%Y')
+                p.drawString(270, y - 70, report_heading)
+                p.setFontSize(13)
+                p.drawString(50, y - 100, "Date")
+                p.drawString(110, y - 100, "Invoice Number")
+                p.drawString(240, y - 100, "Supplier")
+                p.drawString(400, y - 100, "Net Total")
+                p.drawString(580, y - 100, "Discount")
+                p.drawString(480, y - 100, "Grant Total")
+                p.drawString(680, y - 100, "NetTotal- return")
+                p.drawString(780, y - 100, "GrantTotal - return")
+
+                purchases = Purchase.objects.filter(purchase_invoice_date__gte=start_date,purchase_invoice_date__lte=end_date).order_by('purchase_invoice_date')
+                y1 = y - 110
+                for purchase in purchases:
+                    y1 = y1 - 30
+                    if y1 <= 135:
+                        y1 = y - 110
+                        p.showPage()
+                        p = header(p, y)
+                    is_return_exists = False
+                    try:
+                        purchase_return = PurchaseReturn.objects.filter(purchase=purchase)
+                        if purchase_return.count() == 0:
+                            is_return_exists = False
+                            total = float(total) + float(purchase.net_total)
+                            grant_total = float(grant_total) + float(purchase.grant_total)
+                            total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                        else:
+                            is_return_exists = True
+                            total = float(total) + float(purchase.net_total_after_return)
+                            grant_total = float(grant_total) + float(purchase.grant_total_after_return)
+                            if purchase.net_total_after_return > 0 and purchase.net_total_after_return > purchase.discount:
+                                total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                            
+                    except Exception as ex:
+                        is_return_exists = False
+                        total = float(total) + float(purchase.net_total)
+                        grant_total = float(grant_total) + float(purchase.grant_total)
+                        total_discount_after_return = float(total_discount_after_return) + float(purchase.discount)
+                    total_discount = float(total_discount) + float(purchase.discount)
+                    p.drawString(50, y1, purchase.purchase_invoice_date.strftime('%d/%m/%y'))
+                    p.drawString(120, y1, str(purchase.purchase_invoice_number))
+
+                    p.drawString(240, y1, purchase.supplier.name)
+                    p.drawString(400, y1, str(purchase.net_total))
+                    p.drawString(580, y1, str(purchase.discount))
+                    p.drawString(480, y1, str(purchase.grant_total))
+                    if is_return_exists:
+                        p.drawString(680, y1, str(purchase.net_total_after_return))
+                        p.drawString(780, y1, str(purchase.grant_total_after_return))
+                    else:
+                        p.drawString(680, y1, str('No Return'))
+                        p.drawString(780, y1, str('No Return'))
+                if y1 <= 135:
+                    y1 = y - 110
+                    p.showPage()
+                    p = header(p, y)
+                p.drawString(50, y1 - 60, 'Total Discount:')
+                p.drawString(150, y1 - 60, str(total_discount))
+                p.drawString(50, y1 - 80, 'Total Amount:')
+                p.drawString(150, y1 - 80, str(total))
+                p.drawString(50, y1 - 100, 'Grant Total:')
+                p.drawString(150, y1 - 100, str(grant_total))
+                p.showPage()
+                p.save()
+                return response
+
+

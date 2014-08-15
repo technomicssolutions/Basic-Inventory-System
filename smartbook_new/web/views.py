@@ -39,12 +39,7 @@ class Logout(View):
 
 class CustomerList(View):
     def get(self, request, *args, **kwargs):
-        
-        ctx_suppliers = []
         ctx_customers = []
-        
-       
-   
         customers = Customer.objects.all()
         
         if request.is_ajax():
@@ -68,8 +63,6 @@ class SupplierList(View):
     def get(self, request, *args, **kwargs):
         
         ctx_suppliers = []
-  
-
         suppliers = Supplier.objects.all()
         if request.is_ajax():
             if len(suppliers) > 0:
@@ -82,7 +75,6 @@ class SupplierList(View):
                 'suppliers': ctx_suppliers,
                 
             } 
-            
             response = simplejson.dumps(res)
             status_code = 200
             return HttpResponse(response, status = status_code, mimetype="application/json")
@@ -94,22 +86,20 @@ class SupplierList(View):
 class CreateSupplier(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'add_supplier.html',{})
-        
 
     def post(self, request, *args, **kwargs):
        
         context={}
         message = ''
         template = 'add_supplier.html'
-        print request.POST
-        email_validation = (re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", request.POST['email']) )
+        if request.POST['email'] != '':
+            email_validation = (re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", request.POST['email']) )
         if not request.is_ajax():
             if request.POST['name'] == '':
                 message = "Please enter Name"
-            elif request.POST['email'] == '':
-                message = "Please enter email"
-            elif email_validation == None:
-                message = "Please enter a valid email id"
+            elif request.POST['email'] != '':
+                if email_validation == None:
+                    message = "Please enter a valid email id"
             elif request.POST['contact_person'] == '':
                 message = "Please enter Contact Person"
             elif request.POST['mobile'] == '':
@@ -120,7 +110,6 @@ class CreateSupplier(View):
             if request.POST['phone'] != '':
                 if len(request.POST['phone']) > 15:
                     message = 'Please enter a valid phone no.'
-
         if message:
             context = {
                 'error_message': message,
@@ -130,7 +119,6 @@ class CreateSupplier(View):
         else:
             try:
                 supplier = Supplier.objects.get(name=request.POST['name'])
-                
                 context = {
                     'error_message': 'Supplier with this name is already exists',
                     
@@ -157,7 +145,6 @@ class CreateSupplier(View):
                 supplier.land_line = request.POST['phone']
                 supplier.email_id = request.POST['email']
                 supplier.contact_person = request.POST['contact_person']
-                print request.POST['email']
                 supplier.save()
                 if request.is_ajax():
                     res = {
@@ -201,25 +188,17 @@ class EditCustomer(View):
             }
             context.update(request.POST)
             return render(request, 'edit_customer.html',context)
-        elif request.POST['email'] == '':
-            context = {
-                'message': 'Email cannot be null',
-                'customer': customer,
-                'customer_id': customer_id,
-            }
-            context.update(request.POST)
-            return render(request, 'edit_user.html',context)
-        if email_validation == None:
-            message = "Please enter a valid email id"
-            context = {
-                'message': message,
-                'customer': customer,
-                'customer_id': customer_id,
-            }
-            context.update(request.POST)
-            return render(request, 'edit_customer.html',context)  
-
-        
+        if request.POST['email'] != '':
+            if email_validation == None:
+                message = "Please enter a valid email id"
+                context = {
+                    'message': message,
+                    'customer': customer,
+                    'customer_id': customer_id,
+                }
+                context.update(request.POST)
+                return render(request, 'edit_customer.html',context)
+          
         customer.customer_name = request.POST['name']
         customer.house_name =request.POST['house']
         customer.street = request.POST['street']
@@ -229,12 +208,15 @@ class EditCustomer(View):
         customer.mobile_number = request.POST['mobile']
         customer.land_line = request.POST['phone']
         customer.email_id = request.POST['email']
-        customer.save()
-        context = {
-            'message' : 'Customer edited correctly',
-            'customer': customer,
-            'customer_id': customer_id,
-        }
+        try:
+            customer.save()
+            return HttpResponseRedirect(reverse('customers'))
+        except:
+            context = {
+                'message' : 'Customer with this name already exists',
+                'customer': customer,
+                'customer_id': customer_id,
+            }
         return render(request, 'edit_customer.html',context)
         
 class EditSupplier(View):
@@ -261,43 +243,39 @@ class EditSupplier(View):
             }
             context.update(request.POST)
             return render(request, 'edit_supplier.html',context)
-        elif request.POST['email'] == '':
+        if request.POST['email'] != '':
+            if email_validation == None:
+                message = "Please enter a valid email id"
+                context = {
+                    'message': message,
+                    'supplier': supplier,
+                    'supplier_id':supplier_id,
+                }
+                context.update(request.POST)
+                return render(request, 'edit_supplier.html',context)  
+             
+        try:
+            supplier.name = request.POST['name']
+            supplier.house_name =request.POST['house']
+            supplier.street = request.POST['street']
+            supplier.city = request.POST['city']
+            supplier.district = request.POST['district']
+            supplier.pin = request.POST['pin']
+            supplier.mobile = request.POST['mobile']
+            supplier.land_line = request.POST['phone']
+            supplier.email_id = request.POST['email']
+            supplier.contact_person= request.POST['contact_person']
+            supplier.save()
+            return HttpResponseRedirect(reverse('suppliers'))
+        except Exception as ex:
+            print str(ex)
+
             context = {
-                'message': 'Email cannot be null',
+                'message' : 'Supplier with this name already exists',
                 'supplier': supplier,
                 'supplier_id':supplier_id,
             }
-            context.update(request.POST)
-            return render(request, 'edit_user.html',context)
-        if email_validation == None:
-            message = "Please enter a valid email id"
-            context = {
-                'message': message,
-                'supplier': supplier,
-                'supplier_id':supplier_id,
-            }
-            context.update(request.POST)
-            return render(request, 'edit_supplier.html',context)  
-         
-        
-        supplier.name = request.POST['name']
-        supplier.house_name =request.POST['house']
-        supplier.street = request.POST['street']
-        supplier.city = request.POST['city']
-        supplier.district = request.POST['district']
-        supplier.pin = request.POST['pin']
-        supplier.mobile = request.POST['mobile']
-        supplier.land_line = request.POST['phone']
-        supplier.email_id = request.POST['email']
-        supplier.contact_person= request.POST['contact_person']
-        supplier.save()
-        
-        context = {
-            'message' : 'Supplier edited correctly',
-            'supplier': supplier,
-            'supplier_id':supplier_id,
-        }
-        return render(request, 'edit_supplier.html',context)
+            return render(request, 'edit_supplier.html',context)
 
 class DeleteCustomer(View):
 
@@ -346,23 +324,15 @@ class CreateCustomer(View):
                 }
                 context.update(request.POST)
                 return render(request, 'add_customer.html',context)
-            elif request.POST['email'] == '':
-                context = {
-                    'error_message': 'Please enter the email id',
-                    
-                }
-                context.update(request.POST)
-                return render(request, 'add_customer.html',context)
-
-            elif email_validation == None:
-                message = "Please enter a valid email id"
-                context = {
-                    'error_message': 'Please enter a valid email id',
-                    
-                }
-                context.update(request.POST)
-                return render(request, 'add_customer.html',context)
-
+            if request.POST['email'] != '':
+                if email_validation == None:
+                    message = "Please enter a valid email id"
+                    context = {
+                        'error_message': 'Please enter a valid email id',
+                        
+                    }
+                    context.update(request.POST)
+                    return render(request, 'add_customer.html',context)
             elif request.POST['mobile'] != '':
                 if len(request.POST['mobile']) > 15:
                     context = {
@@ -396,7 +366,7 @@ class CreateCustomer(View):
                 context.update(request.POST)
                 return render(request, 'add_customer.html',context)
         except Exception as ex:
-            customer = Customer.objects.create(customer_name = request.POST['name'])
+            customer = Customer.objects.create(customer_name=request.POST['name'])
             customer.customer_name = request.POST['name']
             customer.house_name = request.POST['house'] 
             customer.street = request.POST['street']

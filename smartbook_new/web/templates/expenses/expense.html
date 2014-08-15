@@ -7,12 +7,10 @@
 {% block controller %}
 	ng-controller="ExpenseController" ng-init="init('{{csrf_token}}')"   
 {% endblock controller %}
-
 {% block dialogue_popup %}
 	{% include 'popup/add_expense_head.html' %} 
 	              	
 {% endblock %}
-
 
 {% block content %}
 
@@ -37,7 +35,7 @@
 							<label for="date">Date :</label>
 						</div>
 						<div class="forminput">
-							<input type="text" name="date" id="date" value="{{current_date}}" readonly>
+							<input type="text" name="date" id="date" value="{{current_date}}">
 						</div>
 					</div>
 

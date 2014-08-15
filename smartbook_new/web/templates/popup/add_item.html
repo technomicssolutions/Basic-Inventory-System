@@ -21,18 +21,6 @@
                                     <input type="text" name="code" ng-model="item.code"/>
                                 </div>  
                             </div>
-                            <div class="formrow">
-                                <div class="formtext">
-                                    <label>Type</label>
-                                </div>
-                                <div class="forminput">  
-                                    <select ng-model="item.type">
-                                        <option value="">Select</option>
-                                        <option value="item">Item</option>
-                                        <option value="service_charge">Service Charge</option>
-                                    </select>
-                                </div>  
-                            </div>
                             <div align="center">
                                 <p class="error_message">[[validation_error]]</p>
                                 <input name="submit" type="button" value="Add" ng-click="add_item()">

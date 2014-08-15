@@ -13,13 +13,20 @@
 			</div>
 		</div>
 			
-		<div class="error_message">
+		<div class="message">
 			<p>{{msg}}</p>
 		</div>
-		<form name="purchase_form" method="get" action="{% url 'purchase_reports' %}">
+
+		<form name="salesreport_form" method="get" action="{% url 'purchase_report' %}">
 			
-			<div>
-				<input type="hidden" value="{{report_type}}" name="report_type">
+			<div class="reportinput">
+			    <label>  Select report type </label>		
+				<select name="report_type" ng-change="get_report_type()" ng-model="report_type" >	
+					<option value="select">Select</option>	
+					<option value="date_based" {% if report_type == 'date' %} selected="true"{% endif %}>Date Wise Report</option>
+				</select>
+			</div>
+			<div ng-show="date_based">
 				<div class="reportinput">
 					<label for="s_date">Start Date</label>
 					<input type="text" name="start_date" id="start_date" value="{{start_date}}">
@@ -29,11 +36,11 @@
 					<input type="text" name="end_date" id="end_date" value="{{end_date}}">
 				</div>
 			</div>
-			
-			<div class="reporttext">
-				<input type="submit" value="View Report" class="btn btn-info " style="border-top-width: 0px; margin-top: 3px;" />
-			</div>
-		</form>
+			<div class="reportinput">
+				<label> &nbsp; &nbsp;</label>
+				<input type="submit" value="View Report" class="btn btn-info report_button " style="border-top-width: 0px; margin-top: 3px;">
+			</div>	
+		</form>	
 		<p class="error_message"> {{validation_error}} </p>
 	</div>
 	

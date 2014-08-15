@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Expenses{% endblock title %}
+{% block body_id %}expenses{% endblock %}
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Expenses</h4></div>
+	</div>
+	<div class="top_section">
+		<a class="btn btn-info" href="{% url 'new_expense' %}"> New Expense </a>
+	</div>
+	<p class="error_message"> {{message}} </p>
+	{% if expenses.count == 0 %}
+		<p class="error_message"> No Expenses </p>
+	{% else %}
+		<table class="table table-striped">
+			<tr>
+				<th> Date </th> 
+				<th> Expense Head </th> 
+				<th> Voucher No </th>
+				<th> Amount </th>
+				<th> Purchase No </th>
+				<th> &nbsp;</th> 
+			</tr>
+			{% for expense in expenses %}
+			 	<tr>
+			 		<td> {{expense.date|date:'d/m/y'}} </td>
+			 		<td> {{expense.expense_head.expense_head}} </td>
+			 		<td> {{expense.voucher_no}} </td>
+			 		<td> {{expense.amount}} </td>
+			 		<td> {{expense.purchase.purchase_invoice_number}} </td>
+			 		<td>
+			 			<a href="{% url 'edit_expense' %}?expense_id={{expense.id}}">
+						<img src="/static/images/edit.png">
+					</a>
+					</td>
+			 	</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+{% endblock content %}

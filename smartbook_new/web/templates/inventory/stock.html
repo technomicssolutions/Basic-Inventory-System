@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Add Item{% endblock title %}
+{% block body_id %}add_item{% endblock %}
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Stock</h4></div>
+	</div>
+	{% if stock_items.count == 0 %}
+		<p class="error_message"> No Items on stock </p>
+	{% else %}
+		<table class="table table-striped">
+			<tr>
+				<th> Item code </th> 
+				<th> Item Name </th> 
+				<th> Unit Price </th> 
+				<th> Quantity </th> 
+				<th> Selling Price </th>  
+			</tr>
+			{% for stock in stock_items %}
+			 	<tr>
+			 		<td> {{stock.item.code}} </td>
+			 		<td> {{stock.item.name}} </td>
+			 		<td> {{stock.unit_price}} </td>
+			 		<td> {{stock.quantity}} </td>
+			 		<td> {{stock.selling_price}} </td>
+			 	</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+{% endblock content %}
