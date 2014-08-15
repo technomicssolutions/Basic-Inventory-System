@@ -18,7 +18,7 @@ urlpatterns = patterns('',
 	url(r'^edit_supplier/(?P<supplier_id>\d+)/$', login_required(EditSupplier.as_view()), name='edit_supplier'),
 	url(r'^delete_customer/(?P<customer_id>\d+)/$', login_required(DeleteCustomer.as_view()), name='delete_customer'),
 	url(r'^delete_supplier/(?P<supplier_id>\d+)/$', login_required(DeleteSupplier.as_view()), name='delete_supplier'),
-
+	url(r'^customersearch/$', CustomerSearch.as_view(),name='customer_list'),
 	url(r'^company_list/$', login_required(TransportationCompanyList.as_view()), name="company_list"),
 	url(r'^add_company/$', login_required(AddTransportationCompany.as_view()), name="add_company"),
 )

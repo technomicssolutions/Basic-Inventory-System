@@ -374,6 +374,199 @@ class VendorAccountsReport(View):
             
         return response 
 
+class PendingCustomerReport(View):
+    
+    def get(self, request, *args, **kwargs):
+        print  request.GET
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1100))
+        y = 1150
+        status_code = 200
+        customer_name = request.GET.get('customer_name')
+        report_type = request.GET.get('report_type', '')
+        
+        if not report_type:
+            return render(request, 'reports/pending_customer_report.html', {
+                    'report_type' : 'pending_customer',
+                })
+        else:
+            if not customer_name:
+                context = {
+                        'message': 'Please enter a customer',
+                        'report_type' : 'pending_customer',
+                    }
+                return render(request, 'reports/pending_customer_report.html', context)
+            else:
+                if customer_name == 'all' or customer_name == 'All':
+                    customers = Customer.objects.all()   
+                else:
+                    try:
+                        customer = Customer.objects.get(customer_name=customer_name)
+                        customer_accounts = CustomerAccount.objects.filter(customer=customer, is_complted=False)
+                    except:
+                        context = {
+                            'report_type' : 'pending_customer',
+                            'message': 'No such customers',
+                        }
+                        return render(request, 'reports/pending_customer_report.html', context)
+            p = header(p,y)
+
+            p.drawString(400, 900, 'Pending Customer Report - ' + customer_name)
+            total_balance = 0
+            y = 850
+            p.drawString(50,y,'Date')
+            p.drawString(140, y, 'Customer Name')
+            p.drawString(320, y, 'Invoice No')
+            p.drawString(420, y, 'Total Amount')
+            p.drawString(550, y, 'Paid') 
+            p.drawString(650, y, 'Balance') 
+            
+            y = y - 50 
+            if customer_name == 'all' or customer_name == 'All':
+                if len(customers) > 0:
+                    for customer in customers:
+                        customer_accounts = CustomerAccount.objects.filter(customer=customer, is_complted=False)
+                        for customer_account in customer_accounts:
+                                p.drawString(50, y, customer_account.invoice_no.sales_invoice_date.strftime('%d/%m/%Y') if customer_account.invoice_no.sales_invoice_date else '')
+                                p.drawString(140, y, customer_account.customer.customer_name)
+                                
+                                p.drawString(320, y, customer_account.invoice_no.sales_invoice_number)
+                                p.drawString(420, y, str(customer_account.total_amount))
+                                p.drawString(550, y, str(customer_account.paid))
+                                p.drawString(650, y, str(customer_account.balance))
+                                y = y - 30
+                                if y <= 270:
+                                    y = 850
+                                    p.showPage()
+                                    p = header(p,y)
+                                total_balance = total_balance + customer_account.balance
+
+                p.drawString(50, y, '')
+                p.drawString(150, y, '')
+                p.drawString(650, y, 'Total Balance: ')
+                p.drawString(750, y, str(total_balance))
+            else:
+                
+                if len(customer_accounts) > 0:
+                    for customer_account in customer_accounts:
+                        p.drawString(50, y, customer_account.invoice_no.sales_invoice_date.strftime('%d/%m/%Y') if customer_account.invoice_no.sales_invoice_date else '')
+                        p.drawString(140, y, customer_account.customer.customer_name)
+                        
+                        p.drawString(320, y, customer_account.invoice_no.sales_invoice_number)
+                        p.drawString(420, y, str(customer_account.total_amount))
+                        p.drawString(550, y, str(customer_account.paid))
+                        p.drawString(650, y, str(customer_account.balance))
+                        y = y - 30
+                        if y <= 270:
+                            y = 850
+                            p.showPage()
+                            p = header(p,y)
+
+            p.showPage()
+            p.save()
+            return response
+
+class CustomerPaymentReport(View):
+    def get(self, request, *args, **kwargs):
+
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1100))
+        y = 1150
+        status_code = 200
+        customer_name = request.GET.get('customer_name')
+        report_type = request.GET.get('report_type', '')
+        
+        
+        if not report_type:
+            return render(request, 'reports/customer_payment_report.html', {
+                    'report_type' : 'customer_payment',
+                })
+        else:
+            if not customer_name:
+                context = {
+                    'message': 'Please enter a customer',
+                    'report_type' : 'customer_payment',
+                }
+
+                return render(request, 'reports/customer_payment_report.html', context)
+            else:
+                if customer_name:
+                    if customer_name == 'all' or customer_name == 'All':
+                        customers = Customer.objects.all()
+                    else:
+                        try:
+                            customer = Customer.objects.get(customer_name=customer_name)
+                            customer_payments = CustomerPayment.objects.filter(customer=customer)
+                            
+                        except:
+                            context = {
+                                'message': 'No such customers',
+                                'report_type' : 'customer_payment',
+                            }
+                            return render(request, 'reports/customer_payment_report.html', context)
+            p = header(p,y)
+
+            p.drawString(400, 900, ' Customer Report - ' + customer_name)
+
+            y = 850
+            p.drawString(150, y, 'Date')
+            p.drawString(250, y, 'Customer Name')
+            p.drawString(400, y, 'Invoice No')
+            p.drawString(490, y, 'Total Amount')
+            p.drawString(610, y, 'Payment Mode')
+            p.drawString(740, y, 'Amount Paid')
+            p.drawString(860, y, 'Balance') 
+            
+            y = y - 50 
+            if customer_name == 'all' or customer_name == 'All':
+                if len(customers) > 0:
+                    for customer in customers:
+                        
+                        customer_payments = CustomerPayment.objects.filter(customer=customer)
+                        for customer_payment in customer_payments:
+                                p.drawString(150, y, customer_payment.date.strftime('%d/%m/%Y') if customer_payment.date else '')
+                                p.drawString(250, y, customer_payment.customer.customer_name)
+                                p.drawString(400, y, customer_payment.customer_account.sales_invoice_number)
+                                p.drawString(500, y, str(customer_payment.total_amount))
+                                p.drawString(610, y, str(customer_payment.payment_mode))
+                                if customer_payment.payment_mode == 'Cash(sales)' or customer_payment.payment_mode == 'Cheque(sales)':
+                                    p.drawString(740, y, str(customer_payment.paid))
+                                else:
+                                    p.drawString(740, y, str(customer_payment.amount))
+                                p.drawString(860, y, str(customer_payment.balance))
+                                y = y - 30
+                                if y <= 270:
+                                    y = 850
+                                    p.showPage()
+                                    p = header(p,y)
+
+            else:
+                
+                if len(customer_payments) > 0:
+                    for customer_payment in customer_payments:
+                        
+                        customer_payments = CustomerPayment.objects.filter(customer=customer)
+                        p.drawString(150, y, customer_payment.date.strftime('%d/%m/%Y') if customer_payment.date else '')
+                        p.drawString(250, y, customer_payment.customer.customer_name)
+                        p.drawString(400, y, customer_payment.customer_account.sales_invoice_number)
+                        p.drawString(500, y, str(customer_payment.total_amount))
+                        p.drawString(610, y, str(customer_payment.payment_mode))
+                        if customer_payment.payment_mode == 'Cash(sales)' or customer_payment.payment_mode == 'Cheque(sales)':
+                            p.drawString(740, y, str(customer_payment.paid))
+                        else:
+                            p.drawString(740, y, str(customer_payment.amount))
+
+                        p.drawString(860, y, str(customer_payment.balance))
+                        y = y - 30
+                        if y <= 270:
+                            y = 850
+                            p.showPage()
+                            p = header(p,y)
+
+            p.showPage()
+            p.save()
+            return response
+
 class PurchaseReport(View):
 
     def get(self, request, *args, **kwargs):    

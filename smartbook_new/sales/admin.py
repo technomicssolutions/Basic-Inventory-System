@@ -5,7 +5,11 @@ admin.site.register(Sales)
 admin.site.register(SalesItem)
 admin.site.register(CustomerAccount)
 admin.site.register(ReceiptVoucher)
+
+admin.site.register(CustomerPayment)
+
 admin.site.register(SalesReturn)
 admin.site.register(SalesReturnItem)
+
 
 

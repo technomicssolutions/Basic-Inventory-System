@@ -2166,6 +2166,43 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
     }
 }
 
+
+
+function PendingCustomerReportController($scope, $element, $http, $location) {
+      
+    $scope.customers = [];
+    $scope.selected_customer = '';
+    $scope.customer_name = '';
+    $scope.selecting_customer = false;
+    $scope.customer_selected = false;
+    
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        
+        $scope.get_customers();
+
+    }
+    $scope.addcustomer = function(customer) {
+        $scope.selecting_customer = false;
+        $scope.customer_selected = true;
+        $scope.customer_name = customer.customer_name;
+    }
+    $scope.get_customers = function(parameter) {
+        if(parameter == 'customer_name')
+            var param = $scope.customer_name;
+        console.log($scope.customer_name)
+        // else if(param == 'all')
+        //     var val = $scope.customer_name;
+        //     var param = document.getElementById('customer_name').val;
+            // console.log(param)
+        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
+        {   
+            $scope.selecting_customer = true;
+            $scope.customer_selected = false;
+            $scope.customers = data.customers;
+            
+
+
 function SalesReturnController($scope, $element, $http, $timeout, share, $location) {
     
     $scope.sales_return = {
@@ -2235,6 +2272,46 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             console.log(data || "Request failed");
         });
     }
+
+    
+}
+function CustomerPaymentReportController($scope, $element, $http, $location) {
+      
+    $scope.customers = [];
+    $scope.selected_customer = '';
+    $scope.customer_name = '';
+    $scope.selecting_customer = false;
+    $scope.customer_selected = false;
+    
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        
+        $scope.get_customers();
+
+    }
+    $scope.addcustomer = function(customer) {
+        $scope.selecting_customer = false;
+        $scope.customer_selected = true;
+        $scope.customer_name = customer.customer_name;
+    }
+    $scope.get_customers = function(parameter) {
+        if(parameter == 'customer_name')
+            var param = $scope.customer_name;
+        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
+        {   
+            $scope.selecting_customer = true;
+            $scope.customer_selected = false;
+            $scope.customers = data.customers;
+            
+
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    
+}
+=======
     $scope.add_sales_return_items = function(item) {
         var index = $scope.sales_return.sales_items.indexOf(item)
         if(index >= 0){
@@ -2298,3 +2375,4 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         }
     }    
 }
+>>>>>>> 742efeec4e5986637e6afd8632890b824696cd5f

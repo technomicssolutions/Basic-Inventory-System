@@ -15,6 +15,7 @@ urlpatterns = patterns('',
 
 	url(r'^receipt_voucher/$', login_required(ReceiptVoucherView.as_view()), name='receipt_voucher'),
 
+
 	url(r'^check_invoice_no_existence/$', login_required(CheckInvoiceExistence.as_view()), name='invoice_exists'),
 	url(r'^check_receipt_voucher_existence/$', login_required(CheckReceiptVoucherExistence.as_view()), name='rv_exists'),
 

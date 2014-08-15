@@ -102,3 +102,24 @@ class CustomerAccount(models.Model):
     def __unicode__(self):
         return str(self.invoice_no.sales_invoice_number)
 
+class CustomerPayment(models.Model):
+
+    
+    customer_account = models.ForeignKey(Sales, null=True, blank=True)
+    payment_mode = models.CharField('Payment Mode', null=True, blank=True, max_length=25)
+    customer = models.ForeignKey(Customer, null=True, blank=True)
+    date = models.DateField('Date', null=True, blank=True)
+    total_amount = models.DecimalField('Total amount', max_digits=14, decimal_places=2, default=0)
+    paid = models.DecimalField('Paid', max_digits=14, decimal_places=2, default=0)
+    balance = models.DecimalField('Balance', max_digits=14, decimal_places=2, default=0)
+    amount = models.DecimalField('Amount', max_digits=14, decimal_places=2, default=0)
+
+
+    class Meta:
+
+        verbose_name = 'Customer Payment'
+        verbose_name_plural = 'Customer Payment'
+
+    def __unicode__(self):
+
+        return str(self.customer_account.sales_invoice_number)
