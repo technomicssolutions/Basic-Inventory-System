@@ -19,7 +19,7 @@ urlpatterns = patterns('',
 	url(r'^edit_delivery_note/$', login_required(EditDeliveryNote.as_view()), name='edit_delivery_note'),	
 	url(r'^delivery_note_pdf/(?P<dn_id>\d+)/$', login_required(DeliveryNotePDF.as_view()), name='delivery_note_pdf'),
 	url(r'^print_delivery_note/$', login_required(PrintDeliveryNotes.as_view()), name='print_delivery_note'),
-
+	
 	url(r'^check_delivery_note_no_existence/$', login_required(CheckDeliverynoteExistence.as_view()), name='dn_exists'),
 	url(r'^check_invoice_no_existence/$', login_required(CheckInvoiceExistence.as_view()), name='invoice_exists'),
 	url(r'^check_receipt_voucher_existence/$', login_required(CheckReceiptVoucherExistence.as_view()), name='rv_exists'),

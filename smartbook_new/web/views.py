@@ -420,6 +420,51 @@ class CreateCustomer(View):
                 
             })
 
+class CustomerSearch(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            try:
+                customer_name = request.GET.get('customer_name')
+               
+                customers=[]
+                # if customer_name:
+                customers = Customer.objects.filter(customer_name__istartswith=customer_name)
+                # else:
+                
+                customer_list = []
+                for customer in customers:
+
+                    customer_list.append({
+                        'customer_name':customer.customer_name,
+                        'id': customer.id,
+                        'house_name': customer.house_name if customer.house_name else '',
+                        'street' :customer.street if customer.street else '',
+                        'city' :customer.city if customer.city else '',
+                        'district' :customer.district if customer.district else '',
+                        'pin' :customer.pin if customer.pin else '',
+                        'mobile_number' :customer.mobile_number if customer.mobile_number else '',
+                        'land_line' :customer.land_line if customer.land_line else '',
+                        'email_id' :customer.email_id if customer.email_id else '',
+                        })
+                res = {
+                    'customers': customer_list,
+                }
+                response = simplejson.dumps(res)
+
+            except Exception as ex:
+                response = simplejson.dumps({'result': 'error', 'error': str(ex)})
+                status_code = 500
+            status_code = 200
+            return HttpResponse(response, status = status_code, mimetype = 'application/json')
+        else:
+            customers = Customer.objects.all().order_by('customer_name')
+            ctx = {
+                'customers': customers
+            }
+            return render(request, 'user_list',ctx)
+
 class TransportationCompanyList(View):
 
     def get(self, request, *args, **kwargs):

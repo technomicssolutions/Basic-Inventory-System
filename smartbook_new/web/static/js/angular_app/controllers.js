@@ -3820,3 +3820,80 @@ function AddOpeningStockController($scope, $http, $element) {
     }
 
 }
+function PendingCustomerReportController($scope, $element, $http, $location) {
+      
+    $scope.customers = [];
+    $scope.selected_customer = '';
+    $scope.customer_name = '';
+    $scope.selecting_customer = false;
+    $scope.customer_selected = false;
+    
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        
+        $scope.get_customers();
+
+    }
+    $scope.addcustomer = function(customer) {
+        $scope.selecting_customer = false;
+        $scope.customer_selected = true;
+        $scope.customer_name = customer.customer_name;
+    }
+    $scope.get_customers = function(parameter) {
+        if(parameter == 'customer_name')
+            var param = $scope.customer_name;
+        console.log($scope.customer_name)
+        // else if(param == 'all')
+        //     var val = $scope.customer_name;
+        //     var param = document.getElementById('customer_name').val;
+            // console.log(param)
+        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
+        {   
+            $scope.selecting_customer = true;
+            $scope.customer_selected = false;
+            $scope.customers = data.customers;
+            
+
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    
+}
+function CustomerPaymentReportController($scope, $element, $http, $location) {
+      
+    $scope.customers = [];
+    $scope.selected_customer = '';
+    $scope.customer_name = '';
+    $scope.selecting_customer = false;
+    $scope.customer_selected = false;
+    
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        
+        $scope.get_customers();
+
+    }
+    $scope.addcustomer = function(customer) {
+        $scope.selecting_customer = false;
+        $scope.customer_selected = true;
+        $scope.customer_name = customer.customer_name;
+    }
+    $scope.get_customers = function(parameter) {
+        if(parameter == 'customer_name')
+            var param = $scope.customer_name;
+        $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
+        {   
+            $scope.selecting_customer = true;
+            $scope.customer_selected = false;
+            $scope.customers = data.customers;
+            
+
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    
+}
