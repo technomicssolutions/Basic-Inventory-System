@@ -2373,4 +2373,47 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
     }
     
 }
+
+function SupplierAccountEntryController($scope, $http, $element) {
+    $scope.supplier_account_entry = {
+        'supplier': '',
+        'payment_mode': 'cash',
+        'bank_name': '',
+        'voucher_date': '',
+        'cheque_no': '',
+        'cheque_date': '',
+        'amount': '',
+        'invoice_no': '',
+        'voucher_no': '',
+        'paid_amount': 0,
+    }
+    $scope.init = function(csrf_token, voucher_no) {
+        $scope.csrf_token = csrf_token;
+        $scope.supplier_account_entry.voucher_no = voucher_no;
+        $scope.date_picker_cheque = new Picker.Date($$('#cheque_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format: '%d/%m/%Y',
+        });
+        $scope.date_picker_cheque = new Picker.Date($$('#voucher_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format: '%d/%m/%Y',
+        });
+        $scope.supplier_account_entry.payment_mode = 'cash';
+        $scope.payment_mode_change('cash');
+    }
+    $scope.payment_mode_change = function(payment_mode) {
+        if(payment_mode == 'cheque') {
+            $scope.cash = false;
+        } else {
+            $scope.cash = true;
+        }       
+    }   
+
+}
     

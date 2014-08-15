@@ -60,8 +60,6 @@ class PurchaseEntry(View):
         if purchase_created:
             supplier_payment_detail = SupplierAccountPaymentDetail()
         else:
-            print purchase.supplieraccountpaymentdetail_set.all().count()
-            print (purchase.supplieraccountpaymentdetail_set.all())
             supplier_payment_detail = purchase.supplieraccountpaymentdetail_set.all()[0]
         supplier_payment_detail.supplier = supplier
         supplier_payment_detail.date = purchase.purchase_invoice_date 
@@ -353,6 +351,20 @@ class PurchaseReturnView(View):
             }
         status_code = 200
         return HttpResponse(response, status = status_code, mimetype="application/json")
+
+class SupplierAccountEntry(View):
+
+    def get(self, request, *args, **kwargs):
+
+        current_date = dt.datetime.now().date()
+        voucher_no = SupplierAccountPayment.objects.aggregate(Max('voucher_no'))['voucher_no__max']
+        if not voucher_no:
+            voucher_no = 1
+        else:
+            voucher_no = voucher_no + 1
+        return render(request, 'purchase/supplier_account_entry.html', {
+            'current_date': current_date.strftime('%d/%m/%Y'),
+            'voucher_no': voucher_no,})
 
 
 

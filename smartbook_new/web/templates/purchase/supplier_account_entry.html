@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block body_id %}supplier_account_entry{% endblock %}
+
+{% block title %}Supplier Account{% endblock title %}
+{% block controller %} ng-controller="SupplierAccountEntryController" ng-init="init('{{csrf_token}}', '{{voucher_no}}')"{% endblock controller %}
+
+{% block content %}
+
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Supplier Account</h4></div>
+	</div>
+	<div class="purchase_form_container">
+		<form name="supplier_account" method="post">
+			<div class="form_contents_purchase">
+				<div class="section_1_purchase">
+					<div class="formrow_purchase">		
+						<div class="formtext_purchase">
+							<label for="voucher_no">Voucher No.</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="voucher_no" value="{{voucher_no}}" ng-model="supplier_account_entry.voucher_no" id="voucher_no"readonly/>
+						</div>						
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="Date ">Date </label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="voucher_date"  id="voucher_date" value="{{current_date}}">
+						</div>
+					</div>
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="invoice_number">Invoice Number</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="invoice_number" ng-model="invoice_no" ng-change="load_purchase_details();" />
+							<label class="error_message"> [[invoice_message]] </label>
+						</div>
+					</div>
+
+					<div class="formrow_purchase">
+						<div class="formtext_purchase">
+							<label for="supplier">Suppler Name</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="supplier" id="supplier" ng-model="supplier_account_entry.supplier" readonly>
+						</div>
+					</div>
+				</div>	
+				<div class="section_1_purchase">
+					<div class="formrow_purchase">									
+
+						<div class="formtext_purchase" id="radio">
+							<label for="payment_mode">Payment Mode</label>
+						</div>
+						<div class="forminput_purchase" id="radio_input">
+							<input type="radio" name="payment_mode" ng-model="supplier_account_entry.payment_mode" value="cash" ng-change="payment_mode_change('cash')"><label>Cash</label>
+							<input type="radio" name="payment_mode" ng-model="supplier_account_entry.payment_mode" value="cheque" ng-change="payment_mode_change('cheque')"><label>Cheque</label>
+						</div>
+						<div class="clear"></div>
+						<div class="clear"></div>
+
+						<div class="formtext_purchase">
+							<label for="bank_name">Bank Name</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" ng-model="supplier_account_entry.bank_name" ng-readonly="cash"/>						
+						</div>
+						
+						<div class="formtext_purchase">
+							<label for="cheque_no">Cheque No</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="cheque_no" ng-model="supplier_account_entry.cheque_no" ng-readonly="cash"/>	
+						</div>		
+					
+						<div class="formtext_purchase">
+							<label for="cheque_date">Cheque date</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="cheque_date" id="cheque_date" ng-model="supplier_account_entry.cheque_date" value="{{current_date}}" ng-readonly="cash"/>			
+						</div>	
+					</div>
+					<div class="formrow_purchase">						
+
+						<div class="formtext_purchase">
+							<label for="Amount">Total Amount</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="amount" ng-model="supplier_account_entry.amount" readonly/>
+						</div>						
+					</div>
+					<div class="formrow_purchase">						
+
+						<div class="formtext_purchase">
+							<label for="Settlement">Paid</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="Settlement" ng-model="supplier_account_entry.paid" readonly>
+						</div>						
+					</div>
+					<div class="formrow_purchase">						
+
+						<div class="formtext_purchase">
+							<label for="Settlement">Balance</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="Settlement" ng-model="balance" readonly>
+						</div>						
+					</div>
+
+					<div class="formrow_purchase">						
+
+						<div class="formtext_purchase">
+							<label for="Settlement">Amount</label>
+						</div>
+						<div class="forminput_purchase">
+							<input type="text" name="Settlement" ng-model="supplier_account_entry.paid_amount" ng-change="balance_amount_calculation()">
+						</div>						
+					</div>
+				</div>
+			</div>
+			<div  align="Center">
+				<div class="buttons">
+					<p class="error_message"> [[validation_error]] </p>
+					<input type="button" value="Submit" ng-click="save_supplier_account_entry()"/>
+					<a href="{% url 'home' %}"><input type="button" value="Cancel"></a>
+				</div>
+			</div>			
+		</form>
+		<div class="clear"></div>
+	</div>
+
+
+{% endblock content %}

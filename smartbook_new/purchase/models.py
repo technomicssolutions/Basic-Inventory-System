@@ -65,7 +65,7 @@ class SupplierAccount(models.Model):
 class SupplierAccountPayment(models.Model):
     
     purchase = models.ForeignKey(Purchase, null=True, blank=True)
-    voucher_no = models.CharField('Voucher No', null=True, blank=True, max_length=30, unique=True)
+    voucher_no = models.IntegerField('Voucher No', default=0, unique=True)
     date = models.DateField('Date', null=True, blank=True)
     total_amount = models.DecimalField('Total Amount', max_digits=14, decimal_places=2, default=0)
     paid_amount = models.DecimalField('Paid Amount', max_digits=14, decimal_places=2, default=0)
