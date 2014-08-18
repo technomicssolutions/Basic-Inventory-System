@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*- 
-
 from datetime import datetime
 
 from reportlab.lib.units import cm
@@ -19,7 +17,7 @@ from django.http import HttpResponse
 from sales.models import Sales, SalesReturn, CustomerPayment, CustomerAccount   
 from expenses.models import Expense, ExpenseHead
 from purchase.models import SupplierAccount, SupplierAccountPayment, SupplierAccountPaymentDetail, Purchase, PurchaseReturn
-from web.models import OwnerCompany, Customer
+from web.models import OwnerCompany, Customer, Supplier
 
 def header(canvas, y):
     try:
@@ -247,42 +245,41 @@ class VendorAccountsReport(View):
                 }
                 return render(request, 'reports/vendor_accounts_report.html', ctx) 
             else:
+                heading = 'Date Wise Vendor Report - ' + start_date + ' - '+ end_date
                 start_date = datetime.strptime(start_date, '%d/%m/%Y')
                 end_date = datetime.strptime(end_date, '%d/%m/%Y')
                 p = header(p,y)
+                p.setFontSize(16)
+                p.drawString(350, y - 70, heading)
 
-                p.drawString(350, 900, 'Date Wise Vendor Accounts')
+                p.setFontSize(14)
 
-                p.setFontSize(13)
-
-                p.drawString(50, 875, "Date")
-                p.drawString(150, 875, "Vendor Name")
-                p.drawString(250, 875, "Payment Mode")
-                p.drawString(350, 875, "Narration")
-                p.drawString(470, 875, "Opening Balance")
-                p.drawString(580, 875, "Paid Amount")
-                p.drawString(650, 875, "Closing Balance") 
+                p.drawString(50, y - 100, "Date")
+                p.drawString(150, y - 100, "Vendor Name")
+                p.drawString(370, y - 100, "Invoice No")
+                p.drawString(450, y - 100, "Payment Mode")
+                p.drawString(600, y - 100, "Amount Paid")
+                p.drawString(700, y - 100, "Balance")
                 
-                y = 850
+                y1 = y - 120
+                p.setFontSize(12)
 
                 purchase_accounts = SupplierAccountPaymentDetail.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
                 if len(purchase_accounts) > 0:
                     for purchase_account in purchase_accounts:
-
-                        y = y - 30
-                        if y <= 270:
-                            y = 850
+                        y1 = y1 - 30
+                        if y1 <= 270:
+                            y1 = y - 120
                             p.showPage()
-                            p = header(p,y)
+                            p = header(p, y)
 
-                        p.drawString(50, y, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
-                        p.drawString(150, y, purchase_account.supplier_account.supplier.name)
-                        p.drawString(250, y, purchase_account.supplier_account.payment_mode)
-                        p.drawString(350, y, purchase_account.supplier_account.narration if purchase_account.supplier_account.narration else '')
+                        p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
+                        p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
+                        p.drawString(400, y1, str(purchase_account.purchase.purchase_invoice_number) if purchase_account.purchase else '')
+                        p.drawString(450, y1, purchase_account.payment_mode)
 
-                        p.drawString(470, y, str(purchase_account.opening_balance))
-                        p.drawString(580, y, str(purchase_account.amount))
-                        p.drawString(660, y, str(purchase_account.closing_balance)) 
+                        p.drawString(600, y1, str(purchase_account.paid))
+                        p.drawString(700, y1, str(purchase_account.balance)) 
                 p.showPage()
                 p.save()
         elif report_type == 'vendor':
@@ -295,7 +292,7 @@ class VendorAccountsReport(View):
                 return render(request, 'reports/vendor_accounts_report.html', ctx)
             else:      
                 heading = 'Vendor Wise Vendor Accounts' + ' - ' + supplier_name
-                p.setFontSize(20)
+                p.setFontSize(16)
                 p.drawString(270, y - 70, heading)
                 p.setFontSize(14)
                 p.drawString(50, y - 100, 'Date')
@@ -307,18 +304,16 @@ class VendorAccountsReport(View):
                 p.drawString(860, y - 100, 'Balance')        
                 p = header(p,y)
                 p.setFontSize(12)
-                y1 = y - 110
-                vendor = SupplierAccount.objects.get(supplier__name = supplier_name)
-                purchase_accounts = SupplierAccountPaymentDetail.objects.filter(supplier = vendor)[:10]
+                y1 = y - 120
+                supplier = Supplier.objects.get(name=supplier_name)
+                purchase_accounts = SupplierAccountPaymentDetail.objects.filter(supplier=supplier).order_by('-id')[:10]
                 if len(purchase_accounts) > 0:
                     for purchase_account in purchase_accounts:
-
                         y1 = y1 - 30
                         if y1 <= 270:
                             y1 = 850
                             p.showPage()
                             p = header(p,y)
-
                         p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
                         p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
                         p.drawString(350, y1, str(purchase_account.purchase.purchase_invoice_number) if purchase_account.purchase else '')
@@ -331,8 +326,6 @@ class VendorAccountsReport(View):
                         y1 = 850
                         p.showPage()
                         p = header(p,y)
-                    p.drawString(470, y1, 'Current Balance:')
-                    p.drawString(580, y1, str(purchase_account.balance)) 
                 p.showPage()
                 p.save()
             

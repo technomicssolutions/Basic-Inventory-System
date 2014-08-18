@@ -168,7 +168,6 @@ class EditCustomer(View):
     def get(self, request, *args, **kwargs):
 
         customer_id = kwargs['customer_id']
-        print customer_id
         customer = Customer.objects.get(id=customer_id)
         return render(request, 'edit_customer.html',{'customer_id': customer_id, 'customer': customer, })
 
@@ -211,9 +210,11 @@ class EditCustomer(View):
         try:
             customer.save()
             return HttpResponseRedirect(reverse('customers'))
-        except:
+        except Exception as ex:
+            print str(ex)
             context = {
                 'message' : 'Customer with this name already exists',
+                'error_mssage': str(ex),
                 'customer': customer,
                 'customer_id': customer_id,
             }

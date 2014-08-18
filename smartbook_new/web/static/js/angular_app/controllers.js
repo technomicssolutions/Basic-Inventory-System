@@ -869,6 +869,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
     $scope.selected_item = '';
     $scope.selecting_item = false;
     $scope.item_selected = false;
+    $scope.edit_purchase = false; 
     $scope.init = function(csrf_token, invoice_number) {
         $scope.csrf_token = csrf_token;
         $scope.purchase.purchase_invoice_number = invoice_number;
@@ -1161,8 +1162,11 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                console.log(status)
-                document.location.href = '/purchase/entry/';
+                console.log($scope.edit_purchase);
+                if($scope.edit_purchase)
+                    document.location.href = '/purchase/edit/';
+                else
+                    document.location.href = '/purchase/entry/';
                
             }).error(function(data, success){
                 
@@ -1170,6 +1174,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         }
     }
     $scope.get_purchase_details = function() {
+        $scope.edit_purchase = true;
         $scope.entered_purchase_no = $scope.purchase.purchase_invoice_number;
         $http.get('/purchase/purchase_details/?type=edit&invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
         {

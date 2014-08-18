@@ -55,7 +55,6 @@ class PurchaseEntry(View):
                 purchase.supplier = supplier
             except:
                 pass
-
         supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
         if purchase_created:
             supplier_payment_detail = SupplierAccountPaymentDetail()
@@ -174,64 +173,6 @@ class VendorAccounts(View):
         })
         
 
-class SupplierAccountDetails(View):
-    def get(self, request, *args, **kwargs):
-        try:
-            supplier_id = request.GET['vendor']
-            supplier = Supplier.objects.get(id=supplier_id)
-            vendor_account =  SupplierAccount.objects.get(supplier=supplier)
-            res = {
-                'result': 'Ok',
-                'vendor_account': {
-                    'payment_mode': 'cash',
-                    'total_amount': vendor_account.total_amount,
-                    'amount_paid': vendor_account.paid_amount,
-                    'balance_amount': vendor_account.balance,
-                    'vendor': vendor_account.supplier.name
-                }
-            } 
-
-            response = simplejson.dumps(res)
-            status_code = 200
-        except:
-            res = {
-                'result': 'error',
-                'message': 'Vendor does not have any purchase details',
-            }
-            response = simplejson.dumps(res)
-            status_code = 200
-        return HttpResponse(response, status = status_code, mimetype="application/json")
-
-    def post(self, request, *args, **kwargs):
-
-        vendor_account_dict = ast.literal_eval(request.POST['vendor_account'])
-        vendor = Supplier.objects.get(name=vendor_account_dict['vendor'])
-        vendor_detail = SupplierAccountDetail()
-        vendor_account, created =  SupplierAccount.objects.get_or_create(supplier=vendor) 
-        vendor_account.date = datetime.strptime(vendor_account_dict['vendor_account_date'], '%d/%m/%Y')
-        vendor_detail.date = vendor_account.date
-        vendor_account.payment_mode = vendor_account_dict['payment_mode']
-        vendor_account.narration = vendor_account_dict['narration']
-        vendor_account.amount = int(vendor_account_dict['amount'])
-        vendor_detail.amount = vendor_account.amount
-        vendor_account.paid_amount = vendor_account.paid_amount + vendor_account.amount  #int(vendor_account_dict['amount_paid'])
-        vendor_detail.opening_balance = vendor_account.balance
-        vendor_account.balance = vendor_account.balance - vendor_account.amount  #int(vendor_account_dict['balance_amount'])
-        vendor_detail.closing_balance = vendor_account.balance
-        vendor_detail.supplier_account = vendor_account
-        if vendor_account_dict['cheque_date']:
-            vendor_account.cheque_no = vendor_account_dict['cheque_no']
-            vendor_account.cheque_date = datetime.strptime(vendor_account_dict['cheque_date'], '%d/%m/%Y') 
-            vendor_account.bank_name = vendor_account_dict['bank_name']
-            vendor_account.branch_name = vendor_account_dict['branch_name']
-        vendor_account.save()
-        vendor_detail.save()
-        response = {
-                'result': 'Ok',
-            }
-        status_code = 200
-        return HttpResponse(response, status = status_code, mimetype="application/json")
-
 class PurchaseEdit(View):
     def get(self, request, *args, **kwargs):
         
@@ -244,13 +185,10 @@ class PurchaseDetail(View):
         try:
             invoice_number = request.GET.get('invoice_no', '')
             detail_type = request.GET.get('type', '')
-            print detail_type
             if detail_type == 'edit':
                 purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=False)
             elif detail_type == 'payment':
                 purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=False, is_returned=False)
-                
-                print purchase, 'hii'
                 supplier_account, created = SupplierAccount.objects.get_or_create(supplier=purchase.supplier, purchase=purchase)
             else:
                 purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=True)
@@ -390,7 +328,6 @@ class SupplierAccountEntry(View):
     def post(self, request, *args, **kwargs):
 
         supplier_payment_details = ast.literal_eval(request.POST['supplier_account_details'])
-        print supplier_payment_details
         supplier = Supplier.objects.get(name=supplier_payment_details['supplier'])
         purchase = Purchase.objects.get(purchase_invoice_number=supplier_payment_details['invoice_no'])
         
@@ -406,14 +343,16 @@ class SupplierAccountEntry(View):
         purchase_payment.save()
 
         supplier_payment_detail = SupplierAccountPaymentDetail()
-        supplier_payment_detail.customer = supplier
+        supplier_payment_detail.supplier = supplier
         supplier_payment_detail.date = purchase_payment.date
         supplier_payment_detail.total_amount = purchase_payment.total_amount
         supplier_payment_detail.amount = purchase_payment.paid_amount
+        supplier_payment_detail.paid = purchase_payment.paid_amount
+        supplier_payment_detail.purchase = purchase
         if purchase_payment.payment_mode == 'cheque':   
-            supplier_payment_detail.payment_mode = 'Cheque(R.V)'
+            supplier_payment_detail.payment_mode = 'Cheque(P.V)'
         else:
-            supplier_payment_detail.payment_mode = 'Cash(R.V)'
+            supplier_payment_detail.payment_mode = 'Cash(P.V)'
         supplier_payment_detail.save()
 
         supplier_account, created = SupplierAccount.objects.get_or_create(supplier=supplier, purchase=purchase)
