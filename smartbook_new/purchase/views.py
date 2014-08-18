@@ -322,15 +322,15 @@ class PurchaseReturnView(View):
         purchase_return.discount_before_return = purchase.discount
         purchase_return.save()
         
-        # supplier_account = SupplierAccount.objects.get(supplier=purchase.supplier)
-        # supplier_account.total_amount = float(supplier_account.total_amount) - float(post_dict['net_return_total'])
-        # supplier_account.save()
-        
         purchase.supplier_amount = post_dict['supplier_amount_return']
         purchase.discount = post_dict['discount_return']
         purchase.discount_percentage = post_dict['discount_percentage']
         purchase.net_total = post_dict['net_total']
         purchase.grant_total = post_dict['grant_return_total']
+        if purchase.net_total == 0  and purchase.grant_total == 0:
+            purchase.is_returned = True
+        else:
+            purchase.is_returned = False
         purchase.save()
         return_items = post_dict['purchase_items']
 
