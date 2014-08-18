@@ -571,17 +571,23 @@ class SalesReturnView(View):
         sales_return, created = SalesReturn.objects.get_or_create(sales=sales, return_invoice_number = post_dict['invoice_number'])
         sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
         sales_return.net_amount = post_dict['net_return_total']
-        sales_return.net_amount_after_return = sales.net_amount
-        sales_return.grant_total_after_return = sales.grant_total
-        
+        sales_return.net_amount_before_return = sales.net_amount
+        sales_return.grant_total_before_return = sales.grant_total
+        sales_return.discount_before_return = sales.discount_for_sale
         sales_return.save() 
         
-        sales.net_amount_after_return = float(sales.net_amount) - (float(return_amount) + float(post_dict['net_return_total']))
-        if sales.net_amount_after_return > 0 and sales.net_amount_after_return >= sales.discount_for_sale:
-            sales.grant_total_after_return = float(sales.net_amount_after_return) - float(sales.discount_for_sale)
+        sales.net_amount = post_dict['net_total']
+        sales.grant_total = post_dict['grant_total']
+        sales.discount_for_sale = post_dict['discount']
+        sales.discount_percentage = post_dict['discount_percentage']
+        if sales.payment_mode == 'cash' or sales.payment_mode == 'cheque':
+            sales.paid = sales.grant_total
         else:
-            sales.grant_total_after_return = sales.net_amount_after_return
-        sales.paid = sales.grant_total_after_return
+            sales.balance = sales.grant_total - sales.paid 
+        if sales.net_amount == 0 and sales.grant_total == 0:
+            sales.is_returned = True
+        else:
+            sales.is_returned = False
         sales.save()
 
         return_items = post_dict['sales_items']
@@ -594,12 +600,18 @@ class SalesReturnView(View):
             s_return_item.return_quantity = item['returned_quantity']
             s_return_item.sold_quantity = sales_return_item.quantity_sold
             s_return_item.save()
+            
             sales_return_item.quantity_sold = int(sales_return_item.quantity_sold) - int(item['returned_quantity'])
             sales_return_item.net_amount = float(sales_return_item.net_amount) - float(item['returned_amount'])
             sales_return_item.save()
+            
             inventory = InventoryItem.objects.get(item=return_item)
             inventory.quantity = inventory.quantity + int(item['returned_quantity'])
             inventory.save()
+        removed_items = post_dict['remove_items']
+        for removed_item in removed_items:
+            s_item = SalesItem.objects.get(item__code=removed_item['item_code'], sales=sales)
+            s_item.delete()
         response = {
                 'result': 'Ok',
             }

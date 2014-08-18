@@ -2237,7 +2237,8 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         'net_total': '',
         'grant_total': '',
         'discount': '',
-        'discount_percentage': '',
+        'discount_percentage': 0,
+        'remove_items': [],
     }   
     $scope.sales = {
         'sales_invoice_number': '',
@@ -2287,7 +2288,23 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             $scope.selecting_item = true;
             $scope.item_selected = false;
             var invoice_no = $scope.sales.sales_invoice_number;
-            if(data.sales) {
+            console.log(data.sales);
+            if(data.sales == undefined) {
+                $scope.message = data.result;
+                $scope.sales = {}
+                $scope.sales.sales_invoice_number = invoice_no;
+                $scope.sales_return = {
+                    'invoice_number': '',
+                    'sales_return_date': '',
+                    'net_amount': '',
+                    'sales_items': [],
+                    'net_total': '',
+                    'grant_total': '',
+                    'discount': '',
+                    'discount_percentage': 0,
+                    'remove_items': [],
+                } 
+            } else {
                 $scope.sales = data.sales;
                 $scope.sales.deleted_items = [];
                 $scope.sales.sales_invoice_number = invoice;
@@ -2295,10 +2312,6 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                 $scope.sales_return.grant_total = data.sales.grant_total;
                 $scope.sales_return.discount = data.sales.discount;
                 $scope.message = ''
-            } else {
-                $scope.message = data.result;
-                $scope.sales = {}
-                $scope.sales.sales_invoice_number = invoice_no;
             }
         }).error(function(data, status)
         {
@@ -2337,7 +2350,7 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         $scope.calculate_grant_total();
     }
     $scope.check_return = function(item) {
-        if (item.returned_quantity != Number(item.returned_quantity)) {
+        if (item.returned_quantity != Number(item.returned_quantity) || item.returned_quantity == '') {
             item.returned_quantity = 0;
         }
         if (parseInt(item.returned_quantity) > parseInt(item.quantity_sold)) {
@@ -2351,6 +2364,9 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             $scope.sales_return.sales_invoice_number = $scope.sales.sales_invoice_number;
             for(var i=0; i< $scope.sales_return.sales_items.length; i++){
                 $scope.sales_return.sales_items[i].selected = "selected";
+                if ($scope.sales_return.sales_items[i].quantity_sold == $scope.sales_return.sales_items[i].returned_quantity) {
+                    $scope.sales_return.remove_items.push($scope.sales_return.sales_items[i]);
+                }
             }
             $scope.sales_return.net_total = $scope.sales.net_amount;
             $scope.sales_return.grant_total = $scope.sales.grant_total;
@@ -2358,23 +2374,23 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             if ($scope.sales.discount != 0)
                 $scope.sales_return.discount_percentage = ((parseFloat($scope.sales.discount)/parseFloat($scope.sales.net_total))*100).toFixed(2);
 
-            // params = {
-            //     "csrfmiddlewaretoken" : $scope.csrf_token,
-            //     'sales_return': angular.toJson($scope.sales_return),
-            // }
-            // $http({
-            //     method : 'post',
-            //     url : "/sales/sales_return/",
-            //     data : $.param(params),
-            //     headers : {
-            //         'Content-Type' : 'application/x-www-form-urlencoded'
-            //     }
-            // }).success(function(data, status) {
-            //     document.location.href = '/sales/sales_return/';
+            params = {
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+                'sales_return': angular.toJson($scope.sales_return),
+            }
+            $http({
+                method : 'post',
+                url : "/sales/sales_return/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                document.location.href = '/sales/sales_return/';
                
-            // }).error(function(data, success){
-            //     console.log('Request failed' || data);
-            // });
+            }).error(function(data, success){
+                console.log('Request failed' || data);
+            });
         }
     }    
 }
