@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 from reports.views import WholeSalesReport, PurchaseReport, VendorAccountsReport, ExpenseReport, PendingCustomerReport,\
- CustomerPaymentReport
+ CustomerPaymentReport, PurchaseReturnReport
 
 urlpatterns = patterns('',
 	url(r'^whole_sales_report/$', login_required(WholeSalesReport.as_view()), name='whole_sales_report'),
@@ -13,4 +13,5 @@ urlpatterns = patterns('',
 	url(r'^customer_payment/$', CustomerPaymentReport.as_view(), name='customer_payment_report'),
 
 	url(r'^expense_report/$', login_required(ExpenseReport.as_view()), name='expense_report'),
+	url(r'^purchase_return_report/$', login_required(PurchaseReturnReport.as_view()), name='purchase_return_report'),
 )

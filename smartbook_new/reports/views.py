@@ -605,4 +605,86 @@ class PurchaseReport(View):
                 p.save()
                 return response
 
+class PurchaseReturnReport(View):
+
+    def get(self, request, *args, **kwargs):    
+
+        status_code = 200
+        response = HttpResponse(content_type='application/pdf')
+        p = canvas.Canvas(response, pagesize=(1000, 1250))
+        y = 1150
+        p.setFontSize(15)
+        p = header(p, y)
+
+        report_type = request.GET.get('report_type', '')
+
+        if not report_type:
+            return render(request, 'reports/purchase_return_report.html', {
+                'report_type' : 'date',
+                })
+
+        if report_type == 'date': 
+
+            start = request.GET['start_date']
+            end = request.GET['end_date']
+           
+            if not start:            
+                ctx = {
+                    'msg' : 'Please Select Start Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_return_report.html', ctx)
+            elif not end:
+                ctx = {
+                    'msg' : 'Please Select End Date',
+                    'start_date' : start,
+                    'end_date' : end,
+                    'report_type' : 'date',
+                }
+                return render(request, 'reports/purchase_return_report.html', ctx)                  
+            else:
+                total = 0
+                p.setFont('Helvetica', 20)
+                report_heading = 'Date Wise Purchase Return Report' + ' - '+ start + ' - ' + end
+                start_date = datetime.strptime(start, '%d/%m/%Y')
+                end_date = datetime.strptime(end, '%d/%m/%Y')
+                p.drawString(270, y - 70, report_heading)
+                p.setFontSize(13)
+                p.drawString(50, y - 100, "Date")
+                p.drawString(110, y - 100, "Invoice Number")
+                p.drawString(240, y - 100, "Purchase Invoice")
+                p.drawString(360, y - 100, "Supplier")
+                p.drawString(500, y - 100, "Net Total")
+                
+                purchase_returns = PurchaseReturn.objects.filter(date__gte=start_date, date__lte=end_date).order_by('date')
+                y1 = y - 110
+                for purchase in purchase_returns:
+                    y1 = y1 - 30
+                    if y1 <= 135:
+                        y1 = y - 110
+                        p.showPage()
+                        p = header(p, y)
+                    
+                    total = float(total) + float(purchase.net_amount)
+                    # grant_total = float(grant_total) + float(purchase.grant_total)
+                    # total_discount = float(total_discount) + float(purchase.discount)
+                    p.drawString(50, y1, purchase.date.strftime('%d/%m/%y'))
+                    p.drawString(120, y1, str(purchase.return_invoice_number))
+
+                    p.drawString(240, y1, str(purchase.purchase.purchase_invoice_number))
+                    p.drawString(360, y1, purchase.purchase.supplier.name)
+                    p.drawString(500, y1, str(purchase.net_amount))
+                        
+                if y1 <= 135:
+                    y1 = y - 110
+                    p.showPage()
+                    p = header(p, y)
+                p.drawString(50, y1 - 80, 'Total Amount:')
+                p.drawString(150, y1 - 80, str(total))
+                p.showPage()
+                p.save()
+                return response
+
 
