@@ -2255,6 +2255,7 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
     }
     $scope.init = function(csrf_token, invoice_number){
         $scope.csrf_token = csrf_token;
+        $scope.return_invoice_no = invoice_number;
         $scope.sales_return.invoice_number = invoice_number;
         new Picker.Date($$('#sales_return_date'), {
             timePicker: false,
@@ -2299,13 +2300,11 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             $scope.selecting_item = true;
             $scope.item_selected = false;
             var invoice_no = $scope.sales.sales_invoice_number;
-            console.log(data.sales);
             if(data.sales == undefined) {
                 $scope.message = data.result;
                 $scope.sales = {}
                 $scope.sales.sales_invoice_number = invoice_no;
                 $scope.sales_return = {
-                    'invoice_number': '',
                     'sales_return_date': '',
                     'net_amount': '',
                     'sales_items': [],
@@ -2324,6 +2323,8 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                 $scope.sales_return.discount = data.sales.discount;
                 $scope.message = ''
             }
+            
+            $scope.sales_return.invoice_number = $scope.return_invoice_no;
         }).error(function(data, status)
         {
             console.log(data || "Request failed");

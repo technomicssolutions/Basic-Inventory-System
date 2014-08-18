@@ -123,8 +123,9 @@ body {
 	margin: 0px;
 	padding: 5px;
 	background-color: #ADD8E6;
-	min-width: 150px;
+	min-width: 160px;
 	display: none;
+	margin-left: -19px;
 }
 
 
