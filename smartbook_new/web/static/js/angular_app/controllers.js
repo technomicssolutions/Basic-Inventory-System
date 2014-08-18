@@ -95,7 +95,6 @@ function get_suppliers($scope, $http) {
 
 function validate_add_supplier($scope) {
     $scope.validation_error = '';
-    console.log($scope.email);
     if($scope.name == '' || $scope.name == undefined) {
         $scope.validation_error = "Please Enter the supplier Name" ;
         return false;
@@ -214,7 +213,6 @@ function get_customers($scope, $http) {
     });
 }
 function customer_validation($scope) {
-    console.log($scope.email_id);
     $scope.error_message = "";
     $scope.error_flag = false;
     if($scope.customer_name == '') {
@@ -319,7 +317,6 @@ function get_sales_invoice_details($scope, $http, from) {
                 $scope.message = '';
                
                 $scope.sales = data.sales_invoices[0]; 
-                console.log($scope.sales.sales_items)
                 $scope.payment_mode_change_sales($scope.sales.payment_mode);
                 $scope.sales.balance_payment = $scope.sales.balance;
                 $scope.sales.paid_amount = $scope.sales.paid;
@@ -688,7 +685,6 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         }
     }
     $scope.edit_expense = function(){
-        console.log($scope.expense.expense_head_id);
         if ($scope.expense.cheque_date == null) {
             $scope.expense.cheque_date = ''
         }
@@ -1534,7 +1530,6 @@ function EditSalesController($scope, $http, $location, $element) {
     }
 
     $scope.remove_from_item_list = function(item) {
-        console.log(item);
         var index = $scope.sales.sales_items.indexOf(item);
         $scope.sales.removed_items.push(item);
         $scope.sales.sales_items.splice(index, 1);
@@ -1747,7 +1742,6 @@ function PrintInvoiceController($scope, $http, $element) {
         get_sales_invoice_details($scope, $http, 'print');
     }
     $scope.print_invoice = function() {
-        console.log($scope.sales_id)
         if($scope.sales_id == '' || $scope.sales_id == undefined){
             $scope.invoice_message = "Please enter a invoice number";
             
@@ -1811,7 +1805,6 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.validation_error = data.message;
-                console.log(data.message)
             } else {            
                 $scope.vendor_account = data.vendor_account;
                 $scope.actual_total_amount = data.vendor_account.total_amount;
@@ -1822,9 +1815,6 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
             
         }).error(function(data, status)
         {
-            // $scope.error_flag=true;
-            // $scope.message = data.message;
-            
         });
     }
     $scope.validate_vendor_account = function(){
@@ -1881,7 +1871,6 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         $scope.vendor_account.vendor_account_date = $$('#vendor_account_date')[0].get('value');
         
         if($scope.validate_vendor_account()) {
-            console.log($scope.vendor_account)
             params = { 
 
                 'vendor_account': angular.toJson($scope.vendor_account),
@@ -1935,7 +1924,6 @@ function VendorAccountReportController($scope, $element, $http, $location) {
         $http.get('/suppliers/').success(function(data)
         {   
             $scope.suppliers = data.suppliers;
-            console.log($scope.suppliers)
             $scope.supplier_name = 'select';
         }).error(function(data, status)
         {
@@ -1963,7 +1951,6 @@ function VendorReportController($http, $scope, $location, $element) {
         $http.get('/suppliers/').success(function(data)
         {
             $scope.suppliers = data.suppliers[0];
-            console.log($scope.suppliers)
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
@@ -2167,7 +2154,6 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
     $scope.save_purchase_return = function() {
         $scope.purchase_return.purchase_invoice_number = $scope.purchase.purchase_invoice_number;
         $scope.purchase_return.purchase_return_date = $$('#purchase_return_date')[0].get('value');
-        console.log($scope.return_purchase_validation());
         if ($scope.return_purchase_validation()) {
             for(var i=0; i< $scope.purchase_return.purchase_items.length; i++){
                 $scope.purchase_return.purchase_items[i].selected = "selected";
@@ -2434,14 +2420,12 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
-            
-
+        
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
         });
-    }
-    
+    }  
 }
 
 function SupplierAccountEntryController($scope, $http, $element) {
