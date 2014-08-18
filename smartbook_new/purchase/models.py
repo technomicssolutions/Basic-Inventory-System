@@ -26,6 +26,8 @@ class Purchase(models.Model):
     purchase_expense = models.DecimalField('Purchase Expense', max_digits=14, decimal_places=2, default=0)
     is_paid_completely = models.BooleanField('Paid Completely', default=False)
     is_returned = models.BooleanField('Returned Completely', default=False)
+    paid = models.DecimalField('Paid', max_digits=14, decimal_places=2, default=0)
+    balance = models.DecimalField('Balance', max_digits=14, decimal_places=2, default=0)
     
     def __unicode__(self):
         return str(self.purchase_invoice_number)

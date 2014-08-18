@@ -2141,6 +2141,9 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
         } else if ($scope.purchase.grant_total < 0) {
             $scope.validation_error = 'Please check the discount amount with the grant total';
             return false;
+        } else if ($scope.purchase.discount != Number($scope.purchase.discount)) {
+            $scope.validation_error = 'Please enter valid discount amount';
+            return false;
         } else if ($scope.purchase_return.purchase_items.length > 0) {
             for (var i=0; i<$scope.purchase_return.purchase_items.length; i++) {
                 if($scope.purchase_return.purchase_items[i].returned_quantity != Number($scope.purchase_return.purchase_items[i].returned_quantity) || $scope.purchase_return.purchase_items[i].returned_quantity == 0 || $scope.purchase_return.purchase_items[i].returned_quantity == '' || $scope.purchase_return.purchase_items[i].returned_quantity == undefined) {
@@ -2268,6 +2271,9 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             return false;
         } else if ($scope.sales.grant_total < 0) {
             $scope.validation_error = 'Please check the discount amount with the grant total';
+            return false;
+        } else if ($scope.sales.discount != Number($scope.sales.discount)) {
+            $scope.validation_error = 'Please enter valid discount amount';
             return false;
         } else if ($scope.sales_return.sales_items.length > 0) { 
             for (var i=0; i<$scope.sales_return.sales_items.length; i++) {
@@ -2447,6 +2453,7 @@ function SupplierAccountEntryController($scope, $http, $element) {
     }
     $scope.init = function(csrf_token, voucher_no) {
         $scope.csrf_token = csrf_token;
+        $scope.voucher_no = voucher_no;
         $scope.supplier_account_entry.voucher_no = voucher_no;
         $scope.date_picker_cheque = new Picker.Date($$('#cheque_date'), {
             timePicker: false,
@@ -2472,23 +2479,88 @@ function SupplierAccountEntryController($scope, $http, $element) {
             $scope.cash = true;
         }       
     }
-    // $scope.get_purchase_details = function() {
-    //     $scope.entered_purchase_no = $scope.invoice_no;
-    //     $http.get('/purchase/purchase_details/?type=edit&invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
-    //     {
-    //         $scope.supplier_account_entry = data.purchase;
-    //         $scope.supplier_account_entry.purchase_invoice_number = $scope.entered_purchase_no;
-            
-    //         if (data.message) {
-    //             $scope.validation_error = data.message +' - ' +$scope.entered_purchase_no;
-    //         } else {
-    //             $scope.validation_error = '';
-    //         }
-    //         $scope.purchase.deleted_items = [];
-    //     }).error(function(data, status)
-    //     {
-    //         console.log(data || "Request failed");
-    //     });
-    // }  
+    $scope.get_purchase_details = function() {
+        $scope.entered_purchase_no = $scope.invoice_no;
+        $http.get('/purchase/purchase_details/?type=payment&invoice_no='+$scope.invoice_no).success(function(data)
+        {
+            $scope.supplier_account_entry = data.purchase;
+            $scope.supplier_account_entry.invoice_no = $scope.entered_purchase_no;
+            $scope.supplier_account_entry.voucher_no = $scope.voucher_no;
+            if (data.message) {
+                $scope.validation_error = data.message +' - ' +$scope.entered_purchase_no;
+                $scope.balance = 0;
+            } else {
+                $scope.validation_error = '';
+                $scope.balance = $scope.supplier_account_entry.amount - $scope.supplier_account_entry.paid;
+            }
+            $scope.supplier_account_entry.payment_mode = 'cash';
+            $scope.payment_mode_change('cash');
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }  
+    $scope.calculate_balance = function() {
+        if ($scope.supplier_account_entry.amount == '' || $scope.supplier_account_entry.amount == undefined || $scope.supplier_account_entry.amount != Number($scope.supplier_account_entry.amount)) {
+            $scope.supplier_account_entry.amount = 0;
+        }
+        if ($scope.supplier_account_entry.paid_amount == '' || $scope.supplier_account_entry.paid_amount == undefined || $scope.supplier_account_entry.paid_amount != Number($scope.supplier_account_entry.paid_amount)) {
+            $scope.supplier_account_entry.paid_amount = 0;
+        }
+        $scope.balance = $scope.supplier_account_entry.amount - (parseFloat($scope.supplier_account_entry.paid) + parseFloat($scope.supplier_account_entry.paid_amount));
+    }
+    $scope.supplier_payment_validation = function() {
+        if ($scope.invoice_no == '' || $scope.invoice_no == undefined) {
+            $scope.validation_error = "Please enter invoice no";
+            return false;
+        } else if(($scope.supplier_account_entry.payment_mode == 'cheque') && ($scope.supplier_account_entry.bank_name =='' || $scope.supplier_account_entry.bank_name==undefined)){
+            $scope.validation_error = "Please enter bank name";
+            return false;
+        } else if(($scope.supplier_account_entry.payment_mode == 'cheque') && ($scope.supplier_account_entry.cheque_no == '' || $scope.supplier_account_entry.cheque_no == undefined)){
+            $scope.validation_error = "Please enter cheque no";
+            return false;
+        } else if(($scope.supplier_account_entry.payment_mode == 'cheque') && ($$('#cheque_date')[0].get('value') == '')){
+            $scope.validation_error = "Please enter cheque date";
+            return false;
+        } else if ($scope.supplier_account_entry.paid_amount == '' || $scope.supplier_account_entry.paid_amount == undefined || $scope.supplier_account_entry.paid_amount == 0) {
+            $scope.validation_error = "Please enter amount";
+            return false;
+        } else if ($scope.supplier_account_entry.paid_amount != Number($scope.supplier_account_entry.paid_amount)) {
+            $scope.validation_error = "Please enter valid amount";
+            return false;
+        } else if ($scope.balance < 0) {
+            $scope.validation_error = "Please check the amount with balance";
+            return false;
+        } return true;
+    }
+    $scope.save_supplier_payement = function() {
+        if ($scope.supplier_payment_validation()) {
+            $scope.supplier_account_entry.balance = $scope.balance;
+            if($scope.supplier_account_entry.payment_mode == 'cash') {
+                $scope.supplier_account_entry.bank_name = '';
+                $scope.supplier_account_entry.cheque_no = '';
+                $scope.supplier_account_entry.cheque_date = '';
+            } 
+            $scope.supplier_account_entry.cheque_date = $$('#cheque_date')[0].get('value');
+            $scope.supplier_account_entry.voucher_date = $$('#voucher_date')[0].get('value');
+            params = {
+                'supplier_account_details': angular.toJson($scope.supplier_account_entry),
+                'csrfmiddlewaretoken': $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/purchase/supplier_accounts/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {
+                document.location.href = '/purchase/supplier_accounts/';
+               
+            }).error(function(data, success){
+                console.log('Request failed' || data);
+            });
+        }
+    }
 }
     

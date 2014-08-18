@@ -96,6 +96,13 @@ class PurchaseEntry(View):
         supplier_payment_detail.save()
         purchase.supplier_amount = purchase_dict['supplier_amount']
         purchase.save()
+        if purchase.payment_mode == 'credit':
+            supplier_account, created = SupplierAccount.objects.get_or_create(supplier=supplier, purchase=purchase)
+            if created:
+                supplier_account.total_amount = purchase.grant_total
+                supplier_account.paid = 0
+                supplier_account.balance = purchase.grant_total
+                supplier_account.save()
         
         if float(purchase_dict['purchase_expense']) > 0:
             # Save purchase_expense in Expense
@@ -233,11 +240,18 @@ class PurchaseEdit(View):
 class PurchaseDetail(View):
 
     def get(self, request, *args, **kwargs):
+        supplier_account = None
         try:
             invoice_number = request.GET.get('invoice_no', '')
             detail_type = request.GET.get('type', '')
+            print detail_type
             if detail_type == 'edit':
                 purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=False)
+            elif detail_type == 'payment':
+                purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=False, is_returned=False)
+                
+                print purchase, 'hii'
+                supplier_account, created = SupplierAccount.objects.get_or_create(supplier=purchase.supplier, purchase=purchase)
             else:
                 purchase  = Purchase.objects.get(purchase_invoice_number=int(invoice_number), is_paid_completely=True)
             purchase_items = PurchaseItem.objects.filter(purchase=purchase)
@@ -275,7 +289,10 @@ class PurchaseDetail(View):
                 'cheque_no': purchase.cheque_no if purchase.cheque_no else '',
                 'cheque_date': purchase.cheque_date.strftime('%d/%m/%Y') if purchase.cheque_date else '',
                 'discount_percentage': purchase.discount_percentage,
-                'discount': purchase.discount
+                'discount': purchase.discount,
+                'amount': float(purchase.grant_total) - float(purchase.paid) if purchase else '',
+                'supplier': purchase.supplier.name if purchase.supplier else '',
+                'paid': supplier_account.paid_amount if supplier_account else 0,
             }
             res = {
                 'result': 'Ok',
@@ -370,5 +387,63 @@ class SupplierAccountEntry(View):
             'current_date': current_date.strftime('%d/%m/%Y'),
             'voucher_no': voucher_no,})
 
+    def post(self, request, *args, **kwargs):
 
+        supplier_payment_details = ast.literal_eval(request.POST['supplier_account_details'])
+        print supplier_payment_details
+        supplier = Supplier.objects.get(name=supplier_payment_details['supplier'])
+        purchase = Purchase.objects.get(purchase_invoice_number=supplier_payment_details['invoice_no'])
+        
+        purchase_payment = SupplierAccountPayment.objects.create(purchase=purchase, voucher_no=supplier_payment_details['voucher_no'])
+        purchase_payment.date = datetime.strptime(supplier_payment_details['voucher_date'], '%d/%m/%Y')
+        purchase_payment.total_amount = supplier_payment_details['amount']
+        purchase_payment.paid_amount = supplier_payment_details['paid_amount']
+        purchase_payment.payment_mode = supplier_payment_details['payment_mode']
+        purchase_payment.bank = supplier_payment_details['bank_name']
+        purchase_payment.cheque_no = supplier_payment_details['cheque_no']
+        if purchase_payment.payment_mode == 'cheque':
+            purchase_payment.dated = datetime.strptime(supplier_payment_details['cheque_date'], '%d/%m/%Y')
+        purchase_payment.save()
+
+        supplier_payment_detail = SupplierAccountPaymentDetail()
+        supplier_payment_detail.customer = supplier
+        supplier_payment_detail.date = purchase_payment.date
+        supplier_payment_detail.total_amount = purchase_payment.total_amount
+        supplier_payment_detail.amount = purchase_payment.paid_amount
+        if purchase_payment.payment_mode == 'cheque':   
+            supplier_payment_detail.payment_mode = 'Cheque(R.V)'
+        else:
+            supplier_payment_detail.payment_mode = 'Cash(R.V)'
+        supplier_payment_detail.save()
+
+        supplier_account, created = SupplierAccount.objects.get_or_create(supplier=supplier, purchase=purchase)
+        if created:
+            supplier_account.total_amount = supplier_payment_details['amount']
+            supplier_account.paid_amount = supplier_payment_details['paid_amount']
+        else:
+            supplier_account.total_amount = supplier_payment_details['amount']
+            supplier_account.paid_amount = float(supplier_account.paid_amount) + float(supplier_payment_details['paid_amount'])
+        supplier_account.balance = float(supplier_account.total_amount) - float(supplier_account.paid_amount)
+        supplier_account.save()
+
+        supplier_payment_detail.paid_amount = supplier_account.paid_amount
+        supplier_payment_detail.balance = supplier_account.balance
+        supplier_payment_detail.supplier = supplier
+        supplier_payment_detail.save()
+
+        purchase.balance = supplier_account.balance
+        purchase.save()
+        if supplier_account.balance == 0:
+            supplier_account.is_complted = True
+            supplier_account.save()
+            purchase.is_paid_completely = True
+            purchase.save()
+       
+        res = {
+            'result': 'ok',
+        }
+
+        response = simplejson.dumps(res)
+
+        return HttpResponse(response, status=200, mimetype='application/json')
 

@@ -35,7 +35,7 @@
 							<label for="invoice_number">Invoice Number</label>
 						</div>
 						<div class="forminput_purchase">
-							<input type="text" name="invoice_number" ng-model="invoice_no" ng-change="load_purchase_details();" />
+							<input type="text" name="invoice_number" ng-model="invoice_no" ng-change="get_purchase_details();" />
 							<label class="error_message"> [[invoice_message]] </label>
 						</div>
 					</div>
@@ -93,29 +93,29 @@
 					<div class="formrow_purchase">						
 
 						<div class="formtext_purchase">
-							<label for="Settlement">Paid</label>
+							<label for="paid">Paid</label>
 						</div>
 						<div class="forminput_purchase">
-							<input type="text" name="Settlement" ng-model="supplier_account_entry.paid" readonly>
+							<input type="text" name="paid" ng-model="supplier_account_entry.paid" readonly>
 						</div>						
 					</div>
 					<div class="formrow_purchase">						
 
 						<div class="formtext_purchase">
-							<label for="Settlement">Balance</label>
+							<label for="balance">Balance</label>
 						</div>
 						<div class="forminput_purchase">
-							<input type="text" name="Settlement" ng-model="balance" readonly>
+							<input type="text" name="balance" ng-model="balance" readonly>
 						</div>						
 					</div>
 
 					<div class="formrow_purchase">						
 
 						<div class="formtext_purchase">
-							<label for="Settlement">Amount</label>
+							<label for="paid_amount">Amount</label>
 						</div>
 						<div class="forminput_purchase">
-							<input type="text" name="Settlement" ng-model="supplier_account_entry.paid_amount" ng-change="balance_amount_calculation()">
+							<input type="text" name="paid_amount" ng-model="supplier_account_entry.paid_amount" ng-change="calculate_balance()">
 						</div>						
 					</div>
 				</div>
@@ -123,7 +123,7 @@
 			<div  align="Center">
 				<div class="buttons">
 					<p class="error_message"> [[validation_error]] </p>
-					<input type="button" value="Submit" ng-click="save_supplier_account_entry()"/>
+					<input type="button" value="Submit" ng-click="save_supplier_payement()"/>
 					<a href="{% url 'home' %}"><input type="button" value="Cancel"></a>
 				</div>
 			</div>			
