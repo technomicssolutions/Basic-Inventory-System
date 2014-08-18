@@ -967,7 +967,7 @@ a {
     position: absolute;
     width: 17%;
 }
-#sales_report form, #purchase_accounts_reports form, #expense_report form, #purchase_reports_date form {
+#sales_report form, #purchase_accounts_reports form, #expense_report form, #purchase_reports_date form, #pending_customer_report form, #pending_customers_report form {
 	margin: auto;
 	width: 24%;
 	float: none;
@@ -980,4 +980,10 @@ a {
 }
 #return_entry .purchase_item_list .item_list_row span {
     width: 15% !important;
+}
+#pending_customer_report .item_list .item_list_row span, #pending_customers_report .item_list .item_list_row span{
+	width: 100% !important;
+}
+#pending_customer_report .item_list .item_list_row, #pending_customers_report .item_list .item_list_row {
+	width: 69%;
 }

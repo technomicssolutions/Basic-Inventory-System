@@ -174,6 +174,13 @@ class SalesEntry(View):
             sales.paid = sales_dict['grant_total']
 
             customer_payment.paid = sales.paid
+        else:
+            customer_account, created = CustomerAccount.objects.get_or_create(customer=customer, invoice_no=sales )
+            if created:
+                customer_account.total_amount = sales_dict['grant_total']
+                customer_account.paid = sales_dict['paid']
+                customer_account.balance = sales_dict['balance']
+                customer_account.save()
 
         sales.balance = float(sales.grant_total) - float(sales.paid)
         customer_payment.balance = sales.balance
@@ -189,7 +196,6 @@ class SalesEntry(View):
             inventory = InventoryItem.objects.get(item=d_item.item)
             inventory.quantity = int(inventory.quantity) + int(r_item['qty_sold'])
             inventory.save()
-
          
         for sales_item in sales_items:
             item = Item.objects.get(code=sales_item['item_code'])

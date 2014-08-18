@@ -397,15 +397,9 @@ class CustomerSearch(View):
         if request.is_ajax():
             try:
                 customer_name = request.GET.get('customer_name')
-               
-                customers=[]
-                # if customer_name:
                 customers = Customer.objects.filter(customer_name__istartswith=customer_name)
-                # else:
-                
                 customer_list = []
                 for customer in customers:
-
                     customer_list.append({
                         'customer_name':customer.customer_name,
                         'id': customer.id,
