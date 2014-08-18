@@ -23,15 +23,14 @@ class Sales(models.Model):
     cheque_date = models.DateField('Cheque Date', null=True, blank=True)
     
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=2, default=0)
-    net_amount_after_return = models.DecimalField('Net Amount after return',max_digits=14, decimal_places=2, default=0)
-    grant_total = models.DecimalField('Grand Total',max_digits=14, decimal_places=2, default=0)
-    grant_total_after_return = models.DecimalField('Grand Total after return',max_digits=14, decimal_places=2, default=0)
+    grant_total = models.DecimalField('Grand Total',max_digits=14, decimal_places=2, default=0)   
     balance = models.DecimalField('Balance', null=True, blank=True, decimal_places=2, default=0, max_digits=14)
     paid = models.DecimalField('Paid', null=True, blank=True, decimal_places=2, default=0, max_digits=14)
     discount_for_sale = models.DecimalField('Discount for sale',max_digits=14, decimal_places=2, default=0)
     discount_percentage_for_sale = models.DecimalField('Discount percentage for sale',max_digits=14, decimal_places=2, default=0)
 
     is_processed = models.BooleanField('Processed', default=False)
+    is_returned = models.BooleanField('Is Returned Completely', default=False)
 
     def __unicode__(self):
         return str(self.sales_invoice_number)
@@ -57,6 +56,10 @@ class SalesReturn(models.Model):
     return_invoice_number = models.IntegerField('Sales Return invoice number', unique=True)
     date = models.DateField('Date', null=True, blank=True)
     net_amount = models.DecimalField('Total', max_digits=14, decimal_places=2, default=0)
+    
+    grant_total_before_return = models.DecimalField('Grand Total before return',max_digits=14, decimal_places=2, default=0)
+    net_amount_before_return = models.DecimalField('Net Amount before return',max_digits=14, decimal_places=2, default=0)
+    discount_before_return = models.DecimalField('Discount before return',max_digits=14, decimal_places=2, default=0)
 
     def __unicode__(self):
         return str(self.sales.sales_invoice_number)

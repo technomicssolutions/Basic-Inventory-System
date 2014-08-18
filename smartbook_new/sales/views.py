@@ -88,7 +88,6 @@ def invoice_body_layout(canvas, y, sales):
     canvas.line(815, y - 340, 815, y - 980) 
 
     canvas.line(50, y - 980, 950, y - 980)
-    
 
     canvas.drawString(60, y - 360, 'Quantity')
     canvas.drawString(190, y - 360, 'Item Code')
@@ -568,13 +567,13 @@ class SalesReturnView(View):
     def post(self, request, *args, **kwargs):
         post_dict = ast.literal_eval(request.POST['sales_return'])
         sales = Sales.objects.get(sales_invoice_number=post_dict['sales_invoice_number'])
-        return_items = SalesReturn.objects.filter(sales=sales)
-        return_amount = 0
-        for return_item in return_items:
-            return_amount = float(return_amount) + float(return_item.net_amount)
+        
         sales_return, created = SalesReturn.objects.get_or_create(sales=sales, return_invoice_number = post_dict['invoice_number'])
         sales_return.date = datetime.strptime(post_dict['sales_return_date'], '%d/%m/%Y')
         sales_return.net_amount = post_dict['net_return_total']
+        sales_return.net_amount_after_return = sales.net_amount
+        sales_return.grant_total_after_return = sales.grant_total
+        
         sales_return.save() 
         
         sales.net_amount_after_return = float(sales.net_amount) - (float(return_amount) + float(post_dict['net_return_total']))

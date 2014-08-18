@@ -624,7 +624,6 @@ class PurchaseReport(View):
                 purchases = Purchase.objects.filter(purchase_invoice_date__gte=start_date, purchase_invoice_date__lte=end_date, is_returned=False).order_by('purchase_invoice_date')
                 y1 = y - 110
                 for purchase in purchases:
-                    # if purchase.net_total != 0:
                     y1 = y1 - 30
                     if y1 <= 135:
                         y1 = y - 110

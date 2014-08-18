@@ -101,10 +101,34 @@
 				<div class="section_1_sales">
 					<div class="formrow_sales">
 						<div class="formtext">
-							<label for="net_total">Net Total</label>
+							<label for="net_total">Net Return Total</label>
 						</div>
 						<div class="forminput">
 							<input type="text" name="net_return_total" ng-model="sales_return.net_return_total" readonly />
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext">
+							<label for="net_amount">Net Total</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="net_amount" ng-model="sales.net_amount" readonly />
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext">
+							<label for="grant_total">Grant Total</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="grant_total" ng-model="sales.grant_total" readonly />
+						</div>
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext">
+							<label for="discount">Discount</label>
+						</div>
+						<div class="forminput">
+							<input type="text" name="discount" ng-model="sales.discount" ng-change="calculate_net_return_amount()" />
 						</div>
 					</div>
 				</div>

@@ -1273,7 +1273,7 @@ function InventorySalesController($scope, $http, $element, $location) {
             'item_code': item.code,
             'item_name': item.name,
             'current_stock': item.current_stock,
-            'unit_price': item.unit_price,
+            'unit_price': item.selling_price,
             'qty_sold': 0,
             'net_amount': 0,
         }
@@ -2167,7 +2167,6 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
                     $scope.purchase_return.remove_items.push($scope.purchase_return.purchase_items[i]);
                 }
             }
-            console.log($scope.purchase.discount, $scope.purchase.net_total)
             if ($scope.purchase.discount != 0)
                 $scope.purchase_return.discount_percentage = ((parseFloat($scope.purchase.discount)/parseFloat($scope.purchase.net_total))*100).toFixed(2);
             $scope.purchase_return.net_total = $scope.purchase.net_total;
@@ -2217,11 +2216,6 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
     $scope.get_customers = function(parameter) {
         if(parameter == 'customer_name')
             var param = $scope.customer_name;
-        console.log($scope.customer_name)
-        // else if(param == 'all')
-        //     var val = $scope.customer_name;
-        //     var param = document.getElementById('customer_name').val;
-            // console.log(param)
         $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
         {   
             $scope.selecting_customer = true;
@@ -2239,9 +2233,12 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         'invoice_number': '',
         'sales_return_date': '',
         'net_amount': '',
-        'tax_amount':0,
         'sales_items': [],
-    }
+        'net_total': '',
+        'grant_total': '',
+        'discount': '',
+        'discount_percentage': '',
+    }   
     $scope.sales = {
         'sales_invoice_number': '',
         'customer': '',
@@ -2268,6 +2265,9 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         } else if ($scope.sales_return.sales_items.length == 0) {
             $scope.validation_error = 'Please choose items';
             return false;
+        } else if ($scope.sales.grant_total < 0) {
+            $scope.validation_error = 'Please check the discount amount with the grant total';
+            return false;
         } else if ($scope.sales_return.sales_items.length > 0) { 
             for (var i=0; i<$scope.sales_return.sales_items.length; i++) {
                 if ($scope.sales_return.sales_items[i].returned_quantity == '' || $scope.sales_return.sales_items[i].returned_quantity == undefined || $scope.sales_return.sales_items[i].returned_quantity == 0) {
@@ -2291,6 +2291,9 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                 $scope.sales = data.sales;
                 $scope.sales.deleted_items = [];
                 $scope.sales.sales_invoice_number = invoice;
+                $scope.sales_return.net_total = data.sales.net_amount;
+                $scope.sales_return.grant_total = data.sales.grant_total;
+                $scope.sales_return.discount = data.sales.discount;
                 $scope.message = ''
             } else {
                 $scope.message = data.result;
@@ -2320,14 +2323,18 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
         }
         $scope.calculate_net_return_amount();
     }
+    $scope.calculate_grant_total = function() {
+        $scope.sales.net_amount = $scope.sales_return.net_total - $scope.sales_return.net_return_total;
+        $scope.sales.grant_total = $scope.sales.net_amount - $scope.sales.discount;
+    }
     $scope.calculate_net_return_amount = function() {
         var amount = 0;
         for(var i=0;i<$scope.sales_return.sales_items.length;i++) {
             if ($scope.sales_return.sales_items[i].returned_amount == Number($scope.sales_return.sales_items[i].returned_amount))
                 amount = amount + $scope.sales_return.sales_items[i].returned_amount;
         }
-        console.log(amount);
         $scope.sales_return.net_return_total = amount;
+        $scope.calculate_grant_total();
     }
     $scope.check_return = function(item) {
         if (item.returned_quantity != Number(item.returned_quantity)) {
@@ -2345,23 +2352,29 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
             for(var i=0; i< $scope.sales_return.sales_items.length; i++){
                 $scope.sales_return.sales_items[i].selected = "selected";
             }
-            params = {
-                "csrfmiddlewaretoken" : $scope.csrf_token,
-                'sales_return': angular.toJson($scope.sales_return),
-            }
-            $http({
-                method : 'post',
-                url : "/sales/sales_return/",
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {
-                document.location.href = '/sales/sales_return/';
+            $scope.sales_return.net_total = $scope.sales.net_amount;
+            $scope.sales_return.grant_total = $scope.sales.grant_total;
+            $scope.sales_return.discount = $scope.sales.discount;
+            if ($scope.sales.discount != 0)
+                $scope.sales_return.discount_percentage = ((parseFloat($scope.sales.discount)/parseFloat($scope.sales.net_total))*100).toFixed(2);
+
+            // params = {
+            //     "csrfmiddlewaretoken" : $scope.csrf_token,
+            //     'sales_return': angular.toJson($scope.sales_return),
+            // }
+            // $http({
+            //     method : 'post',
+            //     url : "/sales/sales_return/",
+            //     data : $.param(params),
+            //     headers : {
+            //         'Content-Type' : 'application/x-www-form-urlencoded'
+            //     }
+            // }).success(function(data, status) {
+            //     document.location.href = '/sales/sales_return/';
                
-            }).error(function(data, success){
-                console.log('Request failed' || data);
-            });
+            // }).error(function(data, success){
+            //     console.log('Request failed' || data);
+            // });
         }
     }    
 }

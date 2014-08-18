@@ -310,10 +310,7 @@ class PurchaseReturnView(View):
     def post(self, request, *args, **kwargs):
         post_dict = ast.literal_eval(request.POST['purchase_return'])
         purchase = Purchase.objects.get(purchase_invoice_number=post_dict['purchase_invoice_number'])
-        return_items = PurchaseReturn.objects.filter(purchase=purchase)
-        return_amount = 0
-        for return_item in return_items:
-            return_amount = float(return_amount) + float(return_item.net_amount)
+        
         purchase_return, created = PurchaseReturn.objects.get_or_create(purchase=purchase, return_invoice_number = post_dict['invoice_number'])
         purchase_return.date = datetime.strptime(post_dict['purchase_return_date'], '%d/%m/%Y')
         purchase_return.net_amount = post_dict['net_return_total']
