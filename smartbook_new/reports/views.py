@@ -91,10 +91,8 @@ class WholeSalesReport(View):
                 p.drawString(400, y - 100, "Net Total")
                 p.drawString(580, y - 100, "Discount")
                 p.drawString(480, y - 100, "Grant Total")
-                p.drawString(680, y - 100, "NetTotal- return")
-                p.drawString(780, y - 100, "GrantTotal - return")
 
-                sales = Sales.objects.filter(sales_invoice_date__gte=start_date,sales_invoice_date__lte=end_date).order_by('sales_invoice_date')
+                sales = Sales.objects.filter(sales_invoice_date__gte=start_date,sales_invoice_date__lte=end_date, is_returned=False).order_by('sales_invoice_date')
                 y1 = y - 110
                 for sale in sales:
                     y1 = y1 - 30
@@ -102,26 +100,9 @@ class WholeSalesReport(View):
                         y1 = y - 110
                         p.showPage()
                         p = header(p, y)
-                    is_return_exists = False
-                    try:
-                        sales_return = SalesReturn.objects.filter(sales=sale)
-                        if sales_return.count() == 0:
-                            is_return_exists = False
-                            total = float(total) + float(sale.net_amount)
-                            grant_total = float(grant_total) + float(sale.grant_total)
-                            total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
-                        else:
-                            is_return_exists = True
-                            total = float(total) + float(sale.net_amount_after_return)
-                            grant_total = float(grant_total) + float(sale.grant_total_after_return)
-                            if sale.net_amount_after_return > 0 and sale.net_amount_after_return > sale.discount_for_sale:
-                                total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
                             
-                    except Exception as ex:
-                        is_return_exists = False
-                        total = float(total) + float(sale.net_amount)
-                        grant_total = float(grant_total) + float(sale.grant_total)
-                        total_discount_after_return = float(total_discount_after_return) + float(sale.discount_for_sale)
+                    total = float(total) + float(sale.net_amount)
+                    grant_total = float(grant_total) + float(sale.grant_total)  
                     total_discount = float(total_discount) + float(sale.discount_for_sale)
                     p.drawString(50, y1, sale.sales_invoice_date.strftime('%d/%m/%y'))
                     p.drawString(120, y1, str(sale.sales_invoice_number))
@@ -130,12 +111,6 @@ class WholeSalesReport(View):
                     p.drawString(400, y1, str(sale.net_amount))
                     p.drawString(580, y1, str(sale.discount_for_sale))
                     p.drawString(480, y1, str(sale.grant_total))
-                    if is_return_exists:
-                        p.drawString(680, y1, str(sale.net_amount_after_return))
-                        p.drawString(780, y1, str(sale.grant_total_after_return))
-                    else:
-                        p.drawString(680, y1, str('No Return'))
-                        p.drawString(780, y1, str('No Return'))
                 if y1 <= 135:
                     y1 = y - 110
                     p.showPage()
