@@ -21,14 +21,13 @@ class Migration(SchemaMigration):
             ('bank_branch', self.gf('django.db.models.fields.CharField')(max_length=25, null=True, blank=True)),
             ('cheque_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('net_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('net_amount_after_return', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
             ('grant_total', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
-            ('grant_total_after_return', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
             ('balance', self.gf('django.db.models.fields.DecimalField')(default=0, null=True, max_digits=14, decimal_places=2, blank=True)),
             ('paid', self.gf('django.db.models.fields.DecimalField')(default=0, null=True, max_digits=14, decimal_places=2, blank=True)),
             ('discount_for_sale', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
             ('discount_percentage_for_sale', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
             ('is_processed', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_returned', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal(u'sales', ['Sales'])
 
@@ -50,6 +49,9 @@ class Migration(SchemaMigration):
             ('return_invoice_number', self.gf('django.db.models.fields.IntegerField')(unique=True)),
             ('date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('net_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
+            ('grant_total_before_return', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
+            ('net_amount_before_return', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
+            ('discount_before_return', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=14, decimal_places=2)),
         ))
         db.send_create_signal(u'sales', ['SalesReturn'])
 
@@ -180,11 +182,10 @@ class Migration(SchemaMigration):
             'discount_for_sale': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             'discount_percentage_for_sale': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             'grant_total': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
-            'grant_total_after_return': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_processed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_returned': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'net_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
-            'net_amount_after_return': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             'paid': ('django.db.models.fields.DecimalField', [], {'default': '0', 'null': 'True', 'max_digits': '14', 'decimal_places': '2', 'blank': 'True'}),
             'payment_mode': ('django.db.models.fields.CharField', [], {'max_length': '25', 'null': 'True', 'blank': 'True'}),
             'sales_invoice_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
@@ -203,8 +204,11 @@ class Migration(SchemaMigration):
         u'sales.salesreturn': {
             'Meta': {'object_name': 'SalesReturn'},
             'date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'discount_before_return': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
+            'grant_total_before_return': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'net_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
+            'net_amount_before_return': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '14', 'decimal_places': '2'}),
             'return_invoice_number': ('django.db.models.fields.IntegerField', [], {'unique': 'True'}),
             'sales': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sales.Sales']"})
         },

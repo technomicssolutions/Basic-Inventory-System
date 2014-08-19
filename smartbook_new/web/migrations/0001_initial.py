@@ -27,7 +27,7 @@ class Migration(SchemaMigration):
         # Adding model 'Customer'
         db.create_table(u'web_customer', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('customer_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('customer_name', self.gf('django.db.models.fields.CharField')(max_length=200, unique=True, null=True, blank=True)),
             ('house_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('street', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('city', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
@@ -49,7 +49,12 @@ class Migration(SchemaMigration):
         # Adding model 'OwnerCompany'
         db.create_table(u'web_ownercompany', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('company_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('company_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('address1', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+            ('street', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('city', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('state', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('country', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('logo', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True, blank=True)),
         ))
         db.send_create_signal(u'web', ['OwnerCompany'])
@@ -71,7 +76,7 @@ class Migration(SchemaMigration):
         u'web.customer': {
             'Meta': {'object_name': 'Customer'},
             'city': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'customer_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'customer_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'district': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'email_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'house_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
@@ -83,9 +88,14 @@ class Migration(SchemaMigration):
         },
         u'web.ownercompany': {
             'Meta': {'object_name': 'OwnerCompany'},
-            'company_name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'address1': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'company_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'country': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'logo': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'})
+            'logo': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'state': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'street': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         u'web.supplier': {
             'Meta': {'object_name': 'Supplier'},
