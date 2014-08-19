@@ -101,12 +101,17 @@ function add_item($scope, $http, from) {
         });
     }
 }
-function get_suppliers($scope, $http) {
+function get_suppliers($scope, $http, from) {
     show_spinner();
     $http.get('/suppliers/').success(function(data)
     {
         hide_spinner();
         $scope.suppliers = data.suppliers;
+        if (from == 'report') {
+            if ($scope.suppliers.length > 1) {
+                $scope.suppliers.splice($scope.suppliers.indexOf($scope.suppliers[$scope.suppliers.length - 1]), 1);
+            }
+        }
     }).error(function(data, status)
     {
         console.log(data || "Request failed");
@@ -164,7 +169,7 @@ function add_new_supplier($scope, $http) {
                 $scope.validation_error = data.message;
             } else {
                 $scope.popup.hide_popup();                             
-                get_suppliers($scope, $http);
+                get_suppliers($scope, $http, '');
                 $scope.purchase.supplier_name = $scope.supplier_name;
                 $scope.purchase.supplier_name = data.supplier_name;
                 $scope.name = '';
@@ -576,7 +581,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
     $scope.init = function(csrf_token, expense_id)
     {
         $scope.csrf_token = csrf_token;
-        get_expense_head_list($scope, $http);
+        get_expense_head_list($scope, $http, '');
         if (expense_id) {
             show_spinner();
             $http.get('/expenses/edit_expense/?expense_id='+expense_id).success(function(data){
@@ -654,7 +659,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                     $scope.message = data.message;
                 } else {
                     $scope.message = '';
-                    get_expense_head_list($scope, $http);
+                    get_expense_head_list($scope, $http, '');
                     $scope.expense.expense_head_id = data.head_id;
                     $scope.close_popup();
                 }
@@ -916,7 +921,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         $scope.csrf_token = csrf_token;
         $scope.purchase.purchase_invoice_number = invoice_number;
         get_companies($scope, $http);
-        get_suppliers($scope, $http);
+        get_suppliers($scope, $http, '');
         new Picker.Date($$('#supplier_invoice_date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -1842,7 +1847,7 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
             useFadeInOut: !Browser.ie,
             format: '%d/%m/%Y',
         });
-        get_suppliers($scope, $http);
+        get_suppliers($scope, $http, '');
     }
     $scope.select_payment_mode = function(){
         if($scope.vendor_account.payment_mode == 'cheque') {
@@ -1971,7 +1976,7 @@ function VendorAccountReportController($scope, $element, $http, $location) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y', 
         });
-        get_suppliers($scope, $http);
+        get_suppliers($scope, $http, 'report');
     }
     $scope.get_report_type = function(){
         if($scope.report_type == 'date') {
@@ -1982,13 +1987,17 @@ function VendorAccountReportController($scope, $element, $http, $location) {
             $scope.report_vendor_wise_flag = true;
         }
     }
-    
+    $scope.view_report = function(type) {
+        var start_date = $$('#start_date')[0].get('value');
+        var end_date = $$('#end_date')[0].get('value');
+        document.location.href = '/reports/vendor_accounts_report/?start_date='+start_date+'&end_date='+ end_date+'&vendor='+$scope.supplier_name+'&report_type='+$scope.report_type;
+    }    
 }
 function VendorReportController($http, $scope, $location, $element) {
 
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        get_suppliers($scope, $http);
+        get_suppliers($scope, $http, '');
     }
     
 }

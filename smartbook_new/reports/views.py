@@ -276,8 +276,8 @@ class VendorAccountsReport(View):
                 p.showPage()
                 p.save()
         elif report_type == 'vendor':
-            supplier_name = request.GET['vendor']
-            if supplier_name == 'select':            
+            supplier_name = request.GET.get('vendor', '')
+            if not supplier_name or supplier_name == 'undefined':            
                 ctx = {
                     'msg' : 'Please Select Vendor',
                     'report_type' : 'vendor',
