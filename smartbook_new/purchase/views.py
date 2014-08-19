@@ -49,22 +49,21 @@ class PurchaseEntry(View):
             purchase.cheque_no = purchase_dict['cheque_no']
         if purchase_dict['cheque_date']:
             purchase.cheque_date = datetime.strptime(purchase_dict['cheque_date'], '%d/%m/%Y')
-        if purchase_dict['supplier_name'] != 'other' or purchase_dict['supplier_name'] != 'select' or purchase_dict['supplier_name'] != '': 
-            try:     
-                supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
-                purchase.supplier = supplier
-            except:
-                pass
-        supplier = Supplier.objects.get(name=purchase_dict['supplier_name']) 
+        try:
+            supplier = Supplier.objects.get(id=purchase_dict['supplier_name'])
+            purchase.supplier = supplier
+        except :
+            supplier = None
         if purchase_created:
             supplier_payment_detail = SupplierAccountPaymentDetail()
         else:
             supplier_payment_detail = purchase.supplieraccountpaymentdetail_set.all()[0]
-        supplier_payment_detail.supplier = supplier
+        if supplier:
+            supplier_payment_detail.supplier = supplier
         supplier_payment_detail.date = purchase.purchase_invoice_date 
         supplier_payment_detail.purchase = purchase
 
-        if purchase_dict['transport'] != 'other' or purchase_dict['transport'] != 'select' or purchase_dict['transport'] != '': 
+        if purchase_dict['transport'] != 'other' or purchase_dict['transport'] != '': 
             try:     
                 transport = TransportationCompany.objects.get(company_name=purchase_dict['transport'])
                 purchase.transportation_company = transport

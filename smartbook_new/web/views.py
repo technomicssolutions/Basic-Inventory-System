@@ -71,6 +71,10 @@ class SupplierList(View):
                         'supplier_name': supplier.name,
                         'id': supplier.id,
                     })
+            ctx_suppliers.append({
+                'supplier_name': 'other',
+                'id': 'other',
+            })
             res = {
                 'suppliers': ctx_suppliers,
                 
@@ -441,6 +445,9 @@ class TransportationCompanyList(View):
                 ctx.append({
                     'company_name': transportationcompany.company_name,    
                 })
+        ctx.append({
+            'company_name': 'other',    
+        })
         res = {
             'company_names': ctx,    
         }

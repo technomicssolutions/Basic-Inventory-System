@@ -73,11 +73,9 @@
 							<label for="supplier">Supplier</label>
 						</div>
 						<div class="forminput">
-							<select name="supplier" ng-model="purchase.supplier_name" ng-change="add_supplier()">
-								<option value="select">Select</option>
-								<option ng-repeat="supplier in suppliers" value="[[supplier.supplier_name]]" ng-selected="supplier.supplier_name == purchase.supplier_name">[[supplier.supplier_name]]</option>
-								<option value="other">Other</option>
-							</select>
+							<select name="supplier" ng-model="purchase.supplier_name" ng-options="supplier.id as supplier.supplier_name for supplier in suppliers" ng-change="add_supplier()">
+							<option value="">Select</option>
+						</select>
 						</div>
 					</div>
 
@@ -86,10 +84,8 @@
 							<label for="transport">Transport</label>
 						</div>
 						<div class="forminput">
-							<select name="transport" ng-model="purchase.transport" ng-change="add_transport()">
-								<option value="select">Select</option>
-								<option ng-repeat="company in companies" value="[[company.company_name]]" ng-selected="company.company_name == purchase.transport">[[company.company_name]]</option>
-								<option value="other">Other</option>
+							<select name="transport" ng-model="purchase.transport" ng-change="add_transport()" ng-options="company.company_name as company.company_name for company in companies">
+								<option value="">Select</option>
 							</select>
 						</div>
 					</div>
