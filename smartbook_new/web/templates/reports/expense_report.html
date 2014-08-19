@@ -17,7 +17,7 @@
 		<p>{{msg}}</p>
 	</div>
 
-	<form name="expense_report_form" method="get" action="{% url 'expense_report' %}">
+	<form name="expense_report_form" method="get" action="">
 		
 		<div class="reporttext">
 				<label for="s_date">Start Date</label>
@@ -47,7 +47,7 @@
 		</div>
 
 		<div class="reportinput" id="submit_expense_report">
-			<input type="submit" value="View Report" class="btn btn-info " style="border-top-width: 0px; margin-top: 3px;">
+			<input type="submit" value="View Report" class="btn btn-info " style="border-top-width: 0px; margin-top: 3px;" ng-click="view_report()">
 		</div>		
 	</form>
 {% endblock content %}

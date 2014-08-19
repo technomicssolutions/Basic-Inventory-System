@@ -165,12 +165,14 @@ class ExpenseReport(View):
             
             p.setFontSize(12)
             p = header(p, y)
-            head_name = request.GET['expense_head']
+            head_name = request.GET.get('expense_head','')
             y1 = y - 130
-            try:
-                expense_head = ExpenseHead.objects.get(expense_head=head_name)
-            except Exception as ex:
-                expense_head = None
+            expense_head = None
+            if head_name != 'select':
+                try:
+                    expense_head = ExpenseHead.objects.get(expense_head=head_name)
+                except Exception as ex:
+                    expense_head = None
             
             if expense_head:
                 expenses = Expense.objects.filter(date__gte=start_date, date__lte=end_date, expense_head=expense_head).order_by('date')

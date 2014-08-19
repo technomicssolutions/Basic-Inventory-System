@@ -819,6 +819,11 @@ function ExpenseReportController ($scope, $http) {
         });
         get_expense_head_list($scope, $http, 'report');
     }
+    $scope.view_report = function(){
+        var start_date = $$('#start_date')[0].get('value');
+        var end_date = $$('#end_date')[0].get('value');
+        document.location.href = '/reports/expense_report/?start_date='+start_date+'&end_date='+end_date+'&expense_head='+$scope.expense_head;
+    }
 }
 
 function WholeSalesReportController($scope, $http) {
