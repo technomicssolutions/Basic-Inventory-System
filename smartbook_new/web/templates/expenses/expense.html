@@ -44,10 +44,8 @@
 							<label for="expense_head">Select Head :</label>
 						</div>
 						<div class="forminput">
-							<select name="expense_head" ng-model="expense.expense_head_id">
-								<option value="select">Select</option>
-								<option ng-repeat="head in expense_heads" value="[[head.id]]" ng-selected="expense.expense_head_id == head.id">[[head.head_name]]</option>
-								<option value="other" ng-click="add_expense_head()">Other</option>
+							<select name="expense_head" ng-model="expense.expense_head_id" ng-options="head.id as head.head_name for head in expense_heads" ng-change="add_expense_head()">
+								<option value="">Select</option>
 							</select>
 						</div>
 					</div>

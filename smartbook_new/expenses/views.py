@@ -68,6 +68,10 @@ class ExpenseHeadList(View):
                     'head_name': head.expense_head,
                     'id': head.id, 
                 })
+        ctx_expense_head.append({
+            'head_name': 'other',
+            'id': 'other', 
+        })
         res = {
             'result': 'ok',
             'expense_heads':ctx_expense_head

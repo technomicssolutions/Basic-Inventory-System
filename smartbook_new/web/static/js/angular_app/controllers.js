@@ -609,17 +609,19 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
     }
     $scope.add_expense_head = function() {
         $scope.head_name = '';
-        $scope.popup = new DialogueModelWindow({
-            'dialogue_popup_width': '36%',
-            'message_padding': '0px',
-            'left': '28%',
-            'top': '40px',
-            'height': 'auto',
-            'content_div': '#add_expense_head'
-        });
-        var height = $(document).height();
-        $scope.popup.set_overlay_height(height);
-        $scope.popup.show_content();
+        if ($scope.expense.expense_head_id == 'other') {
+            $scope.popup = new DialogueModelWindow({
+                'dialogue_popup_width': '36%',
+                'message_padding': '0px',
+                'left': '28%',
+                'top': '40px',
+                'height': 'auto',
+                'content_div': '#add_expense_head'
+            });
+            var height = $(document).height();
+            $scope.popup.set_overlay_height(height);
+            $scope.popup.show_content();
+        }
     }
     $scope.close_popup = function(){
         $scope.popup.hide_popup();
@@ -666,7 +668,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             $scope.error_flag = true;
             $scope.error_message = 'Please choose Expense Head';
             return false;
-        } else if ($scope.expense.amount == '' || $scope.expense.amount == undefined) {
+        } else if ($scope.expense.amount == '' || $scope.expense.amount == undefined || $scope.expense.amount != Number($scope.expense.amount)) {
             $scope.error_flag = true;
             $scope.error_message = 'Please enter amount';
             return false;
