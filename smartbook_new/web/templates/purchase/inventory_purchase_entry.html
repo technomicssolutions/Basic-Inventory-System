@@ -73,9 +73,9 @@
 							<label for="supplier">Supplier</label>
 						</div>
 						<div class="forminput">
-							<select name="supplier" ng-model="purchase.supplier_name" ng-options="supplier.id as supplier.supplier_name for supplier in suppliers" ng-change="add_supplier()">
-							<option value="">Select</option>
-						</select>
+							<select name="supplier" ng-model="purchase.supplier_name" ng-options="supplier.supplier_name as supplier.supplier_name for supplier in suppliers" ng-change="add_supplier()">
+								<option value="">Select</option>
+							</select>
 						</div>
 					</div>
 

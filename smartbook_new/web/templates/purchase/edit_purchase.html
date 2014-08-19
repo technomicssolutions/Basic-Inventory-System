@@ -5,6 +5,12 @@
 {% block title %}Purchase Edit{% endblock title %}
 {% block controller %}ng-controller="InventoryPurchaseController" ng-init="init('{{csrf_token}}', '{{invoice_number}}')"{% endblock controller %}
 
+{% block dialogue_popup %}
+	{% include 'popup/add_new_supplier.html' %} 
+	{% include 'popup/add_new_company.html' %}    
+	{% include 'popup/add_item.html' %}                	
+{% endblock %}
+
 {% block content %}
 	<div id="main-title">
 		<div class="alert alert-info" align="Center"><h4>Edit Purchase</h4></div>
@@ -47,9 +53,6 @@
 							<input type="text" name="supplier_invoice_date" ng-model="purchase.supplier_invoice_date" id="supplier_invoice_date" >
 						</div>
 					</div>
-					
-				
-
 					<div class="formrow_purchase">
 						<div class="formtext_purchase">
 							<label for="purchase_invoice_date">Purchase Invoice Date</label>
@@ -58,16 +61,13 @@
 							<input type="text" name="purchase_invoice_date" ng-model="purchase.purchase_invoice_date" id="purchase_invoice_date"/>
 						</div>
 					</div>
-
 					<div class="formrow_purchase">
 						<div class="formtext_purchase">
 							<label for="supplier">Supplier</label>
 						</div>
 						<div class="forminput">
-							<select name="supplier" ng-model="purchase.supplier_name" ng-change="add_supplier()">
-								<option value="select">Select</option>
-								<option ng-repeat="supplier in suppliers" value="[[supplier.supplier_name]]" ng-selected="supplier.supplier_name == purchase.supplier_name">[[supplier.supplier_name]]</option>
-								<option value="other">Other</option>
+							<select name="supplier" ng-model="purchase.supplier_name" ng-options="supplier.supplier_name as supplier.supplier_name for supplier in suppliers" ng-selected="supplier.supplier_name == purchase.supplier_name" ng-change="add_supplier()">
+								<option value="">Select</option>
 							</select>
 						</div>
 					</div>
@@ -76,10 +76,13 @@
 							<label for="transport">Transport</label>
 						</div>
 						<div class="forminput">
-							<select name="transport" ng-model="purchase.transport" ng-change="add_transport()">
+							<!-- <select name="transport" ng-model="purchase.transport" ng-change="add_transport()">
 								<option value="select">Select</option>
 								<option ng-repeat="company in companies" value="[[company.company_name]]" ng-selected="company.company_name == purchase.transport">[[company.company_name]]</option>
 								<option value="other">Other</option>
+							</select> -->
+							<select name="transport" ng-model="purchase.transport" ng-change="add_transport()" ng-options="company.company_name as company.company_name for company in companies" ng-selected="purchase.transport == company.company_name">
+								<option value="">Select</option>
 							</select>
 						</div>
 					</div>

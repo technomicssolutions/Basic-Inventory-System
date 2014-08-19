@@ -945,6 +945,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
         add_new_company($scope, $http);
     }
     $scope.add_supplier = function() {
+        console.log($scope.purchase.supplier_name);
         if($scope.purchase.supplier_name == 'other') {
             $scope.validation_error = '';
             $scope.popup = new DialogueModelWindow({

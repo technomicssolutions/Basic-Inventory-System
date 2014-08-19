@@ -50,7 +50,7 @@ class PurchaseEntry(View):
         if purchase_dict['cheque_date']:
             purchase.cheque_date = datetime.strptime(purchase_dict['cheque_date'], '%d/%m/%Y')
         try:
-            supplier = Supplier.objects.get(id=purchase_dict['supplier_name'])
+            supplier = Supplier.objects.get(name=purchase_dict['supplier_name'])
             purchase.supplier = supplier
         except :
             supplier = None
