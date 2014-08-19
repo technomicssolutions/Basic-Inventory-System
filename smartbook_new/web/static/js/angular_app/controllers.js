@@ -294,12 +294,17 @@ function add_new_customer($http, $scope) {
         });
     } 
 }   
-function get_expense_head_list($scope, $http) {
+function get_expense_head_list($scope, $http, from) {
     show_spinner();
     $http.get('/expenses/expense_head_list/').success(function(data)
     {
         hide_spinner();
         $scope.expense_heads = data.expense_heads;
+        if (from == 'report') {
+            if ($scope.expense_heads.length > 1) {
+                $scope.expense_heads.splice($scope.expense_heads.indexOf($scope.expense_heads[$scope.expense_heads.length - 1]), 1)
+            }
+        }
         $scope.expense_head = 'select';
     }).error(function(data, status)
     {
@@ -807,7 +812,7 @@ function ExpenseReportController ($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y', 
         });
-        get_expense_head_list($scope, $http);
+        get_expense_head_list($scope, $http, 'report');
     }
 }
 

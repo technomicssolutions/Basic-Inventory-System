@@ -41,9 +41,8 @@
 		</div>
 
 		<div class="reportinput">
-			<select name="expense_head" ng-model="expense_head">
-				<option value="select">Select</option>
-				<option ng-repeat="head in expense_heads" value="[[head.head_name]]">[[head.head_name]]</option>
+			<select name="expense_head" ng-model="expense_head" ng-options="head.head_name as head.head_name for head in expense_heads">
+				<option value="">Select</option>
 			</select>
 		</div>
 
