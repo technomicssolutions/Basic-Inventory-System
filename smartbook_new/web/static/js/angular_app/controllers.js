@@ -2250,7 +2250,6 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
     
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        $scope.get_customers();
     }
     $scope.addcustomer = function(customer) {
         $scope.selecting_customer = false;
@@ -2267,6 +2266,11 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
+            if ($scope.customers) {
+                if ($scope.customers.length == 0) {
+                    $scope.message = 'No Customers';
+                }
+            }
         }).error(function(data, success){
             console.log('Request failed' || data);
         });
@@ -2458,9 +2462,6 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
     
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        
-        $scope.get_customers();
-
     }
     $scope.addcustomer = function(customer) {
         $scope.selecting_customer = false;
@@ -2474,10 +2475,15 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
         $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
         {   
             hide_spinner();
+            $scope.message = '';
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
-        
+            if ($scope.customers) {
+                if ($scope.customers.length == 0) {
+                    $scope.message = 'No Customers';
+                }
+            }
         }).error(function(data, status)
         {
             console.log(data || "Request failed");

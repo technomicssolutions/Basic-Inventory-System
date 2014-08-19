@@ -48,6 +48,9 @@ class CustomerList(View):
                     ctx_customers.append({
                         'customer_name': customer.customer_name,
                     })
+            ctx_customers.append({
+                'customer_name': 'other',
+            })
             res = {
                 'customers': ctx_customers,                    
             } 
