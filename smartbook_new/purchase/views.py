@@ -160,17 +160,7 @@ class PurchaseEntry(View):
         } 
         response = simplejson.dumps(res)
         status_code = 200
-        return HttpResponse(response, status = status_code, mimetype="application/json")
-
-class VendorAccounts(View):
-    def get(self, request, *args, **kwargs):
-        vendor_accounts =  SupplierAccount.objects.all()
-        vendors = Supplier.objects.all()
-        return render(request, 'purchase/vendor_accounts.html', {
-            'vendor_accounts' : vendor_accounts,
-            'vendors': vendors
-        })
-        
+        return HttpResponse(response, status = status_code, mimetype="application/json")        
 
 class PurchaseEdit(View):
     def get(self, request, *args, **kwargs):
