@@ -76,11 +76,6 @@
 							<label for="transport">Transport</label>
 						</div>
 						<div class="forminput">
-							<!-- <select name="transport" ng-model="purchase.transport" ng-change="add_transport()">
-								<option value="select">Select</option>
-								<option ng-repeat="company in companies" value="[[company.company_name]]" ng-selected="company.company_name == purchase.transport">[[company.company_name]]</option>
-								<option value="other">Other</option>
-							</select> -->
 							<select name="transport" ng-model="purchase.transport" ng-change="add_transport()" ng-options="company.company_name as company.company_name for company in companies" ng-selected="purchase.transport == company.company_name">
 								<option value="">Select</option>
 							</select>
