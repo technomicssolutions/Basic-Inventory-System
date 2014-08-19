@@ -733,8 +733,24 @@ a {
   position: absolute;
   width: 100%;
 }
-
-
+#spinner_overlay {
+  background-color: #000000;
+  background:url(../images/overlay.png) repeat 0 0;
+  opacity: 0.9;
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+}
+#spinner {
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	z-index: 6;
+	display: none;
+	background: url('../images/ajax-loader.gif') no-repeat;
+}
 #dialogue_popup_container {
   z-index: 2;
   position: absolute;

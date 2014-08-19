@@ -1,11 +1,27 @@
 /************* Common JS Methods ****************************/
+function show_spinner (){
+    var height = $(document).height();
+    height = height + 'px';
+    $('#spinner_overlay').css('display', 'block');
+    $('#spinner_overlay').css('height', height);
+    $('#spinner').css('display', 'block');
+}
+
+function hide_spinner (){
+    $('#spinner_overlay').css('display', 'none');
+    $('#spinner_overlay').css('height', '0px');
+    $('#spinner').css('display', 'none');
+}
+
 function validateEmail(email) { 
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
 function get_inventory_items($scope, $http, parameter, param){
+    show_spinner();
     $http.get('/inventory/items/?inventory_item=true&'+parameter+'='+param).success(function(data)
     {
+        hide_spinner();
         if (data.inventory_items.length == 0) {
             $scope.item_select_error = 'Item not found';
         } else {
@@ -35,6 +51,7 @@ function item_validation($scope) {
 function add_item($scope, $http, from) {
     $scope.is_valid = item_validation($scope);
     if ($scope.is_valid) {
+        show_spinner();
         params = { 
             'item_details': angular.toJson($scope.item),
             "csrfmiddlewaretoken" : $scope.csrf_token
@@ -47,6 +64,7 @@ function add_item($scope, $http, from) {
                 'Content-Type' : 'application/x-www-form-urlencoded'
             }
         }).success(function(data, status) {
+            hide_spinner();
             if (from != 'add_item') {
                 $scope.item = {
                     'id': '',
@@ -84,8 +102,10 @@ function add_item($scope, $http, from) {
     }
 }
 function get_suppliers($scope, $http) {
+    show_spinner();
     $http.get('/suppliers/').success(function(data)
     {
+        hide_spinner();
         $scope.suppliers = data.suppliers;
     }).error(function(data, status)
     {
@@ -116,6 +136,7 @@ function validate_add_supplier($scope) {
 
 function add_new_supplier($scope, $http) {
     if(validate_add_supplier($scope)) {
+        show_spinner();
         params = { 
             'name':$scope.name,
             'contact_person': $scope.contact_person,
@@ -137,7 +158,7 @@ function add_new_supplier($scope, $http) {
                 'Content-Type' : 'application/x-www-form-urlencoded'
             }
         }).success(function(data, status) {
-            
+            hide_spinner();
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.validation_error = data.message;
@@ -164,8 +185,10 @@ function add_new_supplier($scope, $http) {
 }
 
 function get_companies($scope, $http) {
+    show_spinner();
     $http.get('/company_list/').success(function(data)
     {
+        hide_spinner();
         $scope.companies = data.company_names;
     }).error(function(data, status)
     {
@@ -174,6 +197,7 @@ function get_companies($scope, $http) {
 }
 
 function add_new_company($scope, $http) {
+    show_spinner();
     params = { 
         'new_company':$scope.company_name,
         "csrfmiddlewaretoken" : $scope.csrf_token
@@ -186,7 +210,7 @@ function add_new_company($scope, $http) {
             'Content-Type' : 'application/x-www-form-urlencoded'
         }
     }).success(function(data, status) {
-        
+        hide_spinner();
         if (data.result == 'error'){
             $scope.error_flag=true;
             $scope.message = data.message;
@@ -203,8 +227,10 @@ function add_new_company($scope, $http) {
 }
 
 function get_customers($scope, $http) {
+    show_spinner();
     $http.get('/customers/').success(function(data)
     {   
+        hide_spinner();
         $scope.customers = data.customers;
 
     }).error(function(data, status)
@@ -231,6 +257,7 @@ function customer_validation($scope) {
 function add_new_customer($http, $scope) {
     $scope.is_valid = customer_validation($scope);
     if ($scope.is_valid) {
+        show_spinner();
         params = { 
             'name': $scope.customer_name,
             'house': $scope.house_name,
@@ -251,7 +278,7 @@ function add_new_customer($http, $scope) {
                 'Content-Type' : 'application/x-www-form-urlencoded'
             }
         }).success(function(data, status) {
-            
+            hide_spinner();
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.error_message = data.message;
@@ -268,8 +295,10 @@ function add_new_customer($http, $scope) {
     } 
 }   
 function get_expense_head_list($scope, $http) {
+    show_spinner();
     $http.get('/expenses/expense_head_list/').success(function(data)
     {
+        hide_spinner();
         $scope.expense_heads = data.expense_heads;
         $scope.expense_head = 'select';
     }).error(function(data, status)
@@ -281,10 +310,11 @@ function get_sales_invoice_details($scope, $http, from) {
     $scope.invoice_message = '';
         
     var invoice_no = $scope.invoice_no;
-    
+    show_spinner();
 
     $http.get('/sales/invoice_details/?invoice_no='+invoice_no).success(function(data)
     {
+        hide_spinner();
         if (from == 'sales') {
             $scope.sales = {
                 'invoice_no': '',
@@ -359,8 +389,10 @@ function get_sales_invoice_details($scope, $http, from) {
 }
 function check_sales_invoice_no_exists($scope, $http) {
     var sales_invoice_no = $scope.sales.sales_invoice_number;
+    show_spinner();
     $http.get('/sales/check_invoice_no_existence/?invoice_no='+sales_invoice_no).success(function(data)
     {
+        hide_spinner();
         if(data.result == 'error') {
             $scope.existance_message = 'Sales Invoice with this no already exists';
             $scope.sales_invoice_existing = true;
@@ -415,8 +447,10 @@ function ReceiptVoucherController($scope, $element, $http, $location) {
     $scope.is_rv_exists = function() {
         
         var rv_no = $scope.receiptvoucher.voucher_no;
+        show_spinner();
         $http.get('/sales/check_receipt_voucher_existence/?rv_no='+rv_no).success(function(data)
         {
+            hide_spinner();
             if(data.result == 'error') {
                 $scope.existance_message = 'Receipt Voucher with this no already exists';
                 $scope.rv_existing = true;
@@ -477,6 +511,7 @@ function ReceiptVoucherController($scope, $element, $http, $location) {
     $scope.save_receipt = function(){
         $scope.is_valid = $scope.receipt_validation();
         if ($scope.is_valid) {
+            show_spinner();
             $scope.error_flag = false;
             $scope.error_message = '';
             params = { 
@@ -491,7 +526,7 @@ function ReceiptVoucherController($scope, $element, $http, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                
+                hide_spinner();
                 if (data.result == 'error'){
                     $scope.error_flag=true;
                     $scope.message = data.message;
@@ -538,9 +573,11 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         $scope.csrf_token = csrf_token;
         get_expense_head_list($scope, $http);
         if (expense_id) {
+            show_spinner();
             $http.get('/expenses/edit_expense/?expense_id='+expense_id).success(function(data){
                 $scope.expense = data.expense[0];
                 $scope.payment_mode_change($scope.expense.payment_mode);
+                hide_spinner();
 
             }).error(function(data, status)
             {
@@ -591,6 +628,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         if ($scope.head_name == '' || $scope.head_name == undefined) {
             $scope.message = 'Please enter Head Name';
         } else {
+            show_spinner();
             $scope.message = '';
             params = { 
                 'head_name': $scope.head_name,
@@ -604,6 +642,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 if (data.result == 'error') {
                     $scope.message = data.message;
                 } else {
@@ -656,6 +695,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
     }
     $scope.save_expense = function(){
         if ($scope.form_validation()) {
+            show_spinner();
             $scope.error_flag = false;
             $scope.error_message = '';
             params = { 
@@ -670,7 +710,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                
+                hide_spinner();
                 if (data.result == 'error'){
                     $scope.error_flag=true;
                     $scope.message = data.message;
@@ -698,6 +738,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             $scope.expense.bank_name = ''
         }
         if ($scope.form_validation()) {
+            show_spinner();
             $scope.error_flag = false;
             $scope.error_message = '';
             params = { 
@@ -712,7 +753,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                
+                hide_spinner();
                 if (data.result == 'error'){
                     $scope.error_flag=true;
                     $scope.error_message = data.message;
@@ -726,9 +767,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             });
         }
     }
-
 }
-
 function PurchaseReportController($scope, $http, $location) {
     $scope.init = function(csrf_token, report_type) {
         $scope.csrf_token = csrf_token;
@@ -1146,6 +1185,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
     }
     $scope.save_purchase = function() {
         if($scope.validate_purchase()) {
+            show_spinner();
             params = { 
                 'purchase': angular.toJson($scope.purchase),
                 "csrfmiddlewaretoken" : $scope.csrf_token
@@ -1158,7 +1198,7 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                console.log($scope.edit_purchase);
+                hide_spinner();
                 if($scope.edit_purchase)
                     document.location.href = '/purchase/edit/';
                 else
@@ -1172,8 +1212,10 @@ function InventoryPurchaseController($scope, $http, $element, $location) {
     $scope.get_purchase_details = function() {
         $scope.edit_purchase = true;
         $scope.entered_purchase_no = $scope.purchase.purchase_invoice_number;
+        show_spinner();
         $http.get('/purchase/purchase_details/?type=edit&invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
         {
+            hide_spinner();
             $scope.selecting_item = true;
             $scope.item_selected = false;
             $scope.purchase = data.purchase;
@@ -1444,7 +1486,9 @@ function InventorySalesController($scope, $http, $element, $location) {
         return true;
     }
     $scope.save_sales = function() {
+
         if($scope.validate_sales()) {
+            show_spinner();
             params = { 
                 'sales': angular.toJson($scope.sales),
                 "csrfmiddlewaretoken" : $scope.csrf_token
@@ -1457,6 +1501,7 @@ function InventorySalesController($scope, $http, $element, $location) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/sales/invoice_pdf/'+data.id+'/';                
             }).error(function(data, success){
                 
@@ -1648,6 +1693,7 @@ function EditSalesController($scope, $http, $location, $element) {
     }
     $scope.edit_sales_invoice = function() {
         if($scope.validate_sales()){
+            show_spinner();
             if ($scope.sales.bank_name == null) {
                 $scope.sales.bank_name = '';
             }
@@ -1666,6 +1712,7 @@ function EditSalesController($scope, $http, $location, $element) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/sales/invoice_pdf/'+data.id+'/';                        
             }).error(function(data, success){
                 
@@ -1694,6 +1741,7 @@ function AddItemController($scope, $http, $element) {
     }
     $scope.edit_item = function() {
         if (item_validation($scope)) {
+            show_spinner();
             params = { 
                 'item': angular.toJson($scope.item),
                 "csrfmiddlewaretoken" : $scope.csrf_token
@@ -1706,6 +1754,7 @@ function AddItemController($scope, $http, $element) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/inventory/items/';                        
             }).error(function(data, success){
                 
@@ -1733,7 +1782,6 @@ function PrintInvoiceController($scope, $http, $element) {
         'balance': 0,
         'discount': 0,
         'discount_percentage': 0,
-
     }
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
@@ -1796,12 +1844,11 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
         }
     }
     $scope.get_vendor_account_details = function(){
-       
+        show_spinner();
         var vendor = $scope.vendor_account.vendor;
         $http.get('/purchase/vendor_account/?vendor='+$scope.vendor_account.vendor).success(function(data, status)
         {
-        
-            
+            hide_spinner();
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.validation_error = data.message;
@@ -1869,8 +1916,8 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
     }
     $scope.save_vendor_account = function(){
         $scope.vendor_account.vendor_account_date = $$('#vendor_account_date')[0].get('value');
-        
         if($scope.validate_vendor_account()) {
+            show_spinner();
             params = { 
 
                 'vendor_account': angular.toJson($scope.vendor_account),
@@ -1884,13 +1931,13 @@ function VendorAccountController($scope, $element, $http, $timeout, $location){
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/purchase/vendor_accounts/';
                
             }).error(function(data, success){
                 
             });
         }
-          
     }
 }
 function VendorAccountReportController($scope, $element, $http, $location) {
@@ -1916,19 +1963,7 @@ function VendorAccountReportController($scope, $element, $http, $location) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y', 
         });
-        
-        $scope.get_vendors();
-
-    }
-    $scope.get_vendors = function() {
-        $http.get('/suppliers/').success(function(data)
-        {   
-            $scope.suppliers = data.suppliers;
-            $scope.supplier_name = 'select';
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
+        get_suppliers($scope, $http);
     }
     $scope.get_report_type = function(){
         if($scope.report_type == 'date') {
@@ -1945,19 +1980,9 @@ function VendorReportController($http, $scope, $location, $element) {
 
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        $scope.get_vendors()
+        get_suppliers($scope, $http);
     }
-    $scope.get_vendors = function() {
-        $http.get('/suppliers/').success(function(data)
-        {
-            $scope.suppliers = data.suppliers[0];
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-        $scope.supplier_name = 'select';
-    }
-
+    
 }
 function AddOpeningStockController($scope, $http, $element) {
     $scope.openingstock = {
@@ -1987,6 +2012,7 @@ function AddOpeningStockController($scope, $http, $element) {
     $scope.save_opening_stock = function(){
         $scope.is_valid = $scope.opening_stock_validation();
         if ($scope.is_valid){
+            show_spinner();
             params = { 
                 'opening_stock_details': angular.toJson($scope.openingstock),
                 "csrfmiddlewaretoken" : $scope.csrf_token
@@ -1999,7 +2025,7 @@ function AddOpeningStockController($scope, $http, $element) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                
+                hide_spinner();
                 document.location.href = '/inventory/opening_stock/';
             }).error(function(data, success){
                 console.log('error', data);
@@ -2054,8 +2080,10 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
     }
     $scope.load_purchase = function() {
         var invoice = $scope.purchase.purchase_invoice_number;
+        show_spinner();
         $http.get('/purchase/purchase_details/?type=return&invoice_no='+$scope.purchase.purchase_invoice_number).success(function(data)
         {
+            hide_spinner();
             $scope.selecting_item = true;
             $scope.item_selected = false;
             $scope.purchase = data.purchase;
@@ -2155,6 +2183,7 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
         $scope.purchase_return.purchase_invoice_number = $scope.purchase.purchase_invoice_number;
         $scope.purchase_return.purchase_return_date = $$('#purchase_return_date')[0].get('value');
         if ($scope.return_purchase_validation()) {
+            show_spinner();
             for(var i=0; i< $scope.purchase_return.purchase_items.length; i++){
                 $scope.purchase_return.purchase_items[i].selected = "selected";
                 if ($scope.purchase_return.purchase_items[i].qty_purchased == $scope.purchase_return.purchase_items[i].returned_quantity) {
@@ -2179,6 +2208,7 @@ function PurchaseReturnController($scope, $element, $http, $timeout, share, $loc
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/purchase/return/';
                
             }).error(function(data, success){
@@ -2198,9 +2228,7 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
     
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        
         $scope.get_customers();
-
     }
     $scope.addcustomer = function(customer) {
         $scope.selecting_customer = false;
@@ -2210,8 +2238,10 @@ function PendingCustomerReportController($scope, $element, $http, $location) {
     $scope.get_customers = function(parameter) {
         if(parameter == 'customer_name')
             var param = $scope.customer_name;
+        show_spinner();
         $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
         {   
+            hide_spinner();
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
@@ -2281,8 +2311,10 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
     }
     $scope.load_sales = function() {
         var invoice = $scope.sales.sales_invoice_number;
+        show_spinner();
         $http.get('/sales/sales_details/?invoice_no='+$scope.sales.sales_invoice_number).success(function(data)
         {
+            hide_spinner();
             $scope.selecting_item = true;
             $scope.item_selected = false;
             var invoice_no = $scope.sales.sales_invoice_number;
@@ -2309,7 +2341,6 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                 $scope.sales_return.discount = data.sales.discount;
                 $scope.message = ''
             }
-            
             $scope.sales_return.invoice_number = $scope.return_invoice_no;
         }).error(function(data, status)
         {
@@ -2358,6 +2389,7 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
     }
     $scope.save_sales_return = function() {
         if($scope.validate_salesreturn()) {
+            show_spinner();
             $scope.sales_return.sales_return_date = $$('#sales_return_date')[0].get('value');
             $scope.sales_return.sales_invoice_number = $scope.sales.sales_invoice_number;
             for(var i=0; i< $scope.sales_return.sales_items.length; i++){
@@ -2384,6 +2416,7 @@ function SalesReturnController($scope, $element, $http, $timeout, share, $locati
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/sales/sales_return/';
                
             }).error(function(data, success){
@@ -2413,10 +2446,12 @@ function CustomerPaymentReportController($scope, $element, $http, $location) {
         $scope.customer_name = customer.customer_name;
     }
     $scope.get_customers = function(parameter) {
+        show_spinner();
         if(parameter == 'customer_name')
             var param = $scope.customer_name;
         $http.get('/customersearch/?'+parameter+'='+param).success(function(data)
         {   
+            hide_spinner();
             $scope.selecting_customer = true;
             $scope.customer_selected = false;
             $scope.customers = data.customers;
@@ -2471,8 +2506,10 @@ function SupplierAccountEntryController($scope, $http, $element) {
     }
     $scope.get_purchase_details = function() {
         $scope.entered_purchase_no = $scope.invoice_no;
+        show_spinner();
         $http.get('/purchase/purchase_details/?type=payment&invoice_no='+$scope.invoice_no).success(function(data)
         {
+            hide_spinner();
             $scope.supplier_account_entry = data.purchase;
             $scope.supplier_account_entry.invoice_no = $scope.entered_purchase_no;
             $scope.supplier_account_entry.voucher_no = $scope.voucher_no;
@@ -2525,6 +2562,7 @@ function SupplierAccountEntryController($scope, $http, $element) {
     }
     $scope.save_supplier_payement = function() {
         if ($scope.supplier_payment_validation()) {
+            show_spinner();
             $scope.supplier_account_entry.balance = $scope.balance;
             if($scope.supplier_account_entry.payment_mode == 'cash') {
                 $scope.supplier_account_entry.bank_name = '';
@@ -2545,6 +2583,7 @@ function SupplierAccountEntryController($scope, $http, $element) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/purchase/supplier_accounts/';
                
             }).error(function(data, success){

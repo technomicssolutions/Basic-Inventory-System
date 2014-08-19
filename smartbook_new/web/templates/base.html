@@ -37,20 +37,6 @@
 		<script src="/static/js/mootools/calendar/Picker.Date.js" type="text/javascript"></script>
 		<script src="/static/js/mootools/calendar/Picker.Date.Range.js" type="text/javascript"></script>
 		
-	  	
-	    <script>
-
-			window.addEvent('domready', function(){
-				// new Picker.Date($$('#date'), {
-				// 	timePicker: false,
-				// 	positionOffset: {x: 5, y: 0},
-				// 	pickerClass: 'datepicker_bootstrap',
-				// 	useFadeInOut: !Browser.ie
-				// });
-				
-			});
-
-		</script>
 
 		{% block extrahead %}
 		{% endblock extrahead %}
@@ -64,6 +50,8 @@
 				{% include 'header.html' %}
 			{% endblock header %}
 			<div id="overlay"></div>
+			<div id="spinner_overlay"></div>
+			<div id="spinner"></div>
 			<div id="dialogue_popup_container">
 				<div id="dialogue_popup">
 					<a href="" class="close_pop" ng-click="hide_popup()"></a>

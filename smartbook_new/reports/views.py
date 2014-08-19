@@ -1,13 +1,6 @@
 from datetime import datetime
 
-from reportlab.lib.units import cm
-from reportlab.lib import colors
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import green, black, red, gray
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-
-from smartbook_new import arabic_reshaper
 
 from django.shortcuts import render
 from django.views.generic.base import View
