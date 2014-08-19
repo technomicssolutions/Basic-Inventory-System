@@ -581,7 +581,7 @@ class PurchaseReport(View):
                     p.drawString(50, y1, purchase.purchase_invoice_date.strftime('%d/%m/%y'))
                     p.drawString(120, y1, str(purchase.purchase_invoice_number))
 
-                    p.drawString(240, y1, purchase.supplier.name)
+                    p.drawString(240, y1, purchase.supplier.name if purchase and purchase.supplier else '')
                     p.drawString(400, y1, str(purchase.net_total))
                     p.drawString(580, y1, str(purchase.discount))
                     p.drawString(480, y1, str(purchase.grant_total))
