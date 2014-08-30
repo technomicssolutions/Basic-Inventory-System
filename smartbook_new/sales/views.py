@@ -34,81 +34,81 @@ def header(canvas, y):
 
 def invoice_body_layout(canvas, y, sales):
 
-    canvas.setFont("Helvetica-Bold", 40)
+    canvas.setFont("Helvetica-Bold", 20)
     if sales.status == 'estimate':
-        canvas.drawString(350, y - 80, 'Estimate')
+        canvas.drawString(200, y - 80, 'Estimate')
     else:
-        canvas.drawString(350, y - 80, 'Invoice')
+        canvas.drawString(200, y - 80, 'Invoice')
     canvas.setFont("Helvetica", 15)
 
     # Date and Invoice Box start
-    canvas.line(700, y - 45, 950, y - 45)
-    canvas.line(700, y - 100, 950, y - 100)  
-    canvas.line(700, y - 70, 950, y - 70)  
+    canvas.line(300, y - 45, 475, y - 45)
+    canvas.line(300, y - 100, 475, y - 100)  
+    canvas.line(300, y - 70, 475, y - 70)  
 
-    canvas.line(700, y - 45, 700, y - 100)  
-    canvas.line(950, y - 45, 950, y - 100)
-    canvas.line(825, y - 45, 825, y - 100)
+    canvas.line(300, y - 45, 300, y - 100)  
+    canvas.line(475, y - 45, 475, y - 100)
+    canvas.line(410, y - 45, 410, y - 100)
     # Date and Invoice Box end
 
     # Bill and Ship Box start
 
-    canvas.line(50, y - 130, 400, y - 130)
-    canvas.line(50, y - 160, 400, y - 160)
-    canvas.line(50, y - 250, 400, y - 250)
+    canvas.line(25, y - 130, 200, y - 130)
+    canvas.line(25, y - 160, 200, y - 160)
+    canvas.line(25, y - 250, 200, y - 250)
 
-    canvas.line(500, y - 130, 900, y - 130)
-    canvas.line(500, y - 160, 900, y - 160)
-    canvas.line(500, y - 250, 900, y - 250)
+    canvas.line(250, y - 130, 450, y - 130)
+    canvas.line(250, y - 160, 450, y - 160)
+    canvas.line(250, y - 250, 450, y - 250)
     
-    canvas.line(50, y - 130, 50, y - 250)  
-    canvas.line(400, y - 130, 400, y - 250)
-    canvas.line(500, y - 130, 500, y - 250)  
-    canvas.line(900, y - 130, 900, y - 250)
+    canvas.line(25, y - 130, 25, y - 250)  
+    canvas.line(200, y - 130, 200, y - 250)
+    canvas.line(250, y - 130, 250, y - 250)  
+    canvas.line(450, y - 130, 450, y - 250)
 
     # Bill and Ship Box end
 
-    canvas.setFont("Helvetica", 14)
-    canvas.drawString(745,  y - 60, 'Date')
-    canvas.drawString(865,  y - 60, 'Invoice #')
+    canvas.setFont("Helvetica", 11)
+    canvas.drawString(300,  y - 60, 'Date')
+    canvas.drawString(420,  y - 60, 'Invoice #')
 
-    canvas.drawString(100, y - 150, 'Bill To')
-    canvas.drawString(550, y - 150, 'Ship To')
+    canvas.drawString(50, y - 150, 'Bill To')
+    canvas.drawString(275, y - 150, 'Ship To')
 
-    canvas.line(50, y - 340, 950, y - 340) 
+    canvas.line(25, y - 300, 475, y - 300) 
 
-    canvas.line(50, y - 340, 50, y - 980) 
-    canvas.line(950, y - 340, 950, y - 980) 
+    canvas.line(25, y - 300, 25, y - 600) 
+    canvas.line(475, y - 300, 475, y - 600) 
 
-    canvas.line(50, y - 370, 950, y - 370) 
+    canvas.line(25, y - 350, 475, y - 350) 
     
-    canvas.line(150, y - 340, 150, y - 980) 
-    canvas.line(300, y - 340, 300, y - 980)
-    canvas.line(675, y - 340, 675, y - 980)  
-    canvas.line(815, y - 340, 815, y - 980) 
+    canvas.line(75, y - 300, 75, y - 600) 
+    canvas.line(150, y - 300, 150, y - 600)
+    canvas.line(335, y - 300, 335, y - 600)  
+    canvas.line(410, y - 300, 410, y - 600) 
 
-    canvas.line(50, y - 980, 950, y - 980)
+    canvas.line(25, y - 600, 475, y - 600)
 
-    canvas.drawString(60, y - 360, 'Quantity')
-    canvas.drawString(190, y - 360, 'Item Code')
-    canvas.drawString(450, y - 360, 'Item Name')
-    canvas.drawString(710, y - 360, 'Price Each')
-    canvas.drawString(850, y - 360, 'Amount')
+    canvas.drawString(30, y - 330, 'Quantity')
+    canvas.drawString(95, y - 330, 'Item Code')
+    canvas.drawString(225, y - 330, 'Item Name')
+    canvas.drawString(355, y - 330, 'Price Each')
+    canvas.drawString(425, y - 330, 'Amount')
 
-    canvas.drawString(725,  y - 85, sales.sales_invoice_date.strftime('%d-%b-%Y'))
-    canvas.drawString(865,  y - 85, sales.sales_invoice_number)
+    canvas.drawString(300,  y - 85, sales.sales_invoice_date.strftime('%d-%b-%Y'))
+    canvas.drawString(430,  y - 85, sales.sales_invoice_number)
 
-    canvas.drawString(70, y - 180, sales.customer.customer_name)
-    canvas.drawString(70, y - 200, sales.customer.house_name)
-    canvas.drawString(70, y - 220, sales.customer.street)
-    canvas.drawString(165, y - 220, ',' if sales.customer.city and sales.customer.street else '')
-    canvas.drawString(172, y - 220, sales.customer.city)
+    canvas.drawString(35, y - 180, sales.customer.customer_name)
+    canvas.drawString(35, y - 200, sales.customer.house_name)
+    canvas.drawString(35, y - 220, sales.customer.street)
+    canvas.drawString(80, y - 220, ',' if sales.customer.city and sales.customer.street else '')
+    canvas.drawString(85, y - 220, sales.customer.city)
 
-    canvas.drawString(510, y - 180, sales.customer.customer_name)
-    canvas.drawString(510, y - 200, sales.customer.house_name)
-    canvas.drawString(510, y - 220, sales.customer.street)
-    canvas.drawString(605, y - 220, ',' if sales.customer.city and sales.customer.street else '')
-    canvas.drawString(612, y - 220, sales.customer.city)
+    canvas.drawString(255, y - 180, sales.customer.customer_name)
+    canvas.drawString(255, y - 200, sales.customer.house_name)
+    canvas.drawString(255, y - 220, sales.customer.street)
+    canvas.drawString(300, y - 220, ',' if sales.customer.city and sales.customer.street else '')
+    canvas.drawString(306, y - 220, sales.customer.city)
 
     canvas.setFont('Times-Roman', 14)
     return canvas 
@@ -455,57 +455,57 @@ class SalesInvoicePDF(View):
         sales = Sales.objects.get(id=invoice_id)
 
         response = HttpResponse(content_type='application/pdf')
-        p = canvas.Canvas(response, pagesize=(1000, 1250))
-        y = 1150
+        p = canvas.Canvas(response, pagesize=(500, 750))
+        y = 700
         
         p = invoice_body_layout(p, y, sales)
         p = header(p, y)
 
         total_amount = 0
-        y1 = y - 400
-        p.setFont('Helvetica', 14)
+        y1 = y - 380
+        p.setFont('Helvetica', 10)
         for s_item in sales.salesitem_set.all():
                         
-            if y1 <= 170:
-                y1 = y - 400
+            if y1 <= 100:
+                y1 = y - 380
                 p.showPage()
-                
                 p = invoice_body_layout(p, y, sales)
                 p = header(p, y)
+                p.setFont('Helvetica', 10)
 
-            p.drawString(60, y1, str(s_item.quantity_sold))
-            p.drawString(190, y1, str(s_item.item.code))
-            p.drawString(350, y1, str(s_item.item.name))
-            p.drawString(710, y1, str(s_item.selling_price))
-            p.drawString(850, y1, str(s_item.net_amount))
+            p.drawString(30, y1, str(s_item.quantity_sold))
+            p.drawString(95, y1, str(s_item.item.code))
+            p.drawString(175, y1, str(s_item.item.name))
+            p.drawString(360, y1, str(s_item.selling_price))
+            p.drawString(425, y1, str(s_item.net_amount))
 
             total_amount = total_amount + s_item.net_amount
 
             y1 = y1 - 30
 
         #  total box start 
-        p.line(50, y - 1040, 950, y - 1040)
-        p.line(650, y - 980, 650, y - 1040)
-        p.line(50, y - 980, 50, y - 1040)
-        p.line(950, y - 980, 950, y - 1040)
+        p.line(25, y - 660, 475, y - 660)
+        p.line(325, y - 600, 325, y - 660)
+        p.line(25, y - 600, 25, y - 660)
+        p.line(475, y - 600, 475, y - 660)
 
         # total box end
-        p.drawString(820, y - 995, 'Rs')
-        p.drawString(850, y - 995, str(total_amount))
+        p.drawString(410, y - 610, 'Rs')
+        p.drawString(425, y - 610, str(total_amount))
 
         # p.setFont("Helvetica-Bold", 30)  
-        p.drawString(660, y - 995, 'Total')
+        p.drawString(330, y - 610, 'Total')
         
-        p.drawString(820, y - 1015, 'Rs')
-        p.drawString(850, y - 1015, str(sales.discount_for_sale))
-        p.drawString(660, y - 1015, 'Discount')
+        p.drawString(410, y - 630, 'Rs')
+        p.drawString(425, y - 630, str(sales.discount_for_sale))
+        p.drawString(330, y - 630, 'Discount')
         if total_amount > 0 and total_amount > sales.discount_for_sale:
             grant_total = total_amount - sales.discount_for_sale
         else:
             grant_total = total_amount
-        p.drawString(820, y - 1035, 'Rs')
-        p.drawString(850, y - 1035, str(grant_total))
-        p.drawString(660, y - 1035, 'Grant Total')
+        p.drawString(410, y - 650, 'Rs')
+        p.drawString(425, y - 650, str(grant_total))
+        p.drawString(330, y - 650, 'Grant Total')
         # Item Box end
 
         p.showPage()
