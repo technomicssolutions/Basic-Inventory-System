@@ -29,6 +29,7 @@ function get_inventory_items($scope, $http, parameter, param){
             $scope.selecting_item = true;
             $scope.item_selected = false;
             $scope.items = data.inventory_items;
+
         }
         
     }).error(function(data, status)
@@ -1274,6 +1275,10 @@ function InventorySalesController($scope, $http, $element, $location) {
         'discount': 0,
         'discount_percentage': 0,
         'sales_mode':'inventory_sales',
+        'rate_of_tax': 0,
+        'net_tax_total': 0,
+        'kvat': 0,
+        'cess': 0,
         'removed_items': [],
         'po_no': '',
         'terms': '',
@@ -1335,6 +1340,7 @@ function InventorySalesController($scope, $http, $element, $location) {
             'item_name': item.name,
             'current_stock': item.current_stock,
             'unit_price': item.selling_price,
+            'rate_of_tax':0,
             'qty_sold': 0,
             'net_amount': 0,
         }
@@ -1343,10 +1349,13 @@ function InventorySalesController($scope, $http, $element, $location) {
     }
     $scope.calculate_net_total_sale = function() {
         net_total = 0
+        net_tax_total = 0
         for (var i=0; i < $scope.sales.sales_items.length; i++ ){
             net_total = parseFloat(net_total) + parseFloat($scope.sales.sales_items[i].net_amount);
+            // net_tax_total = parseFloat(net_tax_total) + (parseFloat($scope.sales.sales_items[i].rate_of_tax)/100*parseFloat($scope.sales.sales_items[i].unit_price))*parseFloat($scope.sales.sales_items[i].qty_sold);
         }
         $scope.sales.net_total = net_total;
+        // $scope.sales.net_tax_total = net_tax_total;
         $scope.calculate_grant_total_sale();
     }
 
@@ -1379,13 +1388,14 @@ function InventorySalesController($scope, $http, $element, $location) {
     $scope.close_popup = function(){
         $scope.popup.hide_popup();
     }
-
     $scope.add_new_customer = function() { 
         
        add_new_customer($http, $scope);
     }
     $scope.calculate_net_amount_sale = function(item) {
         $scope.validation_error = "";
+        
+        console.log(item)
         if (!Number(item.qty_sold) || item.qty_sold == '' || item.qty_sold == undefined) {
             item.qty_sold = 0
         }
@@ -1394,10 +1404,18 @@ function InventorySalesController($scope, $http, $element, $location) {
             return false;
         } else {
             if(item.qty_sold != '' && item.unit_price != ''){
-                item.net_amount = ((parseFloat(item.qty_sold)*parseFloat(item.unit_price))).toFixed(2);
+                // if(item.rate_of_tax != '' || !Number(item.rate_of_tax)){
+                //     item.net_amount = ((parseFloat(item.qty_sold)*(parseFloat(item.unit_price)+(parseFloat(item.rate_of_tax)/100)*parseFloat(item.unit_price)))).toFixed(2);
+                    
+                // }else{
+                    item.net_amount = ((parseFloat(item.qty_sold)*parseFloat(item.unit_price))).toFixed(2);
+                // }
             }
+            $scope.sales.rate_of_tax = item.rate_of_tax;
+            
             $scope.calculate_net_total_sale();
         }
+
     }
     $scope.payment_mode_change_sales = function(type) {
         if (type == 'cash' || type == 'credit') {
@@ -1433,6 +1451,12 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.net_total == '' || !Number($scope.sales.net_total)) {
             $scope.sales.discount = 0;
         }
+        if ($scope.sales.kvat == '' || !Number($scope.sales.kvat)){
+            $scope.sales.kvat = 0;
+        }
+        if ($scope.sales.cess == '' || !Number($scope.sales.cess)){
+            $scope.sales.cess = 0;
+        }
         $scope.sales.discount = ((parseFloat($scope.sales.discount_percentage) * parseFloat($scope.sales.net_total))/100).toFixed(2);
         $scope.calculate_grant_total_sale();
     }
@@ -1444,7 +1468,7 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.discount == '' || $scope.sales.discount == undefined || !Number($scope.sales.discount)){
             $scope.sales.discount = 0;
         }
-        $scope.sales.grant_total = (parseFloat($scope.sales.net_total) - (parseFloat($scope.sales.discount))).toFixed(2);
+        $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess)) - (parseFloat($scope.sales.discount))) .toFixed(2);
         $scope.calculate_balance_sale();
     }
     $scope.calculate_balance_sale = function () {
@@ -1497,6 +1521,9 @@ function InventorySalesController($scope, $http, $element, $location) {
             for (var i=0; i < $scope.sales.sales_items.length; i++){
                 if (parseInt($scope.sales.sales_items[i].current_stock) < parseInt($scope.sales.sales_items[i].qty_sold)){
                     $scope.validation_error = "Quantity not in stock for item with code "+$scope.sales.sales_items[i].item_code;
+                    return false;
+                }else if(parseInt($scope.sales.sales_items[i].qty_sold) == 0){
+                    $scope.validation_error = "Please enter quantity ";
                     return false;
                 }
             }

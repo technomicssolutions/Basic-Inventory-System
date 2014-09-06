@@ -23,6 +23,9 @@ class Sales(models.Model):
     cheque_date = models.DateField('Cheque Date', null=True, blank=True)
     
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=2, default=0)
+    kvat = models.DecimalField('KVAT',max_digits=14, decimal_places=2, default=0)
+    cess = models.DecimalField('CESS',max_digits=14, decimal_places=2, default=0)
+    net_tax_total = models.DecimalField('Net Tax', max_digits=14, decimal_places=2, default=0)
     grant_total = models.DecimalField('Grand Total',max_digits=14, decimal_places=2, default=0)   
     balance = models.DecimalField('Balance', null=True, blank=True, decimal_places=2, default=0, max_digits=14)
     paid = models.DecimalField('Paid', null=True, blank=True, decimal_places=2, default=0, max_digits=14)
@@ -41,6 +44,7 @@ class Sales(models.Model):
 class SalesItem(models.Model):
     sales = models.ForeignKey(Sales)
     item = models.ForeignKey(Item, null=True, blank=True)
+    rate_of_tax = models.DecimalField('Rate Of Tax',max_digits=14, decimal_places=2, default=0)
     quantity_sold = models.IntegerField('Quantity Sold', default=0)
     selling_price = models.DecimalField('Selling Price', max_digits=14, decimal_places=2, default=0) 
     net_amount = models.DecimalField('Sold Net Amount', max_digits=14, decimal_places=2, default=0)

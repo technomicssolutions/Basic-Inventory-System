@@ -36,79 +36,89 @@ def invoice_body_layout(canvas, y, sales):
 
     canvas.setFont("Helvetica-Bold", 20)
     if sales.status == 'estimate':
-        canvas.drawString(200, y - 80, 'Estimate')
+        canvas.drawString(200, y - 100, 'Estimate')
     else:
-        canvas.drawString(200, y - 80, 'Invoice')
+        canvas.drawString(200, y - 100, 'Tax Invoice')
     canvas.setFont("Helvetica", 15)
 
     # Date and Invoice Box start
-    canvas.line(300, y - 45, 475, y - 45)
-    canvas.line(300, y - 100, 475, y - 100)  
-    canvas.line(300, y - 70, 475, y - 70)  
+    # canvas.line(300, y - 45, 475, y - 45)
+    # canvas.line(300, y - 100, 475, y - 100)  
+    # canvas.line(300, y - 70, 475, y - 70)  
 
-    canvas.line(300, y - 45, 300, y - 100)  
-    canvas.line(475, y - 45, 475, y - 100)
-    canvas.line(410, y - 45, 410, y - 100)
-    # Date and Invoice Box end
+    # canvas.line(300, y - 45, 300, y - 100)  
+    # canvas.line(475, y - 45, 475, y - 100)
+    # canvas.line(410, y - 45, 410, y - 100)
+    # # Date and Invoice Box end
 
-    # Bill and Ship Box start
+    # # Bill and Ship Box start
 
-    canvas.line(25, y - 130, 200, y - 130)
-    canvas.line(25, y - 160, 200, y - 160)
-    canvas.line(25, y - 250, 200, y - 250)
+    # canvas.line(25, y - 130, 200, y - 130)
+    # canvas.line(25, y - 160, 200, y - 160)
+    # canvas.line(25, y - 250, 200, y - 250)
 
-    canvas.line(250, y - 130, 450, y - 130)
-    canvas.line(250, y - 160, 450, y - 160)
-    canvas.line(250, y - 250, 450, y - 250)
+    # canvas.line(250, y - 130, 450, y - 130)
+    # canvas.line(250, y - 160, 450, y - 160)
+    # canvas.line(250, y - 250, 450, y - 250)
     
-    canvas.line(25, y - 130, 25, y - 250)  
-    canvas.line(200, y - 130, 200, y - 250)
-    canvas.line(250, y - 130, 250, y - 250)  
-    canvas.line(450, y - 130, 450, y - 250)
+    # canvas.line(25, y - 130, 25, y - 250)  
+    # canvas.line(200, y - 130, 200, y - 250)
+    # canvas.line(250, y - 130, 250, y - 250)  
+    # canvas.line(450, y - 130, 450, y - 250)
 
     # Bill and Ship Box end
 
     canvas.setFont("Helvetica", 11)
-    canvas.drawString(300,  y - 60, 'Date')
-    canvas.drawString(420,  y - 60, 'Invoice #')
+    canvas.drawString(40, y ,'TIN : 32091113417')
+    canvas.drawString(380, y, ' Phone: 9048435656 ')
+    canvas.drawString(200, y-20, 'M/s. FLOOR MAGIC')
+    canvas.drawString(160, y-40, 'V K Kadavu Road, Nhangattiri, Pattambi')
+    canvas.drawString(160, y-60, 'The Kerala Value Added Tax Rule, 2005')
+    canvas.drawString(180, y-80, 'Form No.8 [See Rule 58(10)]')
+    canvas.drawString(400,  y - 120, 'Date:')
+    canvas.drawString(40,  y - 120, 'Bill No...............................')
 
-    canvas.drawString(50, y - 150, 'Bill To')
-    canvas.drawString(275, y - 150, 'Ship To')
+    canvas.drawString(40, y - 140, 'Sold To.......................................................................................')
+    canvas.drawString(40, y - 160, '.................................................................TIN:')
+    canvas.drawString(40, y-180, 'Documents through.......................................................................................' )
+    canvas.line(25, y - 200, 475, y - 200) 
 
-    canvas.line(25, y - 300, 475, y - 300) 
+    canvas.line(25, y - 200, 25, y - 400) 
+    canvas.line(475, y - 200, 475, y - 400) 
 
-    canvas.line(25, y - 300, 25, y - 600) 
-    canvas.line(475, y - 300, 475, y - 600) 
-
-    canvas.line(25, y - 350, 475, y - 350) 
+    canvas.line(25, y - 250, 475, y - 250) 
     
-    canvas.line(75, y - 300, 75, y - 600) 
-    canvas.line(150, y - 300, 150, y - 600)
-    canvas.line(335, y - 300, 335, y - 600)  
-    canvas.line(410, y - 300, 410, y - 600) 
+    canvas.line(75, y-200, 75, y-400)
+    canvas.line(125, y - 200, 125, y - 400) 
+    canvas.line(220, y-200, 220, y-400)
+    canvas.line(290, y - 200, 290, y - 400)
+    canvas.line(350, y - 200, 350, y - 400)  
+    canvas.line(410, y - 200, 410, y - 400) 
 
-    canvas.line(25, y - 600, 475, y - 600)
+    canvas.line(25, y - 400, 475, y - 400)
 
-    canvas.drawString(30, y - 330, 'Quantity')
-    canvas.drawString(95, y - 330, 'Item Code')
-    canvas.drawString(225, y - 330, 'Item Name')
-    canvas.drawString(355, y - 330, 'Price Each')
-    canvas.drawString(425, y - 330, 'Amount')
+    canvas.drawString(30, y - 230, 'SL. No.')
+    canvas.drawString(90, y-230, 'Sch.')
+    canvas.drawString(135, y - 230, 'Commodity ')
+    canvas.drawString(230, y-230, 'Rate of Tax')
+    canvas.drawString(295, y - 230, 'Quantity')
+    canvas.drawString(355, y - 230, 'Rate')
+    canvas.drawString(425, y - 230, 'Amount')
 
-    canvas.drawString(300,  y - 85, sales.sales_invoice_date.strftime('%d-%b-%Y'))
-    canvas.drawString(430,  y - 85, sales.sales_invoice_number)
+    canvas.drawString(430,  y - 120, sales.sales_invoice_date.strftime('%d-%b-%Y'))
+    canvas.drawString(100,  y - 117, sales.sales_invoice_number)
 
-    canvas.drawString(35, y - 180, sales.customer.customer_name)
-    canvas.drawString(35, y - 200, sales.customer.house_name)
-    canvas.drawString(35, y - 220, sales.customer.street)
-    canvas.drawString(80, y - 220, ',' if sales.customer.city and sales.customer.street else '')
-    canvas.drawString(85, y - 220, sales.customer.city)
+    canvas.drawString(100, y - 137, sales.customer.customer_name)
+    # canvas.drawString(35, y - 200, sales.customer.house_name)
+    # canvas.drawString(35, y - 220, sales.customer.street)
+    # canvas.drawString(80, y - 220, ',' if sales.customer.city and sales.customer.street else '')
+    # canvas.drawString(85, y - 220, sales.customer.city)
 
-    canvas.drawString(255, y - 180, sales.customer.customer_name)
-    canvas.drawString(255, y - 200, sales.customer.house_name)
-    canvas.drawString(255, y - 220, sales.customer.street)
-    canvas.drawString(300, y - 220, ',' if sales.customer.city and sales.customer.street else '')
-    canvas.drawString(306, y - 220, sales.customer.city)
+    # canvas.drawString(255, y - 180, sales.customer.customer_name)
+    # canvas.drawString(255, y - 200, sales.customer.house_name)
+    # canvas.drawString(255, y - 220, sales.customer.street)
+    # canvas.drawString(300, y - 220, ',' if sales.customer.city and sales.customer.street else '')
+    # canvas.drawString(306, y - 220, sales.customer.city)
 
     canvas.setFont('Times-Roman', 14)
     return canvas 
@@ -144,13 +154,15 @@ class SalesEntry(View):
         
         sales.sales_invoice_number = sales_dict['sales_invoice_number']
         sales.payment_mode = sales_dict['payment_mode']
-        
         sales.sales_invoice_date = datetime.strptime(sales_dict['sales_invoice_date'], '%d/%m/%Y')
         customer_payment.date = sales.sales_invoice_date 
         customer_payment.customer_account = sales
         sales.discount_for_sale = sales_dict['discount']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
         sales.net_amount = sales_dict['net_total']
+        sales.kvat = sales_dict['kvat']
+        sales.cess = sales_dict['cess']
+        sales.net_tax_total = sales_dict['net_tax_total']
         sales.grant_total = sales_dict['grant_total']
         customer_payment.total_amount = sales.grant_total
         sales.paid = sales_dict['paid']
@@ -210,6 +222,7 @@ class SalesEntry(View):
             s_item.quantity_sold = sales_item['qty_sold']
             s_item.net_amount = sales_item['net_amount']
             s_item.selling_price = sales_item['unit_price']
+            s_item.rate_of_tax = sales_item['rate_of_tax']
             s_item.save()
 
         res = {
@@ -459,55 +472,90 @@ class SalesInvoicePDF(View):
         y = 700
         
         p = invoice_body_layout(p, y, sales)
-        p = header(p, y)
+        # p = header(p, y)
 
         total_amount = 0
-        y1 = y - 380
+        y1 = y - 280
         p.setFont('Helvetica', 10)
-        for s_item in sales.salesitem_set.all():
-                        
-            if y1 <= 100:
-                y1 = y - 380
+        for s_item in sales.salesitem_set.all():  
+            print y1        
+            if y1 <= 270:
+                y1 = y - 280
                 p.showPage()
                 p = invoice_body_layout(p, y, sales)
-                p = header(p, y)
+                # p = header(p, y)
                 p.setFont('Helvetica', 10)
 
-            p.drawString(30, y1, str(s_item.quantity_sold))
-            p.drawString(95, y1, str(s_item.item.code))
-            p.drawString(175, y1, str(s_item.item.name))
+            p.drawString(30, y1, str(s_item.item.code))
+            p.drawString(135, y1, str(s_item.item.name))
+            p.drawString(250,y1, str(s_item.rate_of_tax))
+            p.drawString(270, y1, '%')
+            p.drawString(310, y1, str(s_item.quantity_sold))
             p.drawString(360, y1, str(s_item.selling_price))
             p.drawString(425, y1, str(s_item.net_amount))
 
             total_amount = total_amount + s_item.net_amount
 
             y1 = y1 - 30
-
+        print y1
         #  total box start 
-        p.line(25, y - 660, 475, y - 660)
-        p.line(325, y - 600, 325, y - 660)
-        p.line(25, y - 600, 25, y - 660)
-        p.line(475, y - 600, 475, y - 660)
+        p.line(25, y - 520, 475, y - 520)
+
+        
+        p.line(410, y - 400, 412, y - 520)
+        p.line(25, y - 400, 25, y - 520)
+        p.line(475, y - 400, 475, y - 520)
 
         # total box end
-        p.drawString(410, y - 610, 'Rs')
-        p.drawString(425, y - 610, str(total_amount))
-
+        p.drawString(420, y - 410, 'Rs')
+        p.drawString(435, y - 410, str(total_amount))
+        # p.line(25, y - 417, 475, y - 417)
         # p.setFont("Helvetica-Bold", 30)  
-        p.drawString(330, y - 610, 'Total')
+        p.drawString(35, y - 410, 'Total')
         
-        p.drawString(410, y - 630, 'Rs')
-        p.drawString(425, y - 630, str(sales.discount_for_sale))
-        p.drawString(330, y - 630, 'Discount')
+        p.drawString(420, y - 430, 'Rs')
+        p.drawString(435, y - 430, str(sales.discount_for_sale))
+        # p.line(25, y - 435, 475, y - 435)
+        p.drawString(35, y - 430, 'Less : Trade/Cash Discount')
         if total_amount > 0 and total_amount > sales.discount_for_sale:
             grant_total = total_amount - sales.discount_for_sale
         else:
             grant_total = total_amount
-        p.drawString(410, y - 650, 'Rs')
-        p.drawString(425, y - 650, str(grant_total))
-        p.drawString(330, y - 650, 'Grant Total')
-        # Item Box end
 
+        p.drawString(420, y - 450, 'Rs')
+        p.drawString(435, y - 450, str(grant_total))
+        p.drawString(35, y - 450, 'Net Taxable Value')
+        # p.line(25, y - 455, 475, y - 455)
+
+        p.drawString(420, y - 470, 'Rs')
+        p.drawString(435, y - 470, str(sales.kvat))
+        p.drawString(35, y - 470, 'KVAT')
+        # p.line(25, y - 475, 475, y - 475)
+
+        p.drawString(420, y - 490, 'Rs')
+        p.drawString(435, y - 490, str(sales.cess))
+        p.drawString(35, y - 490, 'Cess')
+        if sales.kvat or sales.cess:
+            grant_total = grant_total + sales.kvat +sales.cess
+        else:
+            grant_total = grant_total
+       
+        p.drawString(420, y - 510, 'Rs')
+        p.drawString(435, y - 510, str(grant_total))
+        p.drawString(35, y - 510, 'Grant Total')
+        # p.line(25, y - 495, 475, y - 495)
+        # Item Box end
+        if  not sales.status == 'estimate':
+            p.drawString(25, y-530, 'Amount in words : (Rupees...........................................' )
+            p.drawString(25, y-550,'.....................................................................only)')    
+            p.drawString(190, y-529, str(grant_total) )
+            p.drawString(25, y-570, 'E & OE')
+            p.drawString(200, y-580, 'DECLARATION')
+            p.drawString(170, y-600 , '(To be furnished by the seller)')
+            p.drawString(90, y-620, 'Certified that all the particulars shown in the above tax invoice are true and ')
+            p.drawString(70, y-640, 'correct and that my Registration under KVAT Act 2003 is valid as on the date of this bill.')
+            p.drawString(350, y-660,'For M/s. Floor Magic')
+            p.drawString(350, y-690, '(Managing Partner)')
         p.showPage()
         p.save()
          
