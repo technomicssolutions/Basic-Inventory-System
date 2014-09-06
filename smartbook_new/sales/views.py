@@ -9,6 +9,7 @@ from django.db.models import Max
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse
+from num2words import num2words
 
 from sales.models import Sales, SalesItem, \
     ReceiptVoucher, CustomerAccount, SalesReturn, SalesReturnItem, CustomerPayment
@@ -477,6 +478,7 @@ class SalesInvoicePDF(View):
         total_amount = 0
         y1 = y - 280
         p.setFont('Helvetica', 10)
+        i=0
         for s_item in sales.salesitem_set.all():  
             print y1        
             if y1 <= 270:
@@ -485,8 +487,8 @@ class SalesInvoicePDF(View):
                 p = invoice_body_layout(p, y, sales)
                 # p = header(p, y)
                 p.setFont('Helvetica', 10)
-
-            p.drawString(30, y1, str(s_item.item.code))
+            i = i +1
+            p.drawString(30, y1, str(i))
             p.drawString(135, y1, str(s_item.item.name))
             p.drawString(250,y1, str(s_item.rate_of_tax))
             p.drawString(270, y1, '%')
@@ -509,13 +511,13 @@ class SalesInvoicePDF(View):
         # total box end
         p.drawString(420, y - 410, 'Rs')
         p.drawString(435, y - 410, str(total_amount))
-        # p.line(25, y - 417, 475, y - 417)
+        p.line(25, y - 417, 475, y - 417)
         # p.setFont("Helvetica-Bold", 30)  
         p.drawString(35, y - 410, 'Total')
         
         p.drawString(420, y - 430, 'Rs')
         p.drawString(435, y - 430, str(sales.discount_for_sale))
-        # p.line(25, y - 435, 475, y - 435)
+        p.line(25, y - 435, 475, y - 435)
         p.drawString(35, y - 430, 'Less : Trade/Cash Discount')
         if total_amount > 0 and total_amount > sales.discount_for_sale:
             grant_total = total_amount - sales.discount_for_sale
@@ -525,12 +527,12 @@ class SalesInvoicePDF(View):
         p.drawString(420, y - 450, 'Rs')
         p.drawString(435, y - 450, str(grant_total))
         p.drawString(35, y - 450, 'Net Taxable Value')
-        # p.line(25, y - 455, 475, y - 455)
+        p.line(25, y - 455, 475, y - 455)
 
         p.drawString(420, y - 470, 'Rs')
         p.drawString(435, y - 470, str(sales.kvat))
         p.drawString(35, y - 470, 'KVAT')
-        # p.line(25, y - 475, 475, y - 475)
+        p.line(25, y - 475, 475, y - 475)
 
         p.drawString(420, y - 490, 'Rs')
         p.drawString(435, y - 490, str(sales.cess))
@@ -543,12 +545,12 @@ class SalesInvoicePDF(View):
         p.drawString(420, y - 510, 'Rs')
         p.drawString(435, y - 510, str(grant_total))
         p.drawString(35, y - 510, 'Grant Total')
-        # p.line(25, y - 495, 475, y - 495)
+        p.line(25, y - 495, 475, y - 495)
         # Item Box end
         if  not sales.status == 'estimate':
             p.drawString(25, y-530, 'Amount in words : (Rupees...........................................' )
             p.drawString(25, y-550,'.....................................................................only)')    
-            p.drawString(190, y-529, str(grant_total) )
+            p.drawString(190, y-529, str(num2words(grant_total)) )
             p.drawString(25, y-570, 'E & OE')
             p.drawString(200, y-580, 'DECLARATION')
             p.drawString(170, y-600 , '(To be furnished by the seller)')

@@ -7,3 +7,4 @@ psycopg2==2.5.1
 simplejson==3.3.1
 sorl-thumbnail==11.01
 reportlab==2.7
+num2words
