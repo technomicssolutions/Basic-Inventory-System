@@ -339,6 +339,7 @@ class InvoiceDetails(View):
                     'item_name': s_item.item.name,
                     'item_code': s_item.item.code,
                     'current_stock': current_stock,
+                    'rate_of_tax': s_item.rate_of_tax,
                     'unit_price': s_item.selling_price,
                     'qty_sold': s_item.quantity_sold,
                     'net_amount': s_item.net_amount,
@@ -352,6 +353,8 @@ class InvoiceDetails(View):
                 'grant_total': invoice.grant_total,
                 'discount_sale': invoice.discount_for_sale,
                 'discount_percentage': invoice.discount_percentage_for_sale,
+                'kvat': invoice.kvat,
+                'cess':invoice.cess,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
                 'sales_items': ctx_item_list,
@@ -416,6 +419,8 @@ class EditSalesInvoice(View):
 
         sales.discount_for_sale = sales_dict['discount_sale']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
+        sales.kvat = sales_dict['kvat']
+        sales.cess = sales_dict['cess']
         sales.net_amount = sales_dict['net_total']
         sales.grant_total = sales_dict['grant_total']
         sales.paid = float(sales.paid) + float(sales_dict['paid'])
@@ -452,6 +457,7 @@ class EditSalesInvoice(View):
                 s_item.quantity_sold = item['qty_sold']
             s_item.net_amount = item['net_amount']
             s_item.selling_price = item['unit_price']
+            s_item.rate_of_tax = item['rate_of_tax']
             s_item.save()
         res = {
             'result': 'Ok',
@@ -548,9 +554,9 @@ class SalesInvoicePDF(View):
         p.line(25, y - 495, 475, y - 495)
         # Item Box end
         if  not sales.status == 'estimate':
-            p.drawString(25, y-530, 'Amount in words : (Rupees...........................................' )
+            p.drawString(25, y-530, 'Amount in words : (Rupees.....................................................' )
             p.drawString(25, y-550,'.....................................................................only)')    
-            p.drawString(190, y-529, str(num2words(grant_total)) )
+            p.drawString(160, y-529, str(num2words(grant_total)) )
             p.drawString(25, y-570, 'E & OE')
             p.drawString(200, y-580, 'DECLARATION')
             p.drawString(170, y-600 , '(To be furnished by the seller)')

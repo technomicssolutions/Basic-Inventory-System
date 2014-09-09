@@ -1404,12 +1404,12 @@ function InventorySalesController($scope, $http, $element, $location) {
             return false;
         } else {
             if(item.qty_sold != '' && item.unit_price != ''){
-                // if(item.rate_of_tax != '' || !Number(item.rate_of_tax)){
-                //     item.net_amount = ((parseFloat(item.qty_sold)*(parseFloat(item.unit_price)+(parseFloat(item.rate_of_tax)/100)*parseFloat(item.unit_price)))).toFixed(2);
+                if(item.rate_of_tax != '' || !Number(item.rate_of_tax)){
+                    item.net_amount = ((parseFloat(item.qty_sold)*(parseFloat(item.unit_price)+(parseFloat(item.rate_of_tax)/100)*parseFloat(item.unit_price)))).toFixed(2);
                     
-                // }else{
+                }else{
                     item.net_amount = ((parseFloat(item.qty_sold)*parseFloat(item.unit_price))).toFixed(2);
-                // }
+                }
             }
             $scope.sales.rate_of_tax = item.rate_of_tax;
             
@@ -1575,6 +1575,8 @@ function EditSalesController($scope, $http, $location, $element) {
         'bank_name': '',
         'net_total': '',
         'net_discount': '',
+        'kvat': '',
+        'cess': '',
         'grant_total': '',
         'paid': 0,
         'balance': 0,
@@ -1615,6 +1617,12 @@ function EditSalesController($scope, $http, $location, $element) {
         if ($scope.sales.net_total == '' || $scope.sales.net_total != Number($scope.sales.net_total)) {
             $scope.sales.discount_sale = 0;
         }
+        if ($scope.sales.kvat == '' || !Number($scope.sales.kvat)){
+            $scope.sales.kvat = 0;
+        }
+        if ($scope.sales.cess == '' || !Number($scope.sales.cess)){
+            $scope.sales.cess = 0;
+        }
         $scope.sales.discount_sale = ((parseFloat($scope.sales.discount_percentage) * parseFloat($scope.sales.net_total))/100).toFixed(2);
         $scope.calculate_grant_total_sale();
     }
@@ -1649,11 +1657,16 @@ function EditSalesController($scope, $http, $location, $element) {
         } else {
             $scope.validation_error = "";
             if(item.qty_sold != '' && item.unit_price != ''){
-
+                if(item.rate_of_tax != '' || !Number(item.rate_of_tax)){
+                    item.net_amount = ((parseFloat(item.qty_sold)*(parseFloat(item.unit_price)+(parseFloat(item.rate_of_tax)/100)*parseFloat(item.unit_price)))).toFixed(2);
+                    
+                }else{
                 var amount = ((parseFloat(item.qty_sold)*parseFloat(item.unit_price))).toFixed(2);
 
                 item.net_amount = parseFloat(amount);
+                }
             }
+            $scope.sales.rate_of_tax = item.rate_of_tax;
             $scope.calculate_net_total_sale();
         }
     }
@@ -1684,7 +1697,7 @@ function EditSalesController($scope, $http, $location, $element) {
         
     }
     $scope.calculate_grant_total_sale = function(){
-        $scope.sales.grant_total = $scope.sales.net_total - $scope.sales.discount_sale;
+        $scope.sales.grant_total = parseFloat($scope.sales.net_total) + parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess) - parseFloat($scope.sales.discount_sale) ;
         $scope.sales.balance = (parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid);
     }
     $scope.calculate_balance_sale = function () {

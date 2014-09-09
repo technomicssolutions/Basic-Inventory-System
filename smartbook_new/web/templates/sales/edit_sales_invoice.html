@@ -65,6 +65,7 @@
 							<span> Item Name </span>
 							<span> Stock </span>
 							<span> Unit Price </span>
+							<span> Rate of Tax </span>
 							<span> Qty  </span>
 							<span> Net Amount </span>
 							<span> &nbsp;&nbsp; </span>
@@ -74,6 +75,7 @@
 							<span>[[item.item_name]] </span>
 							<span>[[item.current_stock]] </span>
 							<span><input type="text" ng-model="item.unit_price" ng-click="get_latest_sales_details(item)" ng-change="calculate_net_amount_sale(item)" /></span>
+							<span><input type="text" ng-model="item.rate_of_tax" ng-change="calculate_net_amount_sale(item)"> %</span>
 							<span> <input type="text" ng-model="item.qty_sold" ng-change="calculate_net_amount_sale_qty(item)" /> </span>
 							<span>[[item.net_amount]] </span>
 							<span><a href="" ng-click="remove_from_item_list(item)">X</a> </span>
@@ -143,8 +145,21 @@
 						<div class="formtext_sales">
 							<label for="discount">Discount Percentage</label>
 						</div>
+
 						<div class="forminput_sales">
 							<input type="text" name="discount_percentage" ng-model="sales.discount_percentage" ng-change="calculate_discount_amount()"/>
+						</div>
+						<div class="formtext_sales">
+							<label for="discount">Kvat</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="kvat" ng-model="sales.kvat" ng-change="calculate_discount_amount()"/>
+						</div>
+						<div class="formtext_sales">
+							<label for="discount">Cess</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="cess" ng-model="sales.cess" ng-change="calculate_discount_amount()"/>
 						</div>
 						<div class="formtext_sales">
 							<label for="Grant Total">Grand Total</label>
