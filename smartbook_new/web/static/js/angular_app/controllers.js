@@ -1285,7 +1285,7 @@ function InventorySalesController($scope, $http, $element, $location) {
         'rep': '',
         'via': '',
         'fob': '',
-        'status': 'estimate',
+        'status': 'invoice',
         
     }
     $scope.init = function(csrf_token, invoice_no) {
