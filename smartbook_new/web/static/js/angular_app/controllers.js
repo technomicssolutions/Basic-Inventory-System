@@ -1276,9 +1276,11 @@ function InventorySalesController($scope, $http, $element, $location) {
         'discount_percentage': 0,
         'sales_mode':'inventory_sales',
         'rate_of_tax': 0,
-        'net_tax_total': 0,
+        'net_taxable_value': 0,
         'kvat': 0,
+        'kvat_percent':0,
         'cess': 0,
+        'cess_percent':0,
         'removed_items': [],
         'po_no': '',
         'terms': '',
@@ -1451,16 +1453,28 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.net_total == '' || !Number($scope.sales.net_total)) {
             $scope.sales.discount = 0;
         }
-        if ($scope.sales.kvat == '' || !Number($scope.sales.kvat)){
-            $scope.sales.kvat = 0;
-        }
-        if ($scope.sales.cess == '' || !Number($scope.sales.cess)){
-            $scope.sales.cess = 0;
-        }
+       
+       
         $scope.sales.discount = ((parseFloat($scope.sales.discount_percentage) * parseFloat($scope.sales.net_total))/100).toFixed(2);
+       
         $scope.calculate_grant_total_sale();
     }
-
+    $scope.calculate_kvat_cess = function(){
+        if ($scope.sales.kvat_percent == '' || !Number($scope.sales.kvat_percent)){
+            $scope.sales.kvat_percent = 0;
+        }
+        if ($scope.sales.cess_percent == '' || !Number($scope.sales.cess_percent)){
+            $scope.sales.cess_percent = 0;
+        }
+        console.log($scope.sales.kvat_percent)
+        console.log($scope.sales.cess_percent)
+        console.log($scope.sales.net_taxable_value) 
+        $scope.sales.kvat = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.kvat_percent))/100).toFixed(2);
+        $scope.sales.cess = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.cess_percent))/100).toFixed(2);
+        console.log( $scope.sales.kvat)
+        console.log($scope.sales.cess)
+        $scope.calculate_grant_total_sale();
+    }
     $scope.calculate_grant_total_sale = function(){
         if ($scope.sales.net_total == '' || $scope.sales.net_total == undefined || !Number($scope.sales.net_total)){
             $scope.sales.net_total = 0;
@@ -1468,8 +1482,17 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.discount == '' || $scope.sales.discount == undefined || !Number($scope.sales.discount)){
             $scope.sales.discount = 0;
         }
+        if($scope.sales.discount){
+            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total) - parseFloat($scope.sales.discount)
+            
+        }else{
+            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total)
+            
+        }
+       
         $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess)) - (parseFloat($scope.sales.discount))) .toFixed(2);
         $scope.calculate_balance_sale();
+
     }
     $scope.calculate_balance_sale = function () {
         $scope.sales.balance = $scope.sales.grant_total - $scope.sales.paid;

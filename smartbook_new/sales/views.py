@@ -163,7 +163,7 @@ class SalesEntry(View):
         sales.net_amount = sales_dict['net_total']
         sales.kvat = sales_dict['kvat']
         sales.cess = sales_dict['cess']
-        sales.net_tax_total = sales_dict['net_tax_total']
+        sales.net_taxable_value = sales_dict['net_taxable_value']
         sales.grant_total = sales_dict['grant_total']
         customer_payment.total_amount = sales.grant_total
         sales.paid = sales_dict['paid']
