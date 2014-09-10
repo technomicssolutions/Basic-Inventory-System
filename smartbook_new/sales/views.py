@@ -161,8 +161,11 @@ class SalesEntry(View):
         sales.discount_for_sale = sales_dict['discount']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
         sales.net_amount = sales_dict['net_total']
+        sales.freight_rate = sales_dict['freight_rate']
         sales.kvat = sales_dict['kvat']
+        sales.kvat_percent = sales_dict['kvat_percent']
         sales.cess = sales_dict['cess']
+        sales.cess_percent = sales_dict['cess_percent']
         sales.net_taxable_value = sales_dict['net_taxable_value']
         sales.grant_total = sales_dict['grant_total']
         customer_payment.total_amount = sales.grant_total
@@ -353,8 +356,12 @@ class InvoiceDetails(View):
                 'grant_total': invoice.grant_total,
                 'discount_sale': invoice.discount_for_sale,
                 'discount_percentage': invoice.discount_percentage_for_sale,
+                'net_taxable_value': invoice.net_taxable_value,
+                'freight_rate': invoice.freight_rate,
                 'kvat': invoice.kvat,
+                'kvat_percent': invoice.kvat_percent,
                 'cess':invoice.cess,
+                'cess_percent': invoice.cess_percent,
                 'paid': invoice.paid,
                 'balance': invoice.balance,
                 'sales_items': ctx_item_list,
@@ -419,8 +426,12 @@ class EditSalesInvoice(View):
 
         sales.discount_for_sale = sales_dict['discount_sale']
         sales.discount_percentage_for_sale = sales_dict['discount_percentage']
+        sales.net_taxable_value = sales_dict['net_taxable_value']
+        sales.freight_rate = sales_dict['freight_rate']
         sales.kvat = sales_dict['kvat']
+        sales.kvat_percent =sales_dict['kvat_percent']
         sales.cess = sales_dict['cess']
+        sales.cess_percent = sales_dict['cess_percent']
         sales.net_amount = sales_dict['net_total']
         sales.grant_total = sales_dict['grant_total']
         sales.paid = float(sales.paid) + float(sales_dict['paid'])
@@ -475,8 +486,8 @@ class SalesInvoicePDF(View):
         sales = Sales.objects.get(id=invoice_id)
 
         response = HttpResponse(content_type='application/pdf')
-        p = canvas.Canvas(response, pagesize=(500, 750))
-        y = 700
+        p = canvas.Canvas(response, pagesize=(500, 800))
+        y = 750
         
         p = invoice_body_layout(p, y, sales)
         # p = header(p, y)
@@ -507,12 +518,12 @@ class SalesInvoicePDF(View):
             y1 = y1 - 30
         print y1
         #  total box start 
-        p.line(25, y - 520, 475, y - 520)
+        p.line(25, y - 555, 475, y - 555)
 
         
-        p.line(410, y - 400, 412, y - 520)
-        p.line(25, y - 400, 25, y - 520)
-        p.line(475, y - 400, 475, y - 520)
+        p.line(410, y - 400, 412, y - 555)
+        p.line(25, y - 400, 25, y - 555)
+        p.line(475, y - 400, 475, y - 555)
 
         # total box end
         p.drawString(420, y - 410, 'Rs')
@@ -531,7 +542,7 @@ class SalesInvoicePDF(View):
             grant_total = total_amount
 
         p.drawString(420, y - 450, 'Rs')
-        p.drawString(435, y - 450, str(grant_total))
+        p.drawString(435, y - 450, str(sales.net_taxable_value))
         p.drawString(35, y - 450, 'Net Taxable Value')
         p.line(25, y - 455, 475, y - 455)
 
@@ -543,27 +554,42 @@ class SalesInvoicePDF(View):
         p.drawString(420, y - 490, 'Rs')
         p.drawString(435, y - 490, str(sales.cess))
         p.drawString(35, y - 490, 'Cess')
-        if sales.kvat or sales.cess:
-            grant_total = grant_total + sales.kvat +sales.cess
+
+        if sales.kvat or sales.cess :
+            grant_total = grant_total + sales.kvat +sales.cess 
         else:
             grant_total = grant_total
-       
+
         p.drawString(420, y - 510, 'Rs')
         p.drawString(435, y - 510, str(grant_total))
-        p.drawString(35, y - 510, 'Grant Total')
-        p.line(25, y - 495, 475, y - 495)
+        p.drawString(35, y - 510, 'Net Total')
+        p.line(25, y - 495, 475, y - 495) 
+        if sales.freight_rate:
+            grant_total = grant_total +sales.freight_rate
+        else:
+            grant_total = grant_total
+
+        p.drawString(420, y - 530, 'Rs')
+        p.drawString(435, y - 530, str(sales.freight_rate))
+        p.drawString(35, y - 530, 'Freight Rate')
+        p.line(25, y - 515, 475, y - 515)
+
+        p.drawString(420, y - 550, 'Rs')
+        p.drawString(435, y - 550, str(grant_total))
+        p.drawString(35, y - 550, 'Grant Total')
+        p.line(25, y - 535, 475, y - 535)
         # Item Box end
         if  not sales.status == 'estimate':
-            p.drawString(25, y-530, 'Amount in words : (Rupees.....................................................' )
-            p.drawString(25, y-550,'.....................................................................only)')    
-            p.drawString(160, y-529, str(num2words(grant_total)) )
-            p.drawString(25, y-570, 'E & OE')
-            p.drawString(200, y-580, 'DECLARATION')
-            p.drawString(170, y-600 , '(To be furnished by the seller)')
-            p.drawString(90, y-620, 'Certified that all the particulars shown in the above tax invoice are true and ')
-            p.drawString(70, y-640, 'correct and that my Registration under KVAT Act 2003 is valid as on the date of this bill.')
-            p.drawString(350, y-660,'For M/s. Floor Magic')
-            p.drawString(350, y-690, '(Managing Partner)')
+            p.drawString(25, y-570, 'Amount in words : (Rupees.....................................................' )
+            p.drawString(25, y-580,'.....................................................................only)')    
+            p.drawString(160, y-569, str(num2words(grant_total)) )
+            p.drawString(25, y-600, 'E & OE')
+            p.drawString(200, y-610, 'DECLARATION')
+            p.drawString(170, y-630 , '(To be furnished by the seller)')
+            p.drawString(90, y-650, 'Certified that all the particulars shown in the above tax invoice are true and ')
+            p.drawString(70, y-670, 'correct and that my Registration under KVAT Act 2003 is valid as on the date of this bill.')
+            p.drawString(350, y-690,'For M/s. Floor Magic')
+            p.drawString(350, y-720, '(Managing Partner)')
         p.showPage()
         p.save()
          

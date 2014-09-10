@@ -23,8 +23,11 @@ class Sales(models.Model):
     cheque_date = models.DateField('Cheque Date', null=True, blank=True)
     
     net_amount = models.DecimalField('Net Amount',max_digits=14, decimal_places=2, default=0)
+    freight_rate = models.DecimalField('Freight Rate',max_digits=14, decimal_places=2, default=0)
     kvat = models.DecimalField('KVAT',max_digits=14, decimal_places=2, default=0)
+    kvat_percent = models.DecimalField('KVAT Percentage',max_digits=14, decimal_places=2, default=0)
     cess = models.DecimalField('CESS',max_digits=14, decimal_places=2, default=0)
+    cess_percent = models.DecimalField('CESS Percentage',max_digits=14, decimal_places=2, default=0)
     net_taxable_value = models.DecimalField('Net Taxable Value', max_digits=14, decimal_places=2, default=0)
     grant_total = models.DecimalField('Grand Total',max_digits=14, decimal_places=2, default=0)   
     balance = models.DecimalField('Balance', null=True, blank=True, decimal_places=2, default=0, max_digits=14)

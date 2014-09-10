@@ -155,6 +155,7 @@
 							<input type="text" name="branch" ng-model="sales.branch" ng-readonly="payment_cheque"/>
 						</div>
 					</div>
+					
 					<div class="formrow_sales">
 						<div class="formtext_sales">
 							<label for="cheque_no">Cheque No</label>
@@ -171,7 +172,16 @@
 							<input type="text" name="cheque_date" id="cheque_date" ng-model="sales.cheque_date" ng-readonly="payment_cheque"/>
 						</div>
 					</div>
-					
+					<div class="formrow_sales">
+					</div>
+					<div class="formrow_sales">
+						<div class="formtext_sales">
+							<label for="bank_name">Freight Rate</label>
+						</div>
+						<div class="forminput_sales">
+							<input type="text" name="freight_rate" ng-model="sales.freight_rate" />
+						</div>
+					</div>
 
 					<div class="formrow_sales">
 						<div class="formtext_sales">
@@ -204,13 +214,13 @@
 							<label for="discount">Kvat</label>
 						</div>
 						<div class="forminput_sales">
-							<input type="text" name="kvat" ng-model="sales.kvat_percent" ng-change="calculate_kvat_cess()"/>
+							<input type="text" name="kvat" ng-model="sales.kvat_percent" ng-change="calculate_kvat_cess()"/>%
 						</div>
 						<div class="formtext_sales">
 							<label for="discount">Cess</label>
 						</div>
 						<div class="forminput_sales">
-							<input type="text" name="cess" ng-model="sales.cess_percent" ng-change="calculate_kvat_cess()"/>
+							<input type="text" name="cess" ng-model="sales.cess_percent" ng-change="calculate_kvat_cess()"/>%
 						</div>
 						<div class="formtext_sales">
 							<label for="Grant Total">Grand Total</label>

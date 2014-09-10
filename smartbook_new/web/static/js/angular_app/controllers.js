@@ -1281,6 +1281,7 @@ function InventorySalesController($scope, $http, $element, $location) {
         'kvat_percent':0,
         'cess': 0,
         'cess_percent':0,
+        'freight_rate':0,
         'removed_items': [],
         'po_no': '',
         'terms': '',
@@ -1397,7 +1398,7 @@ function InventorySalesController($scope, $http, $element, $location) {
     $scope.calculate_net_amount_sale = function(item) {
         $scope.validation_error = "";
         
-        console.log(item)
+        
         if (!Number(item.qty_sold) || item.qty_sold == '' || item.qty_sold == undefined) {
             item.qty_sold = 0
         }
@@ -1466,13 +1467,10 @@ function InventorySalesController($scope, $http, $element, $location) {
         if ($scope.sales.cess_percent == '' || !Number($scope.sales.cess_percent)){
             $scope.sales.cess_percent = 0;
         }
-        console.log($scope.sales.kvat_percent)
-        console.log($scope.sales.cess_percent)
-        console.log($scope.sales.net_taxable_value) 
+       
         $scope.sales.kvat = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.kvat_percent))/100).toFixed(2);
         $scope.sales.cess = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.cess_percent))/100).toFixed(2);
-        console.log( $scope.sales.kvat)
-        console.log($scope.sales.cess)
+       
         $scope.calculate_grant_total_sale();
     }
     $scope.calculate_grant_total_sale = function(){
@@ -1489,8 +1487,8 @@ function InventorySalesController($scope, $http, $element, $location) {
             $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total)
             
         }
-       
-        $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess)) - (parseFloat($scope.sales.discount))) .toFixed(2);
+        console.log($scope.sales.freight_rate)
+        $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) ) - (parseFloat($scope.sales.discount))) .toFixed(2);
         $scope.calculate_balance_sale();
 
     }
@@ -1598,6 +1596,10 @@ function EditSalesController($scope, $http, $location, $element) {
         'bank_name': '',
         'net_total': '',
         'net_discount': '',
+        'freight_rate': 0,
+        'net_taxable_value': 0,
+        'kvat_percent': 0,
+        'cess_percent': 0,
         'kvat': '',
         'cess': '',
         'grant_total': '',
@@ -1640,13 +1642,23 @@ function EditSalesController($scope, $http, $location, $element) {
         if ($scope.sales.net_total == '' || $scope.sales.net_total != Number($scope.sales.net_total)) {
             $scope.sales.discount_sale = 0;
         }
-        if ($scope.sales.kvat == '' || !Number($scope.sales.kvat)){
-            $scope.sales.kvat = 0;
-        }
-        if ($scope.sales.cess == '' || !Number($scope.sales.cess)){
-            $scope.sales.cess = 0;
-        }
         $scope.sales.discount_sale = ((parseFloat($scope.sales.discount_percentage) * parseFloat($scope.sales.net_total))/100).toFixed(2);
+        $scope.calculate_grant_total_sale();
+    }
+    $scope.calculate_kvat_cess = function(){
+        if ($scope.sales.kvat_percent == '' || !Number($scope.sales.kvat_percent)){
+            $scope.sales.kvat_percent = 0;
+        }
+        if ($scope.sales.cess_percent == '' || !Number($scope.sales.cess_percent)){
+            $scope.sales.cess_percent = 0;
+        }
+        console.log($scope.sales.kvat_percent)
+        console.log($scope.sales.cess_percent)
+        console.log($scope.sales.net_taxable_value) 
+        $scope.sales.kvat = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.kvat_percent))/100).toFixed(2);
+        $scope.sales.cess = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.cess_percent))/100).toFixed(2);
+        console.log( $scope.sales.kvat)
+        console.log($scope.sales.cess)
         $scope.calculate_grant_total_sale();
     }
 
@@ -1720,8 +1732,15 @@ function EditSalesController($scope, $http, $location, $element) {
         
     }
     $scope.calculate_grant_total_sale = function(){
-        $scope.sales.grant_total = parseFloat($scope.sales.net_total) + parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess) - parseFloat($scope.sales.discount_sale) ;
-        $scope.sales.balance = (parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid);
+        if($scope.sales.discount){
+            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total) - parseFloat($scope.sales.discount)
+            
+        }else{
+            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total)
+            
+        }
+        $scope.sales.grant_total = parseFloat($scope.sales.net_total) + parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess)   - parseFloat($scope.sales.discount_sale) ;
+        $scope.calculate_balance_sale();
     }
     $scope.calculate_balance_sale = function () {
         $scope.sales.balance = (parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid);
