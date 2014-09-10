@@ -1732,18 +1732,19 @@ function EditSalesController($scope, $http, $location, $element) {
         
     }
     $scope.calculate_grant_total_sale = function(){
-        if($scope.sales.discount){
-            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total) - parseFloat($scope.sales.discount)
+        if($scope.sales.discount_sale){
+            $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total) - parseFloat($scope.sales.discount_sale)
             
         }else{
+            
             $scope.sales.net_taxable_value = parseFloat($scope.sales.net_total)
             
         }
-        $scope.sales.grant_total = parseFloat($scope.sales.net_total) + parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess)   - parseFloat($scope.sales.discount_sale) ;
+        $scope.sales.grant_total = (parseFloat($scope.sales.net_total) + parseFloat($scope.sales.kvat) + parseFloat($scope.sales.cess) - parseFloat($scope.sales.discount_sale)).toFixed(2) ;
         $scope.calculate_balance_sale();
     }
     $scope.calculate_balance_sale = function () {
-        $scope.sales.balance = (parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid);
+        $scope.sales.balance = ((parseFloat($scope.sales.grant_total) - parseFloat($scope.sales.paid_amount)) - parseFloat($scope.sales.paid)).toFixed(2);
     }
     $scope.validate_sales = function() {
 
