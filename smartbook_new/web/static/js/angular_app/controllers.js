@@ -1469,6 +1469,7 @@ function InventorySalesController($scope, $http, $element, $location) {
         }
        
         $scope.sales.kvat = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.kvat_percent))/100).toFixed(2);
+        console.log($scope.sales.cess_percent)
         $scope.sales.cess = ((parseFloat($scope.sales.net_taxable_value) * parseFloat($scope.sales.cess_percent))/100).toFixed(2);
        
         $scope.calculate_grant_total_sale();
@@ -1488,7 +1489,7 @@ function InventorySalesController($scope, $http, $element, $location) {
             
         }
         console.log($scope.sales.freight_rate)
-        $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) ) - (parseFloat($scope.sales.discount))) .toFixed(2);
+        $scope.sales.grant_total = ((parseFloat($scope.sales.net_total)+ parseFloat($scope.sales.kvat) +parseFloat($scope.sales.cess)) - (parseFloat($scope.sales.discount))) .toFixed(2);
         $scope.calculate_balance_sale();
 
     }
