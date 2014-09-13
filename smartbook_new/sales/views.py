@@ -18,6 +18,17 @@ from web.models import Customer, OwnerCompany
 
 
 from reportlab.pdfgen import canvas
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.styles import ParagraphStyle
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 10),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 10
+para_style.fontName = 'Helvetica'
+
 
 def header(canvas, y):
     try:
@@ -506,7 +517,13 @@ class SalesInvoicePDF(View):
                 p.setFont('Helvetica', 10)
             i = i +1
             p.drawString(30, y1, str(i))
-            p.drawString(135, y1, str(s_item.item.name))
+            data=[[Paragraph(s_item.item.name, para_style)]]
+
+            table = Table(data, colWidths=[100], rowHeights=100, style=style)      
+            table.wrapOn(p, 200, 400)
+            table.drawOn(p, 125, y1-10)
+
+            # p.drawString(135, y1, str(s_item.item.name))
             p.drawString(250,y1, str(s_item.rate_of_tax))
             p.drawString(270, y1, '%')
             p.drawString(310, y1, str(s_item.quantity_sold))
