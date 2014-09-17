@@ -494,7 +494,7 @@ class SalesInvoicePDF(View):
 
         total_amount = 0
         y1 = y - 280
-        p.setFont('Helvetica', 10)
+        p.setFont('Helvetica', 11)
         i=0
         for s_item in sales.salesitem_set.all():  
             print y1        
