@@ -293,7 +293,7 @@ class VendorAccountsReport(View):
                         p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
                         data=[[Paragraph(purchase_account.supplier.name if purchase_account.supplier else '', para_style)]]
 
-                        table = Table(data, colWidths=[50], rowHeights=100, style=style)      
+                        table = Table(data, colWidths=[150], rowHeights=100, style=style)      
                         table.wrapOn(p, 200, 400)
                         table.drawOn(p, 150, y1-10)
                         # p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
@@ -337,7 +337,13 @@ class VendorAccountsReport(View):
                             p.showPage()
                             p = header(p,y)
                         p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
-                        p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
+                        p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
+                        data=[[Paragraph(purchase_account.supplier.name if purchase_account.supplier else '', para_style)]]
+
+                        table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                        table.wrapOn(p, 200, 400)
+                        table.drawOn(p, 150, y1-10)
+                        # p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
                         p.drawString(350, y1, str(purchase_account.purchase.purchase_invoice_number) if purchase_account.purchase else '')
                         p.drawString(490, y1, str(purchase_account.total_amount))
                         p.drawString(610, y1, purchase_account.payment_mode)
@@ -405,7 +411,12 @@ class PendingCustomerReport(View):
                         customer_accounts = CustomerAccount.objects.filter(customer=customer, is_complted=False)
                         for customer_account in customer_accounts:
                                 p.drawString(50, y1, customer_account.invoice_no.sales_invoice_date.strftime('%d/%m/%Y') if customer_account.invoice_no.sales_invoice_date else '')
-                                p.drawString(140, y1, customer_account.customer.customer_name)
+                                data=[[Paragraph(customer_account.customer.customer_name, para_style)]]
+
+                                table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                                table.wrapOn(p, 200, 400)
+                                table.drawOn(p, 140, y1)
+                                # p.drawString(140, y1, customer_account.customer.customer_name)
                                 
                                 p.drawString(320, y1, customer_account.invoice_no.sales_invoice_number)
                                 p.drawString(420, y1, str(customer_account.total_amount))
@@ -427,8 +438,12 @@ class PendingCustomerReport(View):
                 if len(customer_accounts) > 0:
                     for customer_account in customer_accounts:
                         p.drawString(50, y1, customer_account.invoice_no.sales_invoice_date.strftime('%d/%m/%Y') if customer_account.invoice_no.sales_invoice_date else '')
-                        p.drawString(140, y1, customer_account.customer.customer_name)
-                        
+                        # p.drawString(140, y1, customer_account.customer.customer_name)
+                        data=[[Paragraph(customer_account.customer.customer_name, para_style)]]
+
+                        table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                        table.wrapOn(p, 200, 400)
+                        table.drawOn(p, 140, y1)
                         p.drawString(320, y1, customer_account.invoice_no.sales_invoice_number)
                         p.drawString(420, y1, str(customer_account.total_amount))
                         p.drawString(550, y1, str(customer_account.paid))
@@ -499,7 +514,12 @@ class CustomerPaymentReport(View):
                         customer_payments = CustomerPayment.objects.filter(customer=customer)
                         for customer_payment in customer_payments:
                                 p.drawString(150, y1, customer_payment.date.strftime('%d/%m/%Y') if customer_payment.date else '')
-                                p.drawString(250, y1, customer_payment.customer.customer_name)
+                                data=[[Paragraph(customer_payment.customer.customer_name, para_style)]]
+
+                                table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                                table.wrapOn(p, 200, 400)
+                                table.drawOn(p, 250, y1-10)
+                                # p.drawString(250, y1, customer_payment.customer.customer_name)
                                 p.drawString(400, y1, customer_payment.customer_account.sales_invoice_number)
                                 p.drawString(500, y1, str(customer_payment.total_amount))
                                 p.drawString(610, y1, str(customer_payment.payment_mode))
@@ -518,7 +538,12 @@ class CustomerPaymentReport(View):
                     for customer_payment in customer_payments:
                         customer_payments = CustomerPayment.objects.filter(customer=customer)
                         p.drawString(150, y1, customer_payment.date.strftime('%d/%m/%Y') if customer_payment.date else '')
-                        p.drawString(250, y1, customer_payment.customer.customer_name)
+                        data=[[Paragraph(customer_payment.customer.customer_name, para_style)]]
+
+                        table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                        table.wrapOn(p, 200, 400)
+                        table.drawOn(p, 250, y1-10)
+                        # p.drawString(250, y1, customer_payment.customer.customer_name)
                         p.drawString(400, y1, customer_payment.customer_account.sales_invoice_number)
                         p.drawString(500, y1, str(customer_payment.total_amount))
                         p.drawString(610, y1, str(customer_payment.payment_mode))
@@ -607,8 +632,12 @@ class PurchaseReport(View):
                     total_discount = float(total_discount) + float(purchase.discount)
                     p.drawString(50, y1, purchase.purchase_invoice_date.strftime('%d/%m/%y'))
                     p.drawString(120, y1, str(purchase.purchase_invoice_number))
+                    data=[[Paragraph(purchase.supplier.name if purchase and purchase.supplier else '', para_style)]]
 
-                    p.drawString(240, y1, purchase.supplier.name if purchase and purchase.supplier else '')
+                    table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                    table.wrapOn(p, 200, 400)
+                    table.drawOn(p, 240, y1-10)
+                    # p.drawString(240, y1, purchase.supplier.name if purchase and purchase.supplier else '')
                     p.drawString(500, y1, str(purchase.net_total))
                     p.drawString(670, y1, str(purchase.discount))
                     p.drawString(580, y1, str(purchase.grant_total))
@@ -694,7 +723,12 @@ class PurchaseReturnReport(View):
                     p.drawString(120, y1, str(purchase.return_invoice_number))
 
                     p.drawString(240, y1, str(purchase.purchase.purchase_invoice_number))
-                    p.drawString(360, y1, purchase.purchase.supplier.name)
+                    data=[[Paragraph(purchase.purchase.supplier.name, para_style)]]
+
+                    table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                    table.wrapOn(p, 200, 400)
+                    table.drawOn(p, 360, y1-10)
+                    # p.drawString(360, y1, purchase.purchase.supplier.name)
                     p.drawString(500, y1, str(purchase.net_amount))
                         
                 if y1 <= 135:
@@ -775,7 +809,12 @@ class SalesReturnReport(View):
                     p.drawString(120, y1, str(return_sale.return_invoice_number))
 
                     p.drawString(220, y1, return_sale.sales.sales_invoice_number)
-                    p.drawString(350, y1, str(return_sale.sales.customer.customer_name))
+                    data=[[Paragraph(return_sale.sales.customer.customer_name, para_style)]]
+
+                    table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                    table.wrapOn(p, 200, 400)
+                    table.drawOn(p, 350, y1-10)
+                    # p.drawString(350, y1, str(return_sale.sales.customer.customer_name))
                     p.drawString(500, y1, str(return_sale.net_amount))
                 if y1 <= 135:
                     y1 = y - 110

@@ -95,19 +95,19 @@ def invoice_body_layout(canvas, y, sales):
     canvas.drawString(40, y-180, 'Documents through.......................................................................................' )
     canvas.line(25, y - 200, 475, y - 200) 
 
-    canvas.line(25, y - 200, 25, y - 400) 
-    canvas.line(475, y - 200, 475, y - 400) 
+    canvas.line(25, y - 200, 25, y - 410) 
+    canvas.line(475, y - 200, 475, y - 410) 
 
     canvas.line(25, y - 250, 475, y - 250) 
     
-    canvas.line(75, y-200, 75, y-400)
-    canvas.line(125, y - 200, 125, y - 400) 
-    canvas.line(220, y-200, 220, y-400)
-    canvas.line(290, y - 200, 290, y - 400)
-    canvas.line(350, y - 200, 350, y - 400)  
-    canvas.line(410, y - 200, 410, y - 400) 
+    canvas.line(75, y-200, 75, y-410)
+    canvas.line(125, y - 200, 125, y - 410) 
+    canvas.line(220, y-200, 220, y-410)
+    canvas.line(290, y - 200, 290, y - 410)
+    canvas.line(350, y - 200, 350, y - 410)  
+    canvas.line(410, y - 200, 410, y - 410) 
 
-    canvas.line(25, y - 400, 475, y - 400)
+    canvas.line(25, y - 410, 475, y - 410)
 
     canvas.drawString(30, y - 230, 'SL. No.')
     canvas.drawString(90, y-230, 'Sch.')
@@ -524,7 +524,7 @@ class SalesInvoicePDF(View):
             table.drawOn(p, 125, y1-10)
 
             # p.drawString(135, y1, str(s_item.item.name))
-            p.drawString(250,y1, str(s_item.rate_of_tax))
+            p.drawString(240,y1, str(s_item.rate_of_tax))
             p.drawString(270, y1, '%')
             p.drawString(310, y1, str(s_item.quantity_sold))
             p.drawString(360, y1, str(s_item.selling_price))
@@ -535,78 +535,78 @@ class SalesInvoicePDF(View):
             y1 = y1 - 30
         print y1
         #  total box start 
-        p.line(25, y - 555, 475, y - 555)
+        p.line(25, y - 565, 475, y - 565)
 
         
-        p.line(350, y - 400, 352, y - 555)
-        p.line(25, y - 400, 25, y - 555)
-        p.line(475, y - 400, 475, y - 555)
+        p.line(350, y - 400, 352, y - 565)
+        p.line(25, y - 400, 25, y - 565)
+        p.line(475, y - 400, 475, y - 565)
 
         # total box end
-        p.drawString(360, y - 410, 'Rs')
-        p.drawString(380, y - 410, str(total_amount))
-        p.line(25, y - 417, 475, y - 417)
+        p.drawString(360, y - 422, 'Rs')
+        p.drawString(380, y - 422, str(total_amount))
+        p.line(25, y - 427, 475, y - 427)
         # p.setFont("Helvetica-Bold", 30)  
-        p.drawString(35, y - 410, 'Total')
+        p.drawString(35, y - 422, 'Total')
         
-        p.drawString(360, y - 430, 'Rs')
-        p.drawString(380, y - 430, str(sales.discount_for_sale))
-        p.line(25, y - 435, 475, y - 435)
-        p.drawString(35, y - 430, 'Less : Trade/Cash Discount')
+        p.drawString(360, y - 440, 'Rs')
+        p.drawString(380, y - 440, str(sales.discount_for_sale))
+        p.line(25, y - 445, 475, y - 445)
+        p.drawString(35, y - 440, 'Less : Trade/Cash Discount')
         if total_amount > 0 and total_amount > sales.discount_for_sale:
             grant_total = total_amount - sales.discount_for_sale
         else:
             grant_total = total_amount
 
-        p.drawString(360, y - 450, 'Rs')
-        p.drawString(380, y - 450, str(sales.net_taxable_value))
-        p.drawString(35, y - 450, 'Net Taxable Value')
-        p.line(25, y - 455, 475, y - 455)
+        p.drawString(360, y - 460, 'Rs')
+        p.drawString(380, y - 460, str(sales.net_taxable_value))
+        p.drawString(35, y - 460, 'Net Taxable Value')
+        p.line(25, y - 465, 475, y - 465)
 
-        p.drawString(360, y - 470, 'Rs')
-        p.drawString(380, y - 470, str(sales.kvat))
-        p.drawString(35, y - 470, 'KVAT')
-        p.line(25, y - 475, 475, y - 475)
+        p.drawString(360, y - 480, 'Rs')
+        p.drawString(380, y - 480, str(sales.kvat))
+        p.drawString(35, y - 480, 'KVAT')
+        p.line(25, y - 485, 475, y - 485)
 
-        p.drawString(360, y - 490, 'Rs')
-        p.drawString(380, y - 490, str(sales.cess))
-        p.drawString(35, y - 490, 'Cess')
+        p.drawString(360, y - 500, 'Rs')
+        p.drawString(380, y - 500, str(sales.cess))
+        p.drawString(35, y - 500, 'Cess')
 
         if sales.kvat or sales.cess :
             grant_total = grant_total + sales.kvat +sales.cess 
         else:
             grant_total = grant_total
 
-        p.drawString(360, y - 510, 'Rs')
-        p.drawString(380, y - 510, str(grant_total))
-        p.drawString(35, y - 510, 'Net Total')
-        p.line(25, y - 495, 475, y - 495) 
+        p.drawString(360, y - 520, 'Rs')
+        p.drawString(380, y - 520, str(grant_total))
+        p.drawString(35, y - 520, 'Net Total')
+        p.line(25, y - 505, 475, y - 505) 
         if sales.freight_rate:
             grant_total = grant_total +sales.freight_rate
         else:
             grant_total = grant_total
 
-        p.drawString(360, y - 530, 'Rs')
-        p.drawString(380, y - 530, str(sales.freight_rate))
-        p.drawString(35, y - 530, 'Freight Rate')
-        p.line(25, y - 515, 475, y - 515)
+        p.drawString(360, y - 540, 'Rs')
+        p.drawString(380, y - 540, str(sales.freight_rate))
+        p.drawString(35, y - 540, 'Freight Rate')
+        p.line(25, y - 525, 475, y - 525)
 
-        p.drawString(360, y - 550, 'Rs')
-        p.drawString(380, y - 550, str(grant_total))
-        p.drawString(35, y - 550, 'Grant Total')
-        p.line(25, y - 535, 475, y - 535)
+        p.drawString(360, y - 560, 'Rs')
+        p.drawString(380, y - 560, str(grant_total))
+        p.drawString(35, y - 560, 'Grant Total')
+        p.line(25, y - 545, 475, y - 545)
         # Item Box end
         if  not sales.status == 'estimate':
-            p.drawString(25, y-570, 'Amount in words : (Rupees.....................................................' )
-            p.drawString(25, y-580,'.....................................................................only)')    
-            p.drawString(160, y-569, str(num2words(grant_total)) )
-            p.drawString(25, y-600, 'E & OE')
-            p.drawString(200, y-610, 'DECLARATION')
-            p.drawString(170, y-630 , '(To be furnished by the seller)')
-            p.drawString(90, y-650, 'Certified that all the particulars shown in the above tax invoice are true and ')
-            p.drawString(70, y-670, 'correct and that my Registration under KVAT Act 2003 is valid as on the date of this bill.')
-            p.drawString(350, y-690,'For M/s. Floor Magic')
-            p.drawString(350, y-720, '(Managing Partner)')
+            p.drawString(25, y-580, 'Amount in words : (Rupees.....................................................' )
+            p.drawString(25, y-590,'.....................................................................only)')    
+            p.drawString(160, y-579, str(num2words(grant_total)) )
+            p.drawString(25, y-610, 'E & OE')
+            p.drawString(200, y-620, 'DECLARATION')
+            p.drawString(170, y-640 , '(To be furnished by the seller)')
+            p.drawString(90, y-660, 'Certified that all the particulars shown in the above tax invoice are true and ')
+            p.drawString(70, y-690, 'correct and that my Registration under KVAT Act 2003 is valid as on the date of this bill.')
+            p.drawString(350, y-700,'For M/s. Floor Magic')
+            p.drawString(350, y-740, '(Managing Partner)')
         p.showPage()
         p.save()
          
