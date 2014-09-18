@@ -538,19 +538,19 @@ class SalesInvoicePDF(View):
         p.line(25, y - 555, 475, y - 555)
 
         
-        p.line(410, y - 400, 412, y - 555)
+        p.line(350, y - 400, 352, y - 555)
         p.line(25, y - 400, 25, y - 555)
         p.line(475, y - 400, 475, y - 555)
 
         # total box end
-        p.drawString(420, y - 410, 'Rs')
-        p.drawString(435, y - 410, str(total_amount))
+        p.drawString(360, y - 410, 'Rs')
+        p.drawString(380, y - 410, str(total_amount))
         p.line(25, y - 417, 475, y - 417)
         # p.setFont("Helvetica-Bold", 30)  
         p.drawString(35, y - 410, 'Total')
         
-        p.drawString(420, y - 430, 'Rs')
-        p.drawString(435, y - 430, str(sales.discount_for_sale))
+        p.drawString(360, y - 430, 'Rs')
+        p.drawString(380, y - 430, str(sales.discount_for_sale))
         p.line(25, y - 435, 475, y - 435)
         p.drawString(35, y - 430, 'Less : Trade/Cash Discount')
         if total_amount > 0 and total_amount > sales.discount_for_sale:
@@ -558,18 +558,18 @@ class SalesInvoicePDF(View):
         else:
             grant_total = total_amount
 
-        p.drawString(420, y - 450, 'Rs')
-        p.drawString(435, y - 450, str(sales.net_taxable_value))
+        p.drawString(360, y - 450, 'Rs')
+        p.drawString(380, y - 450, str(sales.net_taxable_value))
         p.drawString(35, y - 450, 'Net Taxable Value')
         p.line(25, y - 455, 475, y - 455)
 
-        p.drawString(420, y - 470, 'Rs')
-        p.drawString(435, y - 470, str(sales.kvat))
+        p.drawString(360, y - 470, 'Rs')
+        p.drawString(380, y - 470, str(sales.kvat))
         p.drawString(35, y - 470, 'KVAT')
         p.line(25, y - 475, 475, y - 475)
 
-        p.drawString(420, y - 490, 'Rs')
-        p.drawString(435, y - 490, str(sales.cess))
+        p.drawString(360, y - 490, 'Rs')
+        p.drawString(380, y - 490, str(sales.cess))
         p.drawString(35, y - 490, 'Cess')
 
         if sales.kvat or sales.cess :
@@ -577,8 +577,8 @@ class SalesInvoicePDF(View):
         else:
             grant_total = grant_total
 
-        p.drawString(420, y - 510, 'Rs')
-        p.drawString(435, y - 510, str(grant_total))
+        p.drawString(360, y - 510, 'Rs')
+        p.drawString(380, y - 510, str(grant_total))
         p.drawString(35, y - 510, 'Net Total')
         p.line(25, y - 495, 475, y - 495) 
         if sales.freight_rate:
@@ -586,13 +586,13 @@ class SalesInvoicePDF(View):
         else:
             grant_total = grant_total
 
-        p.drawString(420, y - 530, 'Rs')
-        p.drawString(435, y - 530, str(sales.freight_rate))
+        p.drawString(360, y - 530, 'Rs')
+        p.drawString(380, y - 530, str(sales.freight_rate))
         p.drawString(35, y - 530, 'Freight Rate')
         p.line(25, y - 515, 475, y - 515)
 
-        p.drawString(420, y - 550, 'Rs')
-        p.drawString(435, y - 550, str(grant_total))
+        p.drawString(360, y - 550, 'Rs')
+        p.drawString(380, y - 550, str(grant_total))
         p.drawString(35, y - 550, 'Grant Total')
         p.line(25, y - 535, 475, y - 535)
         # Item Box end

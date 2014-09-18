@@ -1,6 +1,9 @@
 from datetime import datetime
 
 from reportlab.pdfgen import canvas
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.styles import ParagraphStyle
+
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -11,6 +14,14 @@ from sales.models import Sales, SalesReturn, CustomerPayment, CustomerAccount
 from expenses.models import Expense, ExpenseHead
 from purchase.models import SupplierAccount, SupplierAccountPayment, SupplierAccountPaymentDetail, Purchase, PurchaseReturn
 from web.models import OwnerCompany, Customer, Supplier
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 10),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 13
+para_style.fontName = 'Helvetica'
 
 def header(canvas, y):
     try:
@@ -160,6 +171,7 @@ class ExpenseReport(View):
             p.drawString(50, y - 100, "Date")
             p.drawString(150, y - 100, "Voucher No")
             p.drawString(250, y - 100, "Particulars")
+
             p.drawString(500, y - 100, "Narration")
             p.drawString(650, y - 100, "Amount") 
             
@@ -183,8 +195,18 @@ class ExpenseReport(View):
                     p.setFontSize(12)
                     p.drawString(50, y1, expense.date.strftime('%d/%m/%Y'))
                     p.drawString(150, y1, str(expense.voucher_no))
-                    p.drawString(250, y1, expense.expense_head.expense_head[:38] if len(expense.expense_head.expense_head) > 40 else expense.expense_head.expense_head)
-                    p.drawString(500, y1, expense.narration)
+                    data=[[Paragraph(expense.expense_head.expense_head, para_style)]]
+
+                    table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                    table.wrapOn(p, 200, 400)
+                    table.drawOn(p, 250, y1)
+                    # p.drawString(250, y1, expense.expense_head.expense_head[:38] if len(expense.expense_head.expense_head) > 40 else expense.expense_head.expense_head)
+                    data=[[Paragraph(expense.narration, para_style)]]
+
+                    table = Table(data, colWidths=[150], rowHeights=100, style=style)      
+                    table.wrapOn(p, 200, 400)
+                    table.drawOn(p, 500, y1-10)
+                    # p.drawString(500, y1, expense.narration)
                     p.drawString(650, y1, str(expense.amount))
                     y1 = y1 - 30
                     if y1 <= 135:
@@ -269,7 +291,12 @@ class VendorAccountsReport(View):
                             p = header(p, y)
 
                         p.drawString(50, y1, purchase_account.date.strftime('%d/%m/%Y') if purchase_account.date else '')
-                        p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
+                        data=[[Paragraph(purchase_account.supplier.name if purchase_account.supplier else '', para_style)]]
+
+                        table = Table(data, colWidths=[50], rowHeights=100, style=style)      
+                        table.wrapOn(p, 200, 400)
+                        table.drawOn(p, 150, y1-10)
+                        # p.drawString(150, y1, purchase_account.supplier.name if purchase_account.supplier else '')
                         p.drawString(400, y1, str(purchase_account.purchase.purchase_invoice_number) if purchase_account.purchase else '')
                         p.drawString(450, y1, purchase_account.payment_mode)
 
@@ -558,13 +585,13 @@ class PurchaseReport(View):
                 start_date = datetime.strptime(start, '%d/%m/%Y')
                 end_date = datetime.strptime(end, '%d/%m/%Y')
                 p.drawString(270, y - 70, report_heading)
-                p.setFontSize(13)
+                p.setFontSize(15)
                 p.drawString(50, y - 100, "Date")
                 p.drawString(110, y - 100, "Invoice Number")
                 p.drawString(240, y - 100, "Supplier")
-                p.drawString(400, y - 100, "Net Total")
-                p.drawString(580, y - 100, "Discount")
-                p.drawString(480, y - 100, "Grant Total")
+                p.drawString(500, y - 100, "Net Total")
+                p.drawString(670, y - 100, "Discount")
+                p.drawString(580, y - 100, "Grant Total")
 
                 purchases = Purchase.objects.filter(purchase_invoice_date__gte=start_date, purchase_invoice_date__lte=end_date, is_returned=False).order_by('purchase_invoice_date')
                 y1 = y - 110
@@ -582,9 +609,9 @@ class PurchaseReport(View):
                     p.drawString(120, y1, str(purchase.purchase_invoice_number))
 
                     p.drawString(240, y1, purchase.supplier.name if purchase and purchase.supplier else '')
-                    p.drawString(400, y1, str(purchase.net_total))
-                    p.drawString(580, y1, str(purchase.discount))
-                    p.drawString(480, y1, str(purchase.grant_total))
+                    p.drawString(500, y1, str(purchase.net_total))
+                    p.drawString(670, y1, str(purchase.discount))
+                    p.drawString(580, y1, str(purchase.grant_total))
                         
                 if y1 <= 135:
                     y1 = y - 110
